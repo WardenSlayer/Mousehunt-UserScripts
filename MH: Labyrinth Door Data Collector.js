@@ -22,7 +22,7 @@ function buildCopyButton() {
     var copyButton = document.createElement("button");
     copyButton.id = "copyButton";
     copyButton.innerText = "Copy to Clipboard";
-    copyButton.addEventListener("click", copyData)
+    copyButton.addEventListener("click", copyData);
     copyButtonContainer.appendChild(copyButton);
     hudLocation.after(copyButtonContainer);
     $(".copyButtonContainer").css({
