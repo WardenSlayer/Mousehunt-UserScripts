@@ -2,7 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.1
+// @version      1.1.1
 // @description  Description Pending
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -25,15 +25,17 @@ function buildTimerBox() {
         'background-size': 'cover'
     });
     $(timerBox).css({
-        'height': 100 + "px",
+        'height': 150 + "px",
         'padding': 2 + "px"
     });
     let forbiddenGrove = buildForbiddenGrove();
     let balacksCove = buildBalacksCove();
     let seasonalGarden = buildSeasonalGarden();
+    let toxicSpill = buildToxicSpill();
     timerBox.appendChild(forbiddenGrove)
     timerBox.appendChild(balacksCove)
     timerBox.appendChild(seasonalGarden)
+    timerBox.appendChild(toxicSpill)
     $(forbiddenGrove).css({
         'float': 'left'
     })
@@ -45,8 +47,12 @@ function buildTimerBox() {
         'float': 'left',
         'marginLeft': 1 + "px"
     })
+    $(toxicSpill).css({
+        'float': 'left',
+        'marginLeft': 1 + "px"
+    })
     //LAST
-    container.prepend(timerBox);
+    container.prepend(timerBox)
 }
 
 function startTimers() {
@@ -55,13 +61,15 @@ function startTimers() {
 }
 
 function runTimers() {
-    var myTimer = setInterval(updateText, 1000);
+    updateText();
+    var myTimer = setInterval(updateText, 5000);
 }
 
 function updateText() {
     if ($(".forbiddenGrove").length > 0) updateForbiddenGroveTimer();
     if ($(".balacksCove").length > 0) updateBalacksCoveTimer();
     if ($(".seasonalGarden").length > 0) updateSeasonalGardenTimer();
+    if ($(".toxicSpill").length > 0) updateToxicSpillTimer();
 }
 //===================================== Forbidden Grove ======================================
 function buildForbiddenGrove() {
@@ -489,6 +497,10 @@ function updateSeasonalGardenTimer() {
         winterObj = convertToDyHrMn(fallObj.days + 3, fallObj.hours + 8, fallObj.minutes);
         springObj = convertToDyHrMn(winterObj.days + 3, winterObj.hours + 8, winterObj.minutes)
         summerObj = convertToDyHrMn(springObj.days + 3, springObj.hours + 8, springObj.minutes);
+        $(".seasonalGardenFallLabel").text("Next Summer in:")
+        $(".seasonalGardenWinterLabel").text("Winter in:")
+        $(".seasonalGardenSpringLabel").text("Spring in:")
+        $(".seasonalGardenSummerLabel").text("Summer in:")
         seasonalGarden.append($(".seasonalGardenFall"));
         seasonalGarden.append($(".seasonalGardenWinter"));
         seasonalGarden.append($(".seasonalGardenSpring"));
@@ -503,6 +515,10 @@ function updateSeasonalGardenTimer() {
         springObj = convertToDyHrMn(winterObj.days + 3, winterObj.hours + 8, winterObj.minutes)
         summerObj = convertToDyHrMn(springObj.days + 3, springObj.hours + 8, springObj.minutes)
         fallObj = convertToDyHrMn(summerObj.days + 3, summerObj.hours + 8, summerObj.minutes);
+        $(".seasonalGardenFallLabel").text("Next Fall in:")
+        $(".seasonalGardenWinterLabel").text("Winter in:")
+        $(".seasonalGardenSpringLabel").text("Spring in:")
+        $(".seasonalGardenSummerLabel").text("Summer in:")
         seasonalGarden.append($(".seasonalGardenWinter"));
         seasonalGarden.append($(".seasonalGardenSpring"));
         seasonalGarden.append($(".seasonalGardenSummer"));
@@ -517,6 +533,10 @@ function updateSeasonalGardenTimer() {
         summerObj = convertToDyHrMn(springObj.days + 3, springObj.hours + 8, springObj.minutes);
         fallObj = convertToDyHrMn(summerObj.days + 3, summerObj.hours + 8, summerObj.minutes);
         winterObj = convertToDyHrMn(fallObj.days + 3, fallObj.hours + 8, fallObj.minutes);
+        $(".seasonalGardenFallLabel").text("Fall in:")
+        $(".seasonalGardenWinterLabel").text("Next Winter in:")
+        $(".seasonalGardenSpringLabel").text("Spring in:")
+        $(".seasonalGardenSummerLabel").text("Summer in:")
         seasonalGarden.append($(".seasonalGardenSpring"));
         seasonalGarden.append($(".seasonalGardenSummer"));
         seasonalGarden.append($(".seasonalGardenFall"));
@@ -531,6 +551,10 @@ function updateSeasonalGardenTimer() {
         fallObj = convertToDyHrMn(summerObj.days + 3, summerObj.hours + 8, summerObj.minutes);
         winterObj = convertToDyHrMn(fallObj.days + 3, fallObj.hours + 8, fallObj.minutes);
         springObj = convertToDyHrMn(winterObj.days + 3, winterObj.hours + 8, winterObj.minutes);
+        $(".seasonalGardenFallLabel").text("Fall in:")
+        $(".seasonalGardenWinterLabel").text("Winter in:")
+        $(".seasonalGardenSpringLabel").text("Next Spring in:")
+        $(".seasonalGardenSummerLabel").text("Summer in:")
         seasonalGarden.append($(".seasonalGardenSummer"));
         seasonalGarden.append($(".seasonalGardenFall"));
         seasonalGarden.append($(".seasonalGardenWinter"));
@@ -543,6 +567,233 @@ function updateSeasonalGardenTimer() {
 }
 
 function season(days, hours, minutes) {
+    this.days = days;
+    this.hours = hours;
+    this.minutes = minutes;
+}
+//====================================== Toxic Spill ======================================
+function buildToxicSpill() {
+    if ($(".toxicSpill").length > 0) return;
+    var timerBox = $(".timerBox");
+    var toxicSpill = document.createElement("div");
+    toxicSpill.classList.add("toxicSpill");
+    $(toxicSpill).css({
+        'border': '1px solid black',
+        'width': '26%',
+        'height': '90%',
+        'padding': 2 + "px"
+    });
+    //Header
+    var toxicSpillHeader = document.createElement("div");
+    toxicSpillHeader.classList.add("toxicSpillHeader");
+    var toxicSpillHeaderLabel = document.createElement("div");
+    toxicSpillHeaderLabel.classList.add("toxicSpillHeaderLabel");
+    var toxicSpillHeaderLabelText = document.createTextNode("Current Spill Level:");
+    toxicSpillHeaderLabel.appendChild(toxicSpillHeaderLabelText);
+    var toxicSpillHeaderValue = document.createElement("div");
+    toxicSpillHeaderValue.classList.add("toxicSpillHeaderValue");
+    var toxicSpillHeaderValueText = document.createTextNode("Archduke");
+    toxicSpillHeaderValue.appendChild(toxicSpillHeaderValueText);
+    $(toxicSpillHeaderLabel).css({
+        'float': 'left',
+        'font-weight': 700,
+        "marginRight": "5px"
+    })
+    $(toxicSpillHeaderValue).css({
+        "marginLeft": "100px"
+    });
+    toxicSpillHeader.appendChild(toxicSpillHeaderLabel);
+    toxicSpillHeader.appendChild(toxicSpillHeaderValue);
+    //Hero
+    var toxicSpillHero = document.createElement("div");
+    toxicSpillHero.classList.add("toxicSpillHero");
+    var toxicSpillHeroLabel = document.createElement("div");
+    toxicSpillHeroLabel.classList.add("toxicSpillHeroLabel");
+    var toxicSpillHeroLabelText = document.createTextNode("Hero in:");
+    toxicSpillHeroLabel.appendChild(toxicSpillHeroLabelText);
+    var toxicSpillHeroValue = document.createElement("div");
+    toxicSpillHeroValue.classList.add("toxicSpillHeroValue");
+    var toxicSpillHeroValueText = document.createTextNode("?");
+    toxicSpillHeroValue.appendChild(toxicSpillHeroValueText);
+    $(toxicSpillHeroLabel).css({
+        'float': 'left',
+        'font-weight': 700,
+        "marginRight": "5px"
+    })
+    $(toxicSpillHeroValue).css("marginLeft", "50px");
+    toxicSpillHero.appendChild(toxicSpillHeroLabel);
+    toxicSpillHero.appendChild(toxicSpillHeroValue);
+    //Knight
+    var toxicSpillKnight = document.createElement("div");
+    toxicSpillKnight.classList.add("toxicSpillKnight");
+    var toxicSpillKnightLabel = document.createElement("div");
+    toxicSpillKnightLabel.classList.add("toxicSpillKnightLabel");
+    var toxicSpillKnightLabelText = document.createTextNode("Knight in:");
+    toxicSpillKnightLabel.appendChild(toxicSpillKnightLabelText);
+    var toxicSpillKnightValue = document.createElement("div");
+    toxicSpillKnightValue.classList.add("toxicSpillKnightValue");
+    var toxicSpillKnightValueText = document.createTextNode("?");
+    toxicSpillKnightValue.appendChild(toxicSpillKnightValueText);
+    $(toxicSpillKnightLabel).css({
+        'float': 'left',
+        'font-weight': 700,
+        "marginRight": "5px"
+    })
+    $(toxicSpillKnightValue).css("marginLeft", "50px");
+    toxicSpillKnight.appendChild(toxicSpillKnightLabel);
+    toxicSpillKnight.appendChild(toxicSpillKnightValue);
+    //Lord
+    var toxicSpillLord = document.createElement("div");
+    toxicSpillLord.classList.add("toxicSpillLord");
+    var toxicSpillLordLabel = document.createElement("div");
+    toxicSpillLordLabel.classList.add("toxicSpillLordLabel");
+    var toxicSpillLordLabelText = document.createTextNode("Lord in:");
+    toxicSpillLordLabel.appendChild(toxicSpillLordLabelText);
+    var toxicSpillLordValue = document.createElement("div");
+    toxicSpillLordValue.classList.add("toxicSpillLordValue");
+    var toxicSpillLordValueText = document.createTextNode("?");
+    toxicSpillLordValue.appendChild(toxicSpillLordValueText);
+    $(toxicSpillLordLabel).css({
+        'float': 'left',
+        'font-weight': 700,
+        "marginRight": "5px"
+    })
+    $(toxicSpillLordValue).css("marginLeft", "50px");
+    toxicSpillLord.appendChild(toxicSpillLordLabel);
+    toxicSpillLord.appendChild(toxicSpillLordValue);
+    //Baron
+    var toxicSpillBaron = document.createElement("div");
+    toxicSpillBaron.classList.add("toxicSpillBaron");
+    var toxicSpillBaronLabel = document.createElement("div");
+    toxicSpillBaronLabel.classList.add("toxicSpillBaronLabel");
+    var toxicSpillBaronLabelText = document.createTextNode("Baron in:");
+    toxicSpillBaronLabel.appendChild(toxicSpillBaronLabelText);
+    var toxicSpillBaronValue = document.createElement("div");
+    toxicSpillBaronValue.classList.add("toxicSpillBaronValue");
+    var toxicSpillBaronValueText = document.createTextNode("?");
+    toxicSpillBaronValue.appendChild(toxicSpillBaronValueText);
+    $(toxicSpillBaronLabel).css({
+        'float': 'left',
+        'font-weight': 700,
+        "marginRight": "5px"
+    })
+    $(toxicSpillBaronValue).css("marginLeft", "50px");
+    toxicSpillBaron.appendChild(toxicSpillBaronLabel);
+    toxicSpillBaron.appendChild(toxicSpillBaronValue);
+    //Count
+    var toxicSpillCount = document.createElement("div");
+    toxicSpillCount.classList.add("toxicSpillCount");
+    var toxicSpillCountLabel = document.createElement("div");
+    toxicSpillCountLabel.classList.add("toxicSpillCountLabel");
+    var toxicSpillCountLabelText = document.createTextNode("Count in:");
+    toxicSpillCountLabel.appendChild(toxicSpillCountLabelText);
+    var toxicSpillCountValue = document.createElement("div");
+    toxicSpillCountValue.classList.add("toxicSpillCountValue");
+    var toxicSpillCountValueText = document.createTextNode("?");
+    toxicSpillCountValue.appendChild(toxicSpillCountValueText);
+    $(toxicSpillCountLabel).css({
+        'float': 'left',
+        'font-weight': 700,
+        "marginRight": "5px"
+    })
+    $(toxicSpillCountValue).css("marginLeft", "50px");
+    toxicSpillCount.appendChild(toxicSpillCountLabel);
+    toxicSpillCount.appendChild(toxicSpillCountValue);
+    //Duke
+    var toxicSpillDuke = document.createElement("div");
+    toxicSpillDuke.classList.add("toxicSpillDuke");
+    var toxicSpillDukeLabel = document.createElement("div");
+    toxicSpillDukeLabel.classList.add("toxicSpillDukeLabel");
+    var toxicSpillDukeLabelText = document.createTextNode("Duke in:");
+    toxicSpillDukeLabel.appendChild(toxicSpillDukeLabelText);
+    var toxicSpillDukeValue = document.createElement("div");
+    toxicSpillDukeValue.classList.add("toxicSpillDukeValue");
+    var toxicSpillDukeValueText = document.createTextNode("?");
+    toxicSpillDukeValue.appendChild(toxicSpillDukeValueText);
+    $(toxicSpillDukeLabel).css({
+        'float': 'left',
+        'font-weight': 700,
+        "marginRight": "5px"
+    })
+    $(toxicSpillDukeValue).css("marginLeft", "50px");
+    toxicSpillDuke.appendChild(toxicSpillDukeLabel);
+    toxicSpillDuke.appendChild(toxicSpillDukeValue);
+    //Grand Duke
+    var toxicSpillGrandDuke = document.createElement("div");
+    toxicSpillGrandDuke.classList.add("toxicSpillGrandDuke");
+    var toxicSpillGrandDukeLabel = document.createElement("div");
+    toxicSpillGrandDukeLabel.classList.add("toxicSpillGrandDukeLabel");
+    var toxicSpillGrandDukeLabelText = document.createTextNode("Grand Duke in:");
+    toxicSpillGrandDukeLabel.appendChild(toxicSpillGrandDukeLabelText);
+    var toxicSpillGrandDukeValue = document.createElement("div");
+    toxicSpillGrandDukeValue.classList.add("toxicSpillGrandDukeValue");
+    var toxicSpillGrandDukeValueText = document.createTextNode("?");
+    toxicSpillGrandDukeValue.appendChild(toxicSpillGrandDukeValueText);
+    $(toxicSpillGrandDukeLabel).css({
+        'float': 'left',
+        'font-weight': 700,
+        "marginRight": "5px"
+    })
+    $(toxicSpillGrandDukeValue).css("marginLeft", "50px");
+    toxicSpillGrandDuke.appendChild(toxicSpillGrandDukeLabel);
+    toxicSpillGrandDuke.appendChild(toxicSpillGrandDukeValue);
+    //Archduke
+    var toxicSpillArchduke = document.createElement("div");
+    toxicSpillArchduke.classList.add("toxicSpillArchduke");
+    var toxicSpillArchdukeLabel = document.createElement("div");
+    toxicSpillArchdukeLabel.classList.add("toxicSpillArchdukeLabel");
+    var toxicSpillArchdukeLabelText = document.createTextNode("Archduke in:");
+    toxicSpillArchdukeLabel.appendChild(toxicSpillArchdukeLabelText);
+    var toxicSpillArchdukeValue = document.createElement("div");
+    toxicSpillArchdukeValue.classList.add("toxicSpillArchdukeValue");
+    var toxicSpillArchdukeValueText = document.createTextNode("?");
+    toxicSpillArchdukeValue.appendChild(toxicSpillArchdukeValueText);
+    $(toxicSpillArchdukeLabel).css({
+        'float': 'left',
+        'font-weight': 700,
+        "marginRight": "5px"
+    })
+    $(toxicSpillArchdukeValue).css("marginLeft", "50px");
+    toxicSpillArchduke.appendChild(toxicSpillArchdukeLabel);
+    toxicSpillArchduke.appendChild(toxicSpillArchdukeValue);
+
+    //Append
+    toxicSpill.appendChild(toxicSpillHeader);
+    toxicSpill.appendChild(toxicSpillHero);
+    toxicSpill.appendChild(toxicSpillKnight);
+    toxicSpill.appendChild(toxicSpillLord);
+    toxicSpill.appendChild(toxicSpillBaron);
+    toxicSpill.appendChild(toxicSpillCount);
+    toxicSpill.appendChild(toxicSpillDuke);
+    toxicSpill.appendChild(toxicSpillGrandDuke);
+    toxicSpill.appendChild(toxicSpillArchduke);
+    return toxicSpill;
+}
+function updateToxicSpillTimer() {
+    if ($(".toxicSpill").length < 1) return;
+    var toxicSpill = $(".toxicSpill");
+    var firstHero = 1503597600;
+    var now = todayNow();
+    let timePassedHours = (now - firstHero) / 3600;
+    var rotaionLenght = 178;
+    var rotationsExact = timePassedHours / rotaionLenght;
+    var rotationsInteger = Math.floor(rotationsExact);
+    var partialrotation = (rotationsExact - rotationsInteger)*rotaionLenght;
+    var heroObj = new season(0, 0, 0);
+    var knightObj = new season(0, 0, 0);
+    var lordObj = new season(0, 0, 0);
+    var baronObj = new season(0, 0, 0);
+    var countObj = new season(0, 0, 0);
+    var dukeObj = new season(0, 0, 0);
+    var granddukeObj = new season(0, 0, 0);
+    var archdukeObj = new season(0, 0, 0);
+    console.log(partialrotation)
+    //https://mhwiki.hitgrab.com/wiki/index.php/Toxic_Spill#Pollution_Levels
+}
+
+
+
+function spillLevel(days, hours, minutes) {
     this.days = days;
     this.hours = hours;
     this.minutes = minutes;
