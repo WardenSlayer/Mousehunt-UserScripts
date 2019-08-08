@@ -2,7 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.1.1
+// @version      1.1.2
 // @description  Description Pending
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -25,7 +25,7 @@ function buildTimerBox() {
         'background-size': 'cover'
     });
     $(timerBox).css({
-        'height': 150 + "px",
+        'height': 115 + "px",
         'padding': 2 + "px"
     });
     let forbiddenGrove = buildForbiddenGrove();
@@ -142,10 +142,21 @@ function buildForbiddenGrove() {
     $(forbiddenGroveOpensValue).css("marginLeft", "50px");
     forbiddenGroveOpens.appendChild(forbiddenGroveOpensLabel);
     forbiddenGroveOpens.appendChild(forbiddenGroveOpensValue);
+
+    //FG Travel Button
+    var forbiddenGroveControlPanel = document.createElement("div");
+    forbiddenGroveControlPanel.classList.add("forbiddenGroveControlPanel");
+    var forbiddenGroveButton = document.createElement("button");
+    forbiddenGroveButton.id = "forbiddenGroveButton";
+    forbiddenGroveButton.innerText = "Travel";
+    forbiddenGroveButton.addEventListener("click", travelTo);
+    forbiddenGroveControlPanel.appendChild(forbiddenGroveButton);
+
     //Append
     forbiddenGrove.appendChild(forbiddenGroveHeader);
     forbiddenGrove.appendChild(forbiddenGroveCloses);
     forbiddenGrove.appendChild(forbiddenGroveOpens);
+    forbiddenGrove.appendChild(forbiddenGroveControlPanel);
     return forbiddenGrove;
 }
 
@@ -169,6 +180,7 @@ function updateForbiddenGroveTimer() {
         $(".forbiddenGroveOpensLabel").text("Opens Again in:");
         $(".forbiddenGroveOpensValue").text((closesHours + 4) + "h " + closesMinutes + "m");
         forbiddenGrove.append($(".forbiddenGroveOpens"))
+        forbiddenGrove.append($(".forbiddenGroveControlPanel"));
     } else {
         //Closed
         $(".forbiddenGroveHeaderValue").text("CLOSED")
@@ -179,6 +191,7 @@ function updateForbiddenGroveTimer() {
         $(".forbiddenGroveClosesLabel").text("Next Close in:");
         $(".forbiddenGroveClosesValue").text((opensHours + 16) + "h " + opensMinutes + "m");
         forbiddenGrove.append($(".forbiddenGroveCloses"))
+        forbiddenGrove.append($(".forbiddenGroveControlPanel"));
     }
 }
 //====================================== Balacks's Cove ======================================
@@ -756,7 +769,6 @@ function buildToxicSpill() {
     $(toxicSpillArchdukeValue).css("marginLeft", "50px");
     toxicSpillArchduke.appendChild(toxicSpillArchdukeLabel);
     toxicSpillArchduke.appendChild(toxicSpillArchdukeValue);
-
     //Append
     toxicSpill.appendChild(toxicSpillHeader);
     toxicSpill.appendChild(toxicSpillHero);
@@ -769,16 +781,18 @@ function buildToxicSpill() {
     toxicSpill.appendChild(toxicSpillArchduke);
     return toxicSpill;
 }
+
 function updateToxicSpillTimer() {
     if ($(".toxicSpill").length < 1) return;
     var toxicSpill = $(".toxicSpill");
+    $(".toxicSpill").children().show();
     var firstHero = 1503597600;
     var now = todayNow();
     let timePassedHours = (now - firstHero) / 3600;
-    var rotaionLenght = 178;
+    var rotaionLenght = 302;
     var rotationsExact = timePassedHours / rotaionLenght;
     var rotationsInteger = Math.floor(rotationsExact);
-    var partialrotation = (rotationsExact - rotationsInteger)*rotaionLenght;
+    var partialrotation = (rotationsExact - rotationsInteger) * rotaionLenght;
     var heroObj = new season(0, 0, 0);
     var knightObj = new season(0, 0, 0);
     var lordObj = new season(0, 0, 0);
@@ -787,11 +801,404 @@ function updateToxicSpillTimer() {
     var dukeObj = new season(0, 0, 0);
     var granddukeObj = new season(0, 0, 0);
     var archdukeObj = new season(0, 0, 0);
-    console.log(partialrotation)
+    if (partialrotation < 15) {
+        //Hero Rising
+        $(".toxicSpillHeaderValue").text("HERO-RISING");
+        var timeKnight = (15 - partialrotation).toPrecision(4);
+        knightObj.hours = Math.floor(timeKnight);
+        knightObj.minutes = Math.ceil((timeKnight - knightObj.hours) * 60);
+        knightObj = convertToDyHrMn(0, knightObj.hours, knightObj.minutes);
+        lordObj = convertToDyHrMn(knightObj.days, knightObj.hours + 16, knightObj.minutes);
+        baronObj = convertToDyHrMn(lordObj.days, lordObj.hours + 18, lordObj.minutes);
+        countObj = convertToDyHrMn(baronObj.days, baronObj.hours + 18, baronObj.minutes);
+        dukeObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
+        $(".toxicSpillKnightLabel").text("Knight in:");
+        $(".toxicSpillLordLabel").text("Lord in:");
+        $(".toxicSpillBaronLabel").text("Baron in:");
+        $(".toxicSpillCountLabel").text("Count in:");
+        $(".toxicSpillDukeLabel").text("Duke in:");
+        toxicSpill.append($(".toxicSpillKnight"));
+        toxicSpill.append($(".toxicSpillLord"));
+        toxicSpill.append($(".toxicSpillBaron"));
+        toxicSpill.append($(".toxicSpillCount"));
+        toxicSpill.append($(".toxicSpillDuke"));
+        $(".toxicSpillHero").hide();
+        $(".toxicSpillGrandDuke").hide();
+        $(".toxicSpillArchduke").hide();
+    } else if (partialrotation >= 15 && partialrotation < 31) {
+        //Knight Rising
+        $(".toxicSpillHeaderValue").text("KNIGHT-RISING");
+        var timeLord = (31 - partialrotation).toPrecision(4);
+        lordObj.hours = Math.floor(timeLord);
+        lordObj.minutes = Math.ceil((timeLord - lordObj.hours) * 60);
+        lordObj = convertToDyHrMn(0, lordObj.hours, lordObj.minutes);
+        baronObj = convertToDyHrMn(lordObj.days, lordObj.hours + 18, lordObj.minutes);
+        countObj = convertToDyHrMn(baronObj.days, baronObj.hours + 18, baronObj.minutes);
+        dukeObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
+        granddukeObj = convertToDyHrMn(dukeObj.days + 1, dukeObj.hours, dukeObj.minutes);
+        $(".toxicSpillLordLabel").text("Lord in:");
+        $(".toxicSpillBaronLabel").text("Baron in:");
+        $(".toxicSpillCountLabel").text("Count in:");
+        $(".toxicSpillDukeLabel").text("Duke in:");
+        $(".toxicSpillGrandDukeLabel").text("Grand Duke in:");
+        toxicSpill.append($(".toxicSpillLord"));
+        toxicSpill.append($(".toxicSpillBaron"));
+        toxicSpill.append($(".toxicSpillCount"));
+        toxicSpill.append($(".toxicSpillDuke"));
+        toxicSpill.append($(".toxicSpillGrandDuke"));
+        $(".toxicSpillHero").hide();
+        $(".toxicSpillKnight").hide();
+        $(".toxicSpillArchduke").hide();
+    } else if (partialrotation >= 31 && partialrotation < 49) {
+        //Lord Rising
+        $(".toxicSpillHeaderValue").text("LORD-RISING");
+        var timeBaron = (49 - partialrotation).toPrecision(4);
+        baronObj.hours = Math.floor(timeBaron);
+        baronObj.minutes = Math.ceil((timeBaron - baronObj.hours) * 60);
+        baronObj = convertToDyHrMn(0, baronObj.hours, baronObj.minutes);
+        countObj = convertToDyHrMn(baronObj.days, baronObj.hours + 18, baronObj.minutes);
+        dukeObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
+        granddukeObj = convertToDyHrMn(dukeObj.days + 1, dukeObj.hours, dukeObj.minutes);
+        archdukeObj = convertToDyHrMn(granddukeObj.days + 1, granddukeObj.hours, granddukeObj.minutes);
+        $(".toxicSpillBaronLabel").text("Baron in:");
+        $(".toxicSpillCountLabel").text("Count in:");
+        $(".toxicSpillDukeLabel").text("Duke in:");
+        $(".toxicSpillGrandDukeLabel").text("Grand Duke in:");
+        $(".toxicSpillLordLabel").text("Archduke in:");
+        toxicSpill.append($(".toxicSpillBaron"));
+        toxicSpill.append($(".toxicSpillCount"));
+        toxicSpill.append($(".toxicSpillDuke"));
+        toxicSpill.append($(".toxicSpillGrandDuke"));
+        toxicSpill.append($(".toxicSpillArchduke"));
+        $(".toxicSpillHero").hide();
+        $(".toxicSpillKnight").hide();
+        $(".toxicSpillLord").hide();
+    } else if (partialrotation >= 49 && partialrotation < 67) {
+        //Baron Rising
+        $(".toxicSpillHeaderValue").text("BARON-RISING");
+        var timeCount = (67 - partialrotation).toPrecision(4);
+        countObj.hours = Math.floor(timeCount);
+        countObj.minutes = Math.ceil((timeCount - countObj.hours) * 60);
+        countObj = convertToDyHrMn(0, countObj.hours, countObj.minutes);
+        dukeObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
+        granddukeObj = convertToDyHrMn(dukeObj.days + 1, dukeObj.hours, dukeObj.minutes);
+        archdukeObj = convertToDyHrMn(granddukeObj.days + 1, granddukeObj.hours, granddukeObj.minutes);
+        countObj = convertToDyHrMn(archdukeObj.days + 3, archdukeObj.hours, archdukeObj.minutes);
+        baronObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
+        $(".toxicSpillGrandDukeLabel").text("Grand Duke in:");
+        $(".toxicSpillLordLabel").text("Archduke in:");
+        $(".toxicSpillDukeLabel").text("Duke in:");
+        $(".toxicSpillCountLabel").text("Count in:");
+        $(".toxicSpillBaronLabel").text("Baron Falling in:");
+        toxicSpill.append($(".toxicSpillCount"));
+        toxicSpill.append($(".toxicSpillDuke"));
+        toxicSpill.append($(".toxicSpillGrandDuke"));
+        toxicSpill.append($(".toxicSpillArchduke"));
+        toxicSpill.append($(".toxicSpillBaron"));
+        $(".toxicSpillHero").hide();
+        $(".toxicSpillKnight").hide();
+        $(".toxicSpillLord").hide();
+    } else if (partialrotation >= 67 && partialrotation < 91) {
+        //Count Rising
+        $(".toxicSpillHeaderValue").text("COUNT-RISING");
+        var timeDuke = (91 - partialrotation).toPrecision(4);
+        dukeObj.hours = Math.floor(timeDuke);
+        dukeObj.minutes = Math.ceil((timeDuke - dukeObj.hours) * 60);
+        dukeObj = convertToDyHrMn(0, dukeObj.hours, dukeObj.minutes);
+        granddukeObj = convertToDyHrMn(dukeObj.days + 1, dukeObj.hours, dukeObj.minutes);
+        archdukeObj = convertToDyHrMn(granddukeObj.days + 1, granddukeObj.hours, granddukeObj.minutes);
+        countObj = convertToDyHrMn(archdukeObj.days + 3, archdukeObj.hours, archdukeObj.minutes);
+        baronObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
+        $(".toxicSpillGrandDukeLabel").text("Grand Duke in:");
+        $(".toxicSpillLordLabel").text("Archduke in:");
+        $(".toxicSpillDukeLabel").text("Duke in:");
+        $(".toxicSpillCountLabel").text("Count Falling in:");
+        $(".toxicSpillBaronLabel").text("Baron in:");
+        toxicSpill.append($(".toxicSpillDuke"));
+        toxicSpill.append($(".toxicSpillGrandDuke"));
+        toxicSpill.append($(".toxicSpillArchduke"));
+        toxicSpill.append($(".toxicSpillCount"));
+        toxicSpill.append($(".toxicSpillBaron"));
+        $(".toxicSpillHero").hide();
+        $(".toxicSpillKnight").hide();
+        $(".toxicSpillLord").hide();
+    } else if (partialrotation >= 91 && partialrotation < 115) {
+        //Duke Rising
+        $(".toxicSpillHeaderValue").text("DUKE-RISING");
+        var timeGrandDuke = (115 - partialrotation).toPrecision(4);
+        granddukeObj.hours = Math.floor(timeGrandDuke);
+        granddukeObj.minutes = Math.ceil((timeGrandDuke - granddukeObj.hours) * 60);
+        granddukeObj = convertToDyHrMn(0, granddukeObj.hours, granddukeObj.minutes);
+        archdukeObj = convertToDyHrMn(granddukeObj.days + 1, granddukeObj.hours, granddukeObj.minutes);
+        dukeObj = convertToDyHrMn(archdukeObj.days + 2, archdukeObj.hours, archdukeObj.minutes);
+        countObj = convertToDyHrMn(dukeObj.days + 1, dukeObj.hours + 10, dukeObj.minutes);
+        baronObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
+        $(".toxicSpillGrandDukeLabel").text("Grand Duke in:");
+        $(".toxicSpillLordLabel").text("Archduke in:");
+        $(".toxicSpillDukeLabel").text("Duke Falling in:");
+        $(".toxicSpillCountLabel").text("Count in:");
+        $(".toxicSpillBaronLabel").text("Baron in:");
+        toxicSpill.append($(".toxicSpillGrandDuke"));
+        toxicSpill.append($(".toxicSpillArchduke"));
+        toxicSpill.append($(".toxicSpillDuke"));
+        toxicSpill.append($(".toxicSpillCount"));
+        toxicSpill.append($(".toxicSpillBaron"));
+        $(".toxicSpillHero").hide();
+        $(".toxicSpillKnight").hide();
+        $(".toxicSpillLord").hide();
+    } else if (partialrotation >= 115 && partialrotation < 139) {
+        //Grand Duke Rising
+        $(".toxicSpillHeaderValue").text("GD-RISING");
+        var timeArchduke = (139 - partialrotation).toPrecision(4);
+        archdukeObj.hours = Math.floor(timeArchduke);
+        archdukeObj.minutes = Math.ceil((timeArchduke - archdukeObj.hours) * 60);
+        archdukeObj = convertToDyHrMn(0, archdukeObj.hours, archdukeObj.minutes);
+        granddukeObj = convertToDyHrMn(archdukeObj.days, archdukeObj.hours + 24, archdukeObj.minutes);
+        dukeObj = convertToDyHrMn(0, granddukeObj.hours + 24, granddukeObj.minutes);
+        countObj = convertToDyHrMn(dukeObj.days + 1, dukeObj.hours + 10, dukeObj.minutes);
+        baronObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
+        $(".toxicSpillLordLabel").text("Archduke in:");
+        $(".toxicSpillGrandDukeLabel").text("GD Falling in:");
+        $(".toxicSpillDukeLabel").text("Duke in:");
+        $(".toxicSpillCountLabel").text("Count in:");
+        $(".toxicSpillBaronLabel").text("Baron in:");
+        toxicSpill.append($(".toxicSpillArchduke"));
+        toxicSpill.append($(".toxicSpillGrandDuke"));
+        toxicSpill.append($(".toxicSpillDuke"));
+        toxicSpill.append($(".toxicSpillCount"));
+        toxicSpill.append($(".toxicSpillBaron"));
+        $(".toxicSpillHero").hide();
+        $(".toxicSpillKnight").hide();
+        $(".toxicSpillLord").hide();
+    } else if (partialrotation >= 139 && partialrotation < 151) {
+        //Archduke Falling
+        $(".toxicSpillHeaderValue").text("AD-FALLING");
+        var timeArchduke = (151 - partialrotation).toPrecision(4);
+        archdukeObj.hours = Math.floor(timeArchduke);
+        archdukeObj.minutes = Math.ceil((timeArchduke - archdukeObj.hours) * 60);
+        archdukeObj = convertToDyHrMn(0, archdukeObj.hours, archdukeObj.minutes);
+        granddukeObj = convertToDyHrMn(archdukeObj.days, archdukeObj.hours + 12, archdukeObj.minutes);
+        dukeObj = convertToDyHrMn(0, granddukeObj.hours + 24, granddukeObj.minutes);
+        countObj = convertToDyHrMn(dukeObj.days + 1, dukeObj.hours + 10, dukeObj.minutes);
+        baronObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
+        $(".toxicSpillLordLabel").text("AD Falling in:");
+        $(".toxicSpillGrandDukeLabel").text("Grand Duke in:");
+        $(".toxicSpillDukeLabel").text("Duke in:");
+        $(".toxicSpillCountLabel").text("Count in:");
+        $(".toxicSpillBaronLabel").text("Baron in:");
+        toxicSpill.append($(".toxicSpillArchduke"));
+        toxicSpill.append($(".toxicSpillGrandDuke"));
+        toxicSpill.append($(".toxicSpillDuke"));
+        toxicSpill.append($(".toxicSpillCount"));
+        toxicSpill.append($(".toxicSpillBaron"));
+        $(".toxicSpillHero").hide();
+        $(".toxicSpillKnight").hide();
+        $(".toxicSpillLord").hide();
+    } else if (partialrotation >= 151 && partialrotation < 163) {
+        //Archduke Falling
+        $(".toxicSpillHeaderValue").text("AD-FALLING");
+        var timeGDuke = (163 - partialrotation).toPrecision(4);
+        granddukeObj.hours = Math.floor(timeGDuke);
+        granddukeObj.minutes = Math.ceil((timeGDuke - granddukeObj.hours) * 60);
+        granddukeObj = convertToDyHrMn(0, granddukeObj.hours, granddukeObj.minutes);
+        dukeObj = convertToDyHrMn(0, granddukeObj.hours + 24, granddukeObj.minutes);
+        countObj = convertToDyHrMn(dukeObj.days + 1, dukeObj.hours + 10, dukeObj.minutes);
+        baronObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
+        lordObj = convertToDyHrMn(baronObj.days, baronObj.hours + 18, baronObj.minutes);
+        $(".toxicSpillGrandDukeLabel").text("Grand Duke in:");
+        $(".toxicSpillDukeLabel").text("Duke in:");
+        $(".toxicSpillCountLabel").text("Count in:");
+        $(".toxicSpillBaronLabel").text("Baron in:");
+        $(".toxicSpillLordLabel").text("Lord in:");
+        toxicSpill.append($(".toxicSpillGrandDuke"));
+        toxicSpill.append($(".toxicSpillDuke"));
+        toxicSpill.append($(".toxicSpillCount"));
+        toxicSpill.append($(".toxicSpillBaron"));
+        toxicSpill.append($(".toxicSpillLord"));
+        $(".toxicSpillHero").hide();
+        $(".toxicSpillKnight").hide();
+        $(".toxicSpillArchduke").hide();
+    } else if (partialrotation >= 163 && partialrotation < 187) {
+        //Grand Duke Falling
+        $(".toxicSpillHeaderValue").text("GD-FALLING");
+        var timeDuke = (187 - partialrotation).toPrecision(4);
+        dukeObj.hours = Math.floor(timeDuke);
+        dukeObj.minutes = Math.ceil((timeDuke - dukeObj.hours) * 60);
+        dukeObj = convertToDyHrMn(0, dukeObj.hours, dukeObj.minutes);
+        countObj = convertToDyHrMn(dukeObj.days + 1, dukeObj.hours + 10, dukeObj.minutes);
+        baronObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
+        lordObj = convertToDyHrMn(baronObj.days, baronObj.hours + 18, baronObj.minutes);
+        knightObj = convertToDyHrMn(lordObj.days, lordObj.hours + 18, lordObj.minutes);
+        $(".toxicSpillDukeLabel").text("Duke in:");
+        $(".toxicSpillCountLabel").text("Count in:");
+        $(".toxicSpillBaronLabel").text("Baron in:");
+        $(".toxicSpillLordLabel").text("Lord in:");
+        $(".toxicSpillKnightLabel").text("Knight in:");
+        toxicSpill.append($(".toxicSpillDuke"));
+        toxicSpill.append($(".toxicSpillCount"));
+        toxicSpill.append($(".toxicSpillBaron"));
+        toxicSpill.append($(".toxicSpillLord"));
+        toxicSpill.append($(".toxicSpillKnight"));
+        $(".toxicSpillHero").hide();
+        $(".toxicSpillGrandDuke").hide();
+        $(".toxicSpillArchduke").hide();
+    } else if (partialrotation >= 187 && partialrotation < 211) {
+        //Duke Falling
+        $(".toxicSpillHeaderValue").text("DUKE-FALLING");
+        var timeCount = (211 - partialrotation).toPrecision(4);
+        countObj.hours = Math.floor(timeCount);
+        countObj.minutes = Math.ceil((timeCount - countObj.hours) * 60);
+        countObj = convertToDyHrMn(0, countObj.hours, countObj.minutes);
+        baronObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
+        lordObj = convertToDyHrMn(baronObj.days, baronObj.hours + 18, baronObj.minutes);
+        knightObj = convertToDyHrMn(lordObj.days, lordObj.hours + 18, lordObj.minutes);
+        heroObj = convertToDyHrMn(knightObj.days, knightObj.hours + 16, knightObj.minutes);
+        $(".toxicSpillCountLabel").text("Count in:");
+        $(".toxicSpillBaronLabel").text("Baron in:");
+        $(".toxicSpillLordLabel").text("Lord in:");
+        $(".toxicSpillKnightLabel").text("Knight in:");
+        $(".toxicSpillHeroLabel").text("Hero in:");
+        toxicSpill.append($(".toxicSpillCount"));
+        toxicSpill.append($(".toxicSpillBaron"));
+        toxicSpill.append($(".toxicSpillLord"));
+        toxicSpill.append($(".toxicSpillKnight"));
+        toxicSpill.append($(".toxicSpillHero"));
+        $(".toxicSpillDuke").hide();
+        $(".toxicSpillGrandDuke").hide();
+        $(".toxicSpillArchduke").hide();
+    } else if (partialrotation >= 211 && partialrotation < 235) {
+        //Count Falling
+        $(".toxicSpillHeaderValue").text("COUNT-FALLING");
+        var timeBaron = (235 - partialrotation).toPrecision(4);
+        baronObj.hours = Math.floor(timeBaron);
+        baronObj.minutes = Math.ceil((timeBaron - baronObj.hours) * 60);
+        baronObj = convertToDyHrMn(0, baronObj.hours, baronObj.minutes);
+        lordObj = convertToDyHrMn(baronObj.days, baronObj.hours + 18, baronObj.minutes);
+        knightObj = convertToDyHrMn(lordObj.days, lordObj.hours + 18, lordObj.minutes);
+        heroObj = convertToDyHrMn(knightObj.days, knightObj.hours + 16, knightObj.minutes);
+        countObj = convertToDyHrMn(heroObj.days + 3, heroObj.hours + 10, heroObj.minutes);
+        $(".toxicSpillBaronLabel").text("Baron in:");
+        $(".toxicSpillLordLabel").text("Lord in:");
+        $(".toxicSpillKnightLabel").text("Knight in:");
+        $(".toxicSpillHeroLabel").text("Hero in:");
+        $(".toxicSpillCountLabel").text("Count Rising in:");
+        toxicSpill.append($(".toxicSpillBaron"));
+        toxicSpill.append($(".toxicSpillLord"));
+        toxicSpill.append($(".toxicSpillKnight"));
+        toxicSpill.append($(".toxicSpillHero"));
+        toxicSpill.append($(".toxicSpillCount"));
+        $(".toxicSpillDuke").hide();
+        $(".toxicSpillGrandDuke").hide();
+        $(".toxicSpillArchduke").hide();
+    } else if (partialrotation >= 235 && partialrotation < 253) {
+        //Baron Falling
+        $(".toxicSpillHeaderValue").text("BARON-FALLING");
+        var timeLord = (253 - partialrotation).toPrecision(4);
+        lordObj.hours = Math.floor(timeLord);
+        lordObj.minutes = Math.ceil((timeLord - lordObj.hours) * 60);
+        lordObj = convertToDyHrMn(0, lordObj.hours, lordObj.minutes);
+        knightObj = convertToDyHrMn(lordObj.days, lordObj.hours + 18, lordObj.minutes);
+        heroObj = convertToDyHrMn(knightObj.days, knightObj.hours + 16, knightObj.minutes);
+        baronObj = convertToDyHrMn(heroObj.days + 2, heroObj.hours + 16, heroObj.minutes);
+        countObj = convertToDyHrMn(baronObj.days, baronObj.hours + 18, baronObj.minutes);
+        $(".toxicSpillCountLabel").text("Count in:");
+        $(".toxicSpillBaronLabel").text("Baron Rising in:");
+        $(".toxicSpillLordLabel").text("Lord in:");
+        $(".toxicSpillKnightLabel").text("Knight in:");
+        $(".toxicSpillHeroLabel").text("Hero in:");
+        toxicSpill.append($(".toxicSpillLord"));
+        toxicSpill.append($(".toxicSpillKnight"));
+        toxicSpill.append($(".toxicSpillHero"));
+        toxicSpill.append($(".toxicSpillBaron"));
+        toxicSpill.append($(".toxicSpillCount"));
+        $(".toxicSpillDuke").hide();
+        $(".toxicSpillGrandDuke").hide();
+        $(".toxicSpillArchduke").hide();
+    } else if (partialrotation >= 256 && partialrotation < 271) {
+        //Lord Falling
+        $(".toxicSpillHeaderValue").text("LORD-FALLING");
+        var timeKnight = (271 - partialrotation).toPrecision(4);
+        knightObj.hours = Math.floor(timeKnight);
+        knightObj.minutes = Math.ceil((timeKnight - knightObj.hours) * 60);
+        knightObj = convertToDyHrMn(0, knightObj.hours, knightObj.minutes);
+        heroObj = convertToDyHrMn(knightObj.days, knightObj.hours + 16, knightObj.minutes);
+        lordObj = convertToDyHrMn(heroObj.days + 1, heroObj.hours + 22, heroObj.minutes);
+        baronObj = convertToDyHrMn(lordObj.days, lordObj.hours + 18, lordObj.minutes);
+        countObj = convertToDyHrMn(baronObj.days, baronObj.hours + 18, baronObj.minutes);
+        $(".toxicSpillCountLabel").text("Count in:");
+        $(".toxicSpillBaronLabel").text("Baron in:");
+        $(".toxicSpillLordLabel").text("Lord Rising in:");
+        $(".toxicSpillKnightLabel").text("Knight in:");
+        $(".toxicSpillHeroLabel").text("Hero in:");
+        toxicSpill.append($(".toxicSpillKnight"));
+        toxicSpill.append($(".toxicSpillHero"));
+        toxicSpill.append($(".toxicSpillLord"));
+        toxicSpill.append($(".toxicSpillBaron"));
+        toxicSpill.append($(".toxicSpillCount"));
+        $(".toxicSpillDuke").hide();
+        $(".toxicSpillGrandDuke").hide();
+        $(".toxicSpillArchduke").hide();
+    } else if (partialrotation >= 271 && partialrotation < 287) {
+        //Knight Falling
+        $(".toxicSpillHeaderValue").text("KNIGHT-FALLING");
+        var timeHero = (287 - partialrotation).toPrecision(4);
+        heroObj.hours = Math.floor(timeHero);
+        heroObj.minutes = Math.ceil((timeHero - heroObj.hours) * 60);
+        heroObj = convertToDyHrMn(0, heroObj.hours, heroObj.minutes);
+        knightObj = convertToDyHrMn(heroObj.days + 1, heroObj.hours + 6, heroObj.minutes);
+        lordObj = convertToDyHrMn(knightObj.days, knightObj.hours + 16, knightObj.minutes);
+        baronObj = convertToDyHrMn(lordObj.days, lordObj.hours + 18, lordObj.minutes);
+        countObj = convertToDyHrMn(baronObj.days, baronObj.hours + 18, baronObj.minutes);
+        $(".toxicSpillCountLabel").text("Count in:");
+        $(".toxicSpillBaronLabel").text("Baron in:");
+        $(".toxicSpillLordLabel").text("Lord in:");
+        $(".toxicSpillKnightLabel").text("Knight Rising in:");
+        $(".toxicSpillHeroLabel").text("Hero in:");
+        toxicSpill.append($(".toxicSpillHero"));
+        toxicSpill.append($(".toxicSpillKnight"));
+        toxicSpill.append($(".toxicSpillLord"));
+        toxicSpill.append($(".toxicSpillBaron"));
+        toxicSpill.append($(".toxicSpillCount"));
+        $(".toxicSpillDuke").hide();
+        $(".toxicSpillGrandDuke").hide();
+        $(".toxicSpillArchduke").hide();
+    } else if (partialrotation >= 287 && partialrotation < 302) {
+        //Hero Falling
+        $(".toxicSpillHeaderValue").text("HERO-FALLING");
+        var timeHero = (302 - partialrotation).toPrecision(4);
+        heroObj.hours = Math.floor(timeHero);
+        heroObj.minutes = Math.ceil((timeHero - heroObj.hours) * 60);
+        heroObj = convertToDyHrMn(0, heroObj.hours, heroObj.minutes);
+        knightObj = convertToDyHrMn(heroObj.days, heroObj.hours + 15, heroObj.minutes);
+        lordObj = convertToDyHrMn(knightObj.days, knightObj.hours + 16, knightObj.minutes);
+        baronObj = convertToDyHrMn(lordObj.days, lordObj.hours + 18, lordObj.minutes);
+        countObj = convertToDyHrMn(baronObj.days, baronObj.hours + 18, baronObj.minutes);
+        $(".toxicSpillCountLabel").text("Count in:");
+        $(".toxicSpillBaronLabel").text("Baron in:");
+        $(".toxicSpillLordLabel").text("Lord in:");
+        $(".toxicSpillKnightLabel").text("Knight in:");
+        $(".toxicSpillHeroLabel").text("Hero Rising in:");
+        toxicSpill.append($(".toxicSpillHero"));
+        toxicSpill.append($(".toxicSpillKnight"));
+        toxicSpill.append($(".toxicSpillLord"));
+        toxicSpill.append($(".toxicSpillBaron"));
+        toxicSpill.append($(".toxicSpillCount"));
+        $(".toxicSpillDuke").hide();
+        $(".toxicSpillGrandDuke").hide();
+        $(".toxicSpillArchduke").hide();
+    } else {
+        //WTF are we?
+    }
+    $(".toxicSpillArchdukeValue").text(archdukeObj.days + "d " + archdukeObj.hours + "h " + archdukeObj.minutes + "m");
+    $(".toxicSpillGrandDukeValue").text(granddukeObj.days + "d " + granddukeObj.hours + "h " + granddukeObj.minutes + "m");
+    $(".toxicSpillDukeValue").text(dukeObj.days + "d " + dukeObj.hours + "h " + dukeObj.minutes + "m");
+    $(".toxicSpillCountValue").text(countObj.days + "d " + countObj.hours + "h " + countObj.minutes + "m");
+    $(".toxicSpillBaronValue").text(baronObj.days + "d " + baronObj.hours + "h " + baronObj.minutes + "m");
+    $(".toxicSpillLordValue").text(lordObj.days + "d " + lordObj.hours + "h " + lordObj.minutes + "m");
+    $(".toxicSpillKnightValue").text(knightObj.days + "d " + knightObj.hours + "h " + knightObj.minutes + "m");
+    $(".toxicSpillHeroValue").text(heroObj.days + "d " + heroObj.hours + "h " + heroObj.minutes + "m");
     //https://mhwiki.hitgrab.com/wiki/index.php/Toxic_Spill#Pollution_Levels
 }
-
-
 
 function spillLevel(days, hours, minutes) {
     this.days = days;
@@ -818,4 +1225,7 @@ function convertToDyHrMn(days, hours, minutes) {
         hours,
         minutes
     }
+}
+
+function travelTo(destination){
 }
