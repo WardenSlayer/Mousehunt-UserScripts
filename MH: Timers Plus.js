@@ -2,7 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.1.2
+// @version      1.1.3
 // @description  Description Pending
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -12,6 +12,7 @@
 $(document).ready(function() {
     console.log("MH Timers+");
     buildTimerBox();
+    buildControlPanels();
     startTimers();
 });
 
@@ -25,7 +26,7 @@ function buildTimerBox() {
         'background-size': 'cover'
     });
     $(timerBox).css({
-        'height': 115 + "px",
+        'height': 100 + "px",
         'padding': 2 + "px"
     });
     let forbiddenGrove = buildForbiddenGrove();
@@ -55,6 +56,182 @@ function buildTimerBox() {
     container.prepend(timerBox)
 }
 
+function buildControlPanels() {
+    var timerBox = $(".timerBox");
+    //FG
+    var forbiddenGroveControlPanel = document.createElement("div");
+    forbiddenGroveControlPanel.classList.add("forbiddenGroveControlPanel");
+    var forbiddenGroveButton = document.createElement("button");
+    forbiddenGroveButton.id = "forbiddenGroveButton";
+    forbiddenGroveButton.innerText = "Travel";
+    forbiddenGroveButton.addEventListener("click", travelToGrove);
+    forbiddenGroveControlPanel.appendChild(forbiddenGroveButton);
+    $(forbiddenGroveControlPanel).css({
+        'float': 'left',
+        'width': '21.5%'
+    })
+    $(forbiddenGroveButton).css({
+        'width': '75px',
+        'float': 'left',
+        'marginRight': 5 + "px"
+    })
+    var forbiddenGroveCb = document.createElement('input');
+    forbiddenGroveCb.type = "checkbox";
+    forbiddenGroveCb.name = "forbiddenGroveCb";
+    forbiddenGroveCb.value = "value";
+    forbiddenGroveCb.id = "forbiddenGroveCb";
+    //forbiddenGroveCb.addEventListener("click", remindMeGrove);
+    if (localStorage.getItem('RemindGrove') == "Y") {
+        forbiddenGroveCb.checked = "Yes";
+    } else {
+        forbiddenGroveCb.checked = "";
+    }
+    var forbiddenGroveCbLabel = document.createElement('label')
+    forbiddenGroveCbLabel.htmlFor = "forbiddenGroveCbLabel";
+    forbiddenGroveCbLabel.appendChild(document.createTextNode('Remind '));
+    forbiddenGroveControlPanel.appendChild(forbiddenGroveCbLabel);
+    forbiddenGroveControlPanel.appendChild(forbiddenGroveCb)
+    $(forbiddenGroveCbLabel).css({
+        'float': 'left',
+        'fontSize': "14px",
+        'width': '45px',
+    })
+    $(forbiddenGroveCb).css({
+        'float': 'left',
+        'width': '20px'
+    })
+    timerBox.append(forbiddenGroveControlPanel);
+    //BC
+    var balacksCoveControlPanel = document.createElement("div");
+    balacksCoveControlPanel.classList.add("balacksCoveControlPanel");
+    var balacksCoveButton = document.createElement("button");
+    balacksCoveButton.id = "balacksCoveButton";
+    balacksCoveButton.innerText = "Travel";
+    balacksCoveButton.addEventListener("click", travelToCove);
+    balacksCoveControlPanel.appendChild(balacksCoveButton);
+    $(balacksCoveControlPanel).css({
+        'float': 'left',
+        'width': '25%',
+        'marginLeft': 5 + "px"
+    })
+    $(balacksCoveButton).css({
+        'width': '75px',
+        'float': 'left',
+        'marginRight': 5 + "px"
+    })
+    var balacksCoveCb = document.createElement('input');
+    balacksCoveCb.type = "checkbox";
+    balacksCoveCb.name = "balacksCoveCb";
+    balacksCoveCb.value = "value";
+    balacksCoveCb.id = "balacksCoveCb";
+    if (localStorage.getItem('RemindCove') == "Y") {
+        balacksCoveCb.checked = "Yes";
+    } else {
+        balacksCoveCb.checked = "";
+    }
+    var balacksCoveCbLabel = document.createElement('label')
+    balacksCoveCbLabel.htmlFor = "balacksCoveCbLabel";
+    balacksCoveCbLabel.appendChild(document.createTextNode('Remind '));
+    balacksCoveControlPanel.appendChild(balacksCoveCbLabel);
+    balacksCoveControlPanel.appendChild(balacksCoveCb)
+    $(balacksCoveCbLabel).css({
+        'float': 'left',
+        'fontSize': "14px",
+        'width': '45px',
+    })
+    $(balacksCoveCb).css({
+        'float': 'left',
+        'width': '20px'
+    })
+    timerBox.append(balacksCoveControlPanel);
+    //SG
+    var seasonalGardenControlPanel = document.createElement("div");
+    seasonalGardenControlPanel.classList.add("seasonalGardenControlPanel");
+    var seasonalGardenButton = document.createElement("button");
+    seasonalGardenButton.id = "seasonalGardenButton";
+    seasonalGardenButton.innerText = "Travel";
+    seasonalGardenButton.addEventListener("click", travelToGarden);
+    seasonalGardenControlPanel.appendChild(seasonalGardenButton);
+    $(seasonalGardenControlPanel).css({
+        'float': 'left',
+        'width': '24%',
+        'marginLeft': 5 + "px"
+    })
+    $(seasonalGardenButton).css({
+        'width': '75px',
+        'float': 'left',
+        'marginRight': 5 + "px"
+    })
+    var seasonalGardenCb = document.createElement('input');
+    seasonalGardenCb.type = "checkbox";
+    seasonalGardenCb.name = "seasonalGardenCb";
+    seasonalGardenCb.value = "value";
+    seasonalGardenCb.id = "seasonalGardenCb";
+    if (localStorage.getItem('RemindGarden') == "Y") {
+        seasonalGardenCb.checked = "Yes";
+    } else {
+        seasonalGardenCb.checked = "";
+    }
+    var seasonalGardenCbLabel = document.createElement('label')
+    seasonalGardenCbLabel.htmlFor = "seasonalGardenCbLabel";
+    seasonalGardenCbLabel.appendChild(document.createTextNode('Remind '));
+    seasonalGardenControlPanel.appendChild(seasonalGardenCbLabel);
+    seasonalGardenControlPanel.appendChild(seasonalGardenCb)
+    $(seasonalGardenCbLabel).css({
+        'float': 'left',
+        'fontSize': "14px",
+        'width': '45px',
+    })
+    $(seasonalGardenCb).css({
+        'float': 'left',
+        'width': '20px'
+    })
+    timerBox.append(seasonalGardenControlPanel);
+    //TS
+    var toxicSpillControlPanel = document.createElement("div");
+    toxicSpillControlPanel.classList.add("toxicSpillControlPanel");
+    var toxicSpillButton = document.createElement("button");
+    toxicSpillButton.id = "toxicSpillButton";
+    toxicSpillButton.innerText = "Travel";
+    toxicSpillButton.addEventListener("click", travelToSpill);
+    toxicSpillControlPanel.appendChild(toxicSpillButton);
+    $(toxicSpillControlPanel).css({
+        'float': 'left',
+        'width': '24%',
+        'marginLeft': 10 + "px"
+    })
+    $(toxicSpillButton).css({
+        'width': '75px',
+        'float': 'left',
+        'marginRight': 5 + "px"
+    })
+    var toxicSpillCb = document.createElement('input');
+    toxicSpillCb.type = "checkbox";
+    toxicSpillCb.name = "toxicSpillCb";
+    toxicSpillCb.value = "value";
+    toxicSpillCb.id = "toxicSpillCb";
+    if (localStorage.getItem('RemindSpill') == "Y") {
+        toxicSpillCb.checked = "Yes";
+    } else {
+        toxicSpillCb.checked = "";
+    }
+    var toxicSpillCbLabel = document.createElement('label')
+    toxicSpillCbLabel.htmlFor = "toxicSpillCbLabel";
+    toxicSpillCbLabel.appendChild(document.createTextNode('Remind '));
+    toxicSpillControlPanel.appendChild(toxicSpillCbLabel);
+    toxicSpillControlPanel.appendChild(toxicSpillCb)
+    $(toxicSpillCbLabel).css({
+        'float': 'left',
+        'fontSize': "14px",
+        'width': '45px',
+    })
+    $(toxicSpillCb).css({
+        'float': 'left',
+        'width': '20px'
+    })
+    timerBox.append(toxicSpillControlPanel);
+}
+
 function startTimers() {
     localStorage.setItem("mainTimer", 0);
     runTimers();
@@ -80,7 +257,7 @@ function buildForbiddenGrove() {
     $(forbiddenGrove).css({
         'border': '1px solid black',
         'width': '21%',
-        'height': '90%',
+        'height': '75%',
         'padding': 2 + "px"
     });
     //Header
@@ -143,20 +320,10 @@ function buildForbiddenGrove() {
     forbiddenGroveOpens.appendChild(forbiddenGroveOpensLabel);
     forbiddenGroveOpens.appendChild(forbiddenGroveOpensValue);
 
-    //FG Travel Button
-    var forbiddenGroveControlPanel = document.createElement("div");
-    forbiddenGroveControlPanel.classList.add("forbiddenGroveControlPanel");
-    var forbiddenGroveButton = document.createElement("button");
-    forbiddenGroveButton.id = "forbiddenGroveButton";
-    forbiddenGroveButton.innerText = "Travel";
-    forbiddenGroveButton.addEventListener("click", travelTo);
-    forbiddenGroveControlPanel.appendChild(forbiddenGroveButton);
-
     //Append
     forbiddenGrove.appendChild(forbiddenGroveHeader);
     forbiddenGrove.appendChild(forbiddenGroveCloses);
     forbiddenGrove.appendChild(forbiddenGroveOpens);
-    forbiddenGrove.appendChild(forbiddenGroveControlPanel);
     return forbiddenGrove;
 }
 
@@ -180,7 +347,6 @@ function updateForbiddenGroveTimer() {
         $(".forbiddenGroveOpensLabel").text("Opens Again in:");
         $(".forbiddenGroveOpensValue").text((closesHours + 4) + "h " + closesMinutes + "m");
         forbiddenGrove.append($(".forbiddenGroveOpens"))
-        forbiddenGrove.append($(".forbiddenGroveControlPanel"));
     } else {
         //Closed
         $(".forbiddenGroveHeaderValue").text("CLOSED")
@@ -191,9 +357,18 @@ function updateForbiddenGroveTimer() {
         $(".forbiddenGroveClosesLabel").text("Next Close in:");
         $(".forbiddenGroveClosesValue").text((opensHours + 16) + "h " + opensMinutes + "m");
         forbiddenGrove.append($(".forbiddenGroveCloses"))
-        forbiddenGrove.append($(".forbiddenGroveControlPanel"));
     }
 }
+$(document).on('change', '#forbiddenGroveCb', function() {
+    if (this.checked) {
+        localStorage.setItem('RemindGrove', "Y")
+        this.checked = "Yes";
+    } else {
+        localStorage.setItem('RemindGrove', "N")
+        this.checked = "";
+    }
+})
+
 //====================================== Balacks's Cove ======================================
 function buildBalacksCove() {
     if ($(".balacksCove").length > 0) return;
@@ -203,7 +378,7 @@ function buildBalacksCove() {
     $(balacksCove).css({
         'border': '1px solid black',
         'width': '25%',
-        'height': '90%',
+        'height': '75%',
         'padding': 2 + "px"
     });
     //Header
@@ -368,6 +543,16 @@ function updateBalacksCoveTimer() {
         balacksCove.append($(".balacksCoveHigh").show())
     }
 }
+
+$(document).on('change', '#balacksCoveCb', function() {
+    if (this.checked) {
+        localStorage.setItem('RemindCove', "Y")
+        this.checked = "Yes";
+    } else {
+        localStorage.setItem('RemindCove', "N")
+        this.checked = "";
+    }
+})
 //====================================== Seasonal Garden ======================================
 function buildSeasonalGarden() {
     if ($(".seasonalGarden").length > 0) return;
@@ -377,7 +562,7 @@ function buildSeasonalGarden() {
     $(seasonalGarden).css({
         'border': '1px solid black',
         'width': '24%',
-        'height': '90%',
+        'height': '75%',
         'padding': 2 + "px"
     });
     //Header
@@ -584,6 +769,15 @@ function season(days, hours, minutes) {
     this.hours = hours;
     this.minutes = minutes;
 }
+$(document).on('change', '#seasonalGardenCb', function() {
+    if (this.checked) {
+        localStorage.setItem('RemindGarden', "Y")
+        this.checked = "Yes";
+    } else {
+        localStorage.setItem('RemindGarden', "N")
+        this.checked = "";
+    }
+})
 //====================================== Toxic Spill ======================================
 function buildToxicSpill() {
     if ($(".toxicSpill").length > 0) return;
@@ -593,7 +787,7 @@ function buildToxicSpill() {
     $(toxicSpill).css({
         'border': '1px solid black',
         'width': '26%',
-        'height': '90%',
+        'height': '75%',
         'padding': 2 + "px"
     });
     //Header
@@ -1205,6 +1399,16 @@ function spillLevel(days, hours, minutes) {
     this.hours = hours;
     this.minutes = minutes;
 }
+
+$(document).on('change', '#toxicSpillCb', function() {
+    if (this.checked) {
+        localStorage.setItem('RemindSpill', "Y")
+        this.checked = "Yes";
+    } else {
+        localStorage.setItem('RemindSpill', "N")
+        this.checked = "";
+    }
+})
 //============================================================================================
 function todayNow() {
     var today = new Date();
@@ -1227,5 +1431,78 @@ function convertToDyHrMn(days, hours, minutes) {
     }
 }
 
-function travelTo(destination){
+function travelToGrove(destination) {
+    fetch("https://www.mousehuntgame.com/managers/ajax/users/changeenvironment.php", {
+        "credentials": "include",
+        "headers": {
+            "accept": "application/json, text/javascript, */*; q=0.01",
+            "accept-language": "en-US,en;q=0.9",
+            "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "x-requested-with": "XMLHttpRequest"
+        },
+        "referrer": "https://www.mousehuntgame.com/travel.php?tab=map",
+        "referrerPolicy": "no-referrer-when-downgrade",
+        "body": "sn=Hitgrab&hg_is_ajax=1&destination=forbidden_grove&uh=JqeHeJjz",
+        "method": "POST",
+        "mode": "cors"
+    });
+}
+
+function travelToCove(destination) {
+    fetch("https://www.mousehuntgame.com/managers/ajax/users/changeenvironment.php", {
+        "credentials": "include",
+        "headers": {
+            "accept": "application/json, text/javascript, */*; q=0.01",
+            "accept-language": "en-US,en;q=0.9",
+            "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "x-requested-with": "XMLHttpRequest"
+        },
+        "referrer": "https://www.mousehuntgame.com/travel.php?tab=map",
+        "referrerPolicy": "no-referrer-when-downgrade",
+        "body": "sn=Hitgrab&hg_is_ajax=1&destination=balacks_cove&uh=JqeHeJjz",
+        "method": "POST",
+        "mode": "cors"
+    });
+}
+
+function travelToGarden(destination) {
+    fetch("https://www.mousehuntgame.com/managers/ajax/users/changeenvironment.php", {
+        "credentials": "include",
+        "headers": {
+            "accept": "application/json, text/javascript, */*; q=0.01",
+            "accept-language": "en-US,en;q=0.9",
+            "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "x-requested-with": "XMLHttpRequest"
+        },
+        "referrer": "https://www.mousehuntgame.com/travel.php?tab=map",
+        "referrerPolicy": "no-referrer-when-downgrade",
+        "body": "sn=Hitgrab&hg_is_ajax=1&destination=seasonal_garden&uh=JqeHeJjz",
+        "method": "POST",
+        "mode": "cors"
+    });
+}
+
+function travelToSpill(destination) {
+    fetch("https://www.mousehuntgame.com/managers/ajax/users/changeenvironment.php", {
+        "credentials": "include",
+        "headers": {
+            "accept": "application/json, text/javascript, */*; q=0.01",
+            "accept-language": "en-US,en;q=0.9",
+            "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "x-requested-with": "XMLHttpRequest"
+        },
+        "referrer": "https://www.mousehuntgame.com/travel.php?tab=map",
+        "referrerPolicy": "no-referrer-when-downgrade",
+        "body": "sn=Hitgrab&hg_is_ajax=1&destination=pollution_outbreak&uh=JqeHeJjz",
+        "method": "POST",
+        "mode": "cors"
+    });
 }
