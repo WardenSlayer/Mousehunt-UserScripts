@@ -2,8 +2,8 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.1.3
-// @description  Description Pending
+// @version      1.2
+// @description  Handy script to keep track of the various MH location timers
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
 // @include      https://www.mousehuntgame.com/*
@@ -19,14 +19,15 @@ $(document).ready(function() {
 function buildTimerBox() {
     if ($(".timerBox").length > 0) return;
     var container = $("#mousehuntContainer");
+    var mainAccordion = document.getElementsByClassName("accordion");
+    var i;
     var timerBox = document.createElement("div");
     timerBox.classList.add("timerBox");
     $(timerBox).css({
-        'background-image': 'url("https://image.freepik.com/free-vector/cool-blue-parchment_53876-86280.jpg")',
-        'background-size': 'cover'
+        'background-image': "url('https://www.toptal.com/designers/subtlepatterns/patterns/interlaced.png')"
     });
     $(timerBox).css({
-        'height': 100 + "px",
+        'height': 112 + "px",
         'padding': 2 + "px"
     });
     let forbiddenGrove = buildForbiddenGrove();
@@ -80,7 +81,6 @@ function buildControlPanels() {
     forbiddenGroveCb.name = "forbiddenGroveCb";
     forbiddenGroveCb.value = "value";
     forbiddenGroveCb.id = "forbiddenGroveCb";
-    //forbiddenGroveCb.addEventListener("click", remindMeGrove);
     if (localStorage.getItem('RemindGrove') == "Y") {
         forbiddenGroveCb.checked = "Yes";
     } else {
@@ -347,6 +347,11 @@ function updateForbiddenGroveTimer() {
         $(".forbiddenGroveOpensLabel").text("Opens Again in:");
         $(".forbiddenGroveOpensValue").text((closesHours + 4) + "h " + closesMinutes + "m");
         forbiddenGrove.append($(".forbiddenGroveOpens"))
+        if ((closesHours == 0) && (closesMinutes <= 15) && (localStorage.getItem('RemindGrove') == "Y")) {
+            if (confirm('The forbidden grove is closing soon, travel there now?') == true) {
+                travelToGrove();
+            }
+        }
     } else {
         //Closed
         $(".forbiddenGroveHeaderValue").text("CLOSED")
@@ -357,6 +362,11 @@ function updateForbiddenGroveTimer() {
         $(".forbiddenGroveClosesLabel").text("Next Close in:");
         $(".forbiddenGroveClosesValue").text((opensHours + 16) + "h " + opensMinutes + "m");
         forbiddenGrove.append($(".forbiddenGroveCloses"))
+        if ((opensHours == 0) && (opensMinutes <= 15) && (localStorage.getItem('RemindGrove') == "Y")) {
+            if (confirm('The forbidden grove is opening soon, travel there now?') == true) {
+                travelToGrove();
+            }
+        }
     }
 }
 $(document).on('change', '#forbiddenGroveCb', function() {
@@ -477,7 +487,6 @@ function updateBalacksCoveTimer() {
     var rotationsExact = timePassedHours / rotaionLenght;
     var rotationsInteger = Math.trunc(rotationsExact);
     var partialrotation = (rotationsExact - rotationsInteger) * rotaionLenght;
-    //partialrotation = 17.8;
     if (partialrotation < 16) {
         //Low
         $(".balacksCoveHeaderValue").text("LOW");
@@ -496,6 +505,11 @@ function updateBalacksCoveTimer() {
         }
         $(".balacksCoveLowValue").text((lowHours) + "h " + (lowMinutes) + "m");
         balacksCove.append($(".balacksCoveLow"))
+        if ((midHours == 0) && (midMinutes <= 15) && (localStorage.getItem('RemindCove') == "Y")) {
+            if (confirm('It will be mid tide soon, travel there now?') == true) {
+                travelToCove();
+            }
+        }
     } else if ((partialrotation >= 16) && (partialrotation < 17)) {
         //Mid (flooding)
         $(".balacksCoveHeaderValue").text("MID-Flooding");
@@ -515,7 +529,11 @@ function updateBalacksCoveTimer() {
         $(".balacksCoveLowValue").text((midHours + 1) + "h " + (midMinutes) + "m");
         balacksCove.append($(".balacksCoveMid"))
         balacksCove.append($(".balacksCoveLow"))
-
+        if ((highHours == 0) && (highMinutes <= 15) && (localStorage.getItem('RemindCove') == "Y")) {
+            if (confirm('It will be high tide soon, travel there now?') == true) {
+                travelToCove();
+            }
+        }
     } else if ((partialrotation >= 17) && (partialrotation < 17.6666666667)) {
         //High
         $(".balacksCoveHeaderValue").text("HIGH");
@@ -528,6 +546,11 @@ function updateBalacksCoveTimer() {
         $(".balacksCoveLowValue").text((midHours + 1) + "h " + midMinutes + "m");
         $(".balacksCoveHigh").hide();
         balacksCove.append($(".balacksCoveLow"))
+        if ((midHours == 0) && (midMinutes <= 15) && (localStorage.getItem('RemindCove') == "Y")) {
+            if (confirm('It will be mid tide soon, travel there now?') == true) {
+                travelToCove();
+            }
+        }
     } else if (partialrotation >= 17.6666666667) {
         //Mid (ebbing)
         $(".balacksCoveHeaderValue").text("MID-Ebbing");
@@ -541,6 +564,11 @@ function updateBalacksCoveTimer() {
         $(".balacksCoveHighLabel").text("High Tide in:");
         $(".balacksCoveHighValue").text(lowHours + 17 + "h " + (lowMinutes) + "m");
         balacksCove.append($(".balacksCoveHigh").show())
+        if ((lowHours == 0) && (lowMinutes <= 15) && (localStorage.getItem('RemindCove') == "Y")) {
+            if (confirm('It will be low tide soon, travel there now?') == true) {
+                travelToCove();
+            }
+        }
     }
 }
 
@@ -703,6 +731,11 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenWinter"));
         seasonalGarden.append($(".seasonalGardenSpring"));
         seasonalGarden.append($(".seasonalGardenSummer"));
+        if ((fallObj.hours == 0) && (fallObj.minutes <= 15) && (localStorage.getItem('RemindGarden') == "Y")) {
+            if (confirm('It will be fall in the garden soon, travel there now?') == true) {
+                travelToGarden();
+            }
+        }
     } else if ((partialrotation >= 80) && (partialrotation < 160)) {
         //Fall
         $(".seasonalGardenHeaderValue").text("FALL");
@@ -721,6 +754,11 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenSpring"));
         seasonalGarden.append($(".seasonalGardenSummer"));
         seasonalGarden.append($(".seasonalGardenFall"));
+        if ((winterObj.hours == 0) && (winterObj.minutes <= 15) && (localStorage.getItem('RemindGarden') == "Y")) {
+            if (confirm('It will be winter in the garden soon, travel there now?') == true) {
+                travelToGarden();
+            }
+        }
     } else if ((partialrotation >= 160) && (partialrotation < 240)) {
         //Winter
         $(".seasonalGardenHeaderValue").text("WINTER");
@@ -739,6 +777,11 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenSummer"));
         seasonalGarden.append($(".seasonalGardenFall"));
         seasonalGarden.append($(".seasonalGardenWinter"));
+        if ((springObj.hours == 0) && (springObj.minutes <= 15) && (localStorage.getItem('RemindGarden') == "Y")) {
+            if (confirm('It will be spring in the garden soon, travel there now?') == true) {
+                travelToGarden();
+            }
+        }
     } else {
         //Spring
         $(".seasonalGardenHeaderValue").text("SPRING");
@@ -757,6 +800,11 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenFall"));
         seasonalGarden.append($(".seasonalGardenWinter"));
         seasonalGarden.append($(".seasonalGardenSpring"));
+        if ((summerObj.hours == 0) && (summerObj.minutes <= 15) && (localStorage.getItem('RemindGarden') == "Y")) {
+            if (confirm('It will be summer in the garden soon, travel there now?') == true) {
+                travelToGarden();
+            }
+        }
     }
     $(".seasonalGardenFallValue").text(fallObj.days + "d " + fallObj.hours + "h " + fallObj.minutes + "m");
     $(".seasonalGardenWinterValue").text(winterObj.days + "d " + winterObj.hours + "h " + winterObj.minutes + "m");
@@ -1019,6 +1067,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
+        if ((knightObj.hours == 0) && (knightObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+            if (confirm('It will be Knight level soon at the toxic spill, travel there now?') == true) {
+                travelToSpill();
+            }
+        }
     } else if (partialrotation >= 15 && partialrotation < 31) {
         //Knight Rising
         $(".toxicSpillHeaderValue").text("KNIGHT-RISING");
@@ -1043,6 +1096,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillArchduke").hide();
+        if ((lordObj.hours == 0) && (lordObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+            if (confirm('It will be Lord level soon at the toxic spill, travel there now?') == true) {
+                travelToSpill();
+            }
+        }
     } else if (partialrotation >= 31 && partialrotation < 49) {
         //Lord Rising
         $(".toxicSpillHeaderValue").text("LORD-RISING");
@@ -1058,7 +1116,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillCountLabel").text("Count in:");
         $(".toxicSpillDukeLabel").text("Duke in:");
         $(".toxicSpillGrandDukeLabel").text("Grand Duke in:");
-        $(".toxicSpillLordLabel").text("Archduke in:");
+        $(".toxicSpillArchdukeLabel").text("Archduke in:");
         toxicSpill.append($(".toxicSpillBaron"));
         toxicSpill.append($(".toxicSpillCount"));
         toxicSpill.append($(".toxicSpillDuke"));
@@ -1067,6 +1125,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
+        if ((baronObj.hours == 0) && (baronObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+            if (confirm('It will be Baron level soon at the toxic spill, travel there now?') == true) {
+                travelToSpill();
+            }
+        }
     } else if (partialrotation >= 49 && partialrotation < 67) {
         //Baron Rising
         $(".toxicSpillHeaderValue").text("BARON-RISING");
@@ -1080,7 +1143,7 @@ function updateToxicSpillTimer() {
         countObj = convertToDyHrMn(archdukeObj.days + 3, archdukeObj.hours, archdukeObj.minutes);
         baronObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
         $(".toxicSpillGrandDukeLabel").text("Grand Duke in:");
-        $(".toxicSpillLordLabel").text("Archduke in:");
+        $(".toxicSpillArchdukeLabel").text("Archduke in:");
         $(".toxicSpillDukeLabel").text("Duke in:");
         $(".toxicSpillCountLabel").text("Count in:");
         $(".toxicSpillBaronLabel").text("Baron Falling in:");
@@ -1092,6 +1155,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
+        if ((countObj.hours == 0) && (countObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+            if (confirm('It will be Count level soon at the toxic spill, travel there now?') == true) {
+                travelToSpill();
+            }
+        }
     } else if (partialrotation >= 67 && partialrotation < 91) {
         //Count Rising
         $(".toxicSpillHeaderValue").text("COUNT-RISING");
@@ -1104,7 +1172,7 @@ function updateToxicSpillTimer() {
         countObj = convertToDyHrMn(archdukeObj.days + 3, archdukeObj.hours, archdukeObj.minutes);
         baronObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
         $(".toxicSpillGrandDukeLabel").text("Grand Duke in:");
-        $(".toxicSpillLordLabel").text("Archduke in:");
+        $(".toxicSpillArchdukeLabel").text("Archduke in:");
         $(".toxicSpillDukeLabel").text("Duke in:");
         $(".toxicSpillCountLabel").text("Count Falling in:");
         $(".toxicSpillBaronLabel").text("Baron in:");
@@ -1116,6 +1184,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
+        if ((dukeObj.hours == 0) && (dukeObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+            if (confirm('It will be Duke level soon at the toxic spill, travel there now?') == true) {
+                travelToSpill();
+            }
+        }
     } else if (partialrotation >= 91 && partialrotation < 115) {
         //Duke Rising
         $(".toxicSpillHeaderValue").text("DUKE-RISING");
@@ -1128,7 +1201,7 @@ function updateToxicSpillTimer() {
         countObj = convertToDyHrMn(dukeObj.days + 1, dukeObj.hours + 10, dukeObj.minutes);
         baronObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
         $(".toxicSpillGrandDukeLabel").text("Grand Duke in:");
-        $(".toxicSpillLordLabel").text("Archduke in:");
+        $(".toxicSpillArchdukeLabel").text("Archduke in:");
         $(".toxicSpillDukeLabel").text("Duke Falling in:");
         $(".toxicSpillCountLabel").text("Count in:");
         $(".toxicSpillBaronLabel").text("Baron in:");
@@ -1140,6 +1213,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
+        if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+            if (confirm('It will be Grand Duke level soon at the toxic spill, travel there now?') == true) {
+                travelToSpill();
+            }
+        }
     } else if (partialrotation >= 115 && partialrotation < 139) {
         //Grand Duke Rising
         $(".toxicSpillHeaderValue").text("GD-RISING");
@@ -1151,7 +1229,7 @@ function updateToxicSpillTimer() {
         dukeObj = convertToDyHrMn(0, granddukeObj.hours + 24, granddukeObj.minutes);
         countObj = convertToDyHrMn(dukeObj.days + 1, dukeObj.hours + 10, dukeObj.minutes);
         baronObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
-        $(".toxicSpillLordLabel").text("Archduke in:");
+        $(".toxicSpillArchdukeLabel").text("Archduke in:");
         $(".toxicSpillGrandDukeLabel").text("GD Falling in:");
         $(".toxicSpillDukeLabel").text("Duke in:");
         $(".toxicSpillCountLabel").text("Count in:");
@@ -1164,9 +1242,14 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
+        if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+            if (confirm('It will be Grand Duke level soon at the toxic spill, travel there now?') == true) {
+                travelToSpill();
+            }
+        }
     } else if (partialrotation >= 139 && partialrotation < 151) {
-        //Archduke Falling
-        $(".toxicSpillHeaderValue").text("AD-FALLING");
+        //Archduke Rising
+        $(".toxicSpillHeaderValue").text("AD-RISING");
         var timeArchduke = (151 - partialrotation).toPrecision(4);
         archdukeObj.hours = Math.floor(timeArchduke);
         archdukeObj.minutes = Math.ceil((timeArchduke - archdukeObj.hours) * 60);
@@ -1175,7 +1258,7 @@ function updateToxicSpillTimer() {
         dukeObj = convertToDyHrMn(0, granddukeObj.hours + 24, granddukeObj.minutes);
         countObj = convertToDyHrMn(dukeObj.days + 1, dukeObj.hours + 10, dukeObj.minutes);
         baronObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
-        $(".toxicSpillLordLabel").text("AD Falling in:");
+        $(".toxicSpillArchdukeLabel").text("AD Falling in:");
         $(".toxicSpillGrandDukeLabel").text("Grand Duke in:");
         $(".toxicSpillDukeLabel").text("Duke in:");
         $(".toxicSpillCountLabel").text("Count in:");
@@ -1212,6 +1295,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillArchduke").hide();
+        if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+            if (confirm('It will be Grand Duke level soon at the toxic spill, travel there now?') == true) {
+                travelToSpill();
+            }
+        }
     } else if (partialrotation >= 163 && partialrotation < 187) {
         //Grand Duke Falling
         $(".toxicSpillHeaderValue").text("GD-FALLING");
@@ -1236,6 +1324,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
+        if ((dukeObj.hours == 0) && (dukeObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+            if (confirm('It will be Duke level soon at the toxic spill, travel there now?') == true) {
+                travelToSpill();
+            }
+        }
     } else if (partialrotation >= 187 && partialrotation < 211) {
         //Duke Falling
         $(".toxicSpillHeaderValue").text("DUKE-FALLING");
@@ -1260,6 +1353,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillDuke").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
+        if ((countObj.hours == 0) && (countObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+            if (confirm('It will be Count level soon at the toxic spill, travel there now?') == true) {
+                travelToSpill();
+            }
+        }
     } else if (partialrotation >= 211 && partialrotation < 235) {
         //Count Falling
         $(".toxicSpillHeaderValue").text("COUNT-FALLING");
@@ -1284,6 +1382,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillDuke").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
+        if ((baronObj.hours == 0) && (baronObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+            if (confirm('It will be Baron level soon at the toxic spill, travel there now?') == true) {
+                travelToSpill();
+            }
+        }
     } else if (partialrotation >= 235 && partialrotation < 253) {
         //Baron Falling
         $(".toxicSpillHeaderValue").text("BARON-FALLING");
@@ -1308,7 +1411,12 @@ function updateToxicSpillTimer() {
         $(".toxicSpillDuke").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
-    } else if (partialrotation >= 256 && partialrotation < 271) {
+        if ((lordObj.hours == 0) && (lordObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+            if (confirm('It will be Lord level soon at the toxic spill, travel there now?') == true) {
+                travelToSpill();
+            }
+        }
+    } else if (partialrotation >= 253 && partialrotation < 271) {
         //Lord Falling
         $(".toxicSpillHeaderValue").text("LORD-FALLING");
         var timeKnight = (271 - partialrotation).toPrecision(4);
@@ -1332,6 +1440,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillDuke").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
+        if ((knightObj.hours == 0) && (knightObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+            if (confirm('It will be Knight level soon at the toxic spill, travel there now?') == true) {
+                travelToSpill();
+            }
+        }
     } else if (partialrotation >= 271 && partialrotation < 287) {
         //Knight Falling
         $(".toxicSpillHeaderValue").text("KNIGHT-FALLING");
@@ -1356,6 +1469,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillDuke").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
+        if ((heroObj.hours == 0) && (heroObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+            if (confirm('It will be Hero level soon at the toxic spill, travel there now?') == true) {
+                travelToSpill();
+            }
+        }
     } else if (partialrotation >= 287 && partialrotation < 302) {
         //Hero Falling
         $(".toxicSpillHeaderValue").text("HERO-FALLING");
@@ -1431,78 +1549,18 @@ function convertToDyHrMn(days, hours, minutes) {
     }
 }
 
-function travelToGrove(destination) {
-    fetch("https://www.mousehuntgame.com/managers/ajax/users/changeenvironment.php", {
-        "credentials": "include",
-        "headers": {
-            "accept": "application/json, text/javascript, */*; q=0.01",
-            "accept-language": "en-US,en;q=0.9",
-            "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-site": "same-origin",
-            "x-requested-with": "XMLHttpRequest"
-        },
-        "referrer": "https://www.mousehuntgame.com/travel.php?tab=map",
-        "referrerPolicy": "no-referrer-when-downgrade",
-        "body": "sn=Hitgrab&hg_is_ajax=1&destination=forbidden_grove&uh=JqeHeJjz",
-        "method": "POST",
-        "mode": "cors"
-    });
+function travelToGrove() {
+    app.pages.TravelPage.travel("forbidden_grove");
 }
 
-function travelToCove(destination) {
-    fetch("https://www.mousehuntgame.com/managers/ajax/users/changeenvironment.php", {
-        "credentials": "include",
-        "headers": {
-            "accept": "application/json, text/javascript, */*; q=0.01",
-            "accept-language": "en-US,en;q=0.9",
-            "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-site": "same-origin",
-            "x-requested-with": "XMLHttpRequest"
-        },
-        "referrer": "https://www.mousehuntgame.com/travel.php?tab=map",
-        "referrerPolicy": "no-referrer-when-downgrade",
-        "body": "sn=Hitgrab&hg_is_ajax=1&destination=balacks_cove&uh=JqeHeJjz",
-        "method": "POST",
-        "mode": "cors"
-    });
+function travelToCove() {
+    app.pages.TravelPage.travel("balacks_cove");
 }
 
-function travelToGarden(destination) {
-    fetch("https://www.mousehuntgame.com/managers/ajax/users/changeenvironment.php", {
-        "credentials": "include",
-        "headers": {
-            "accept": "application/json, text/javascript, */*; q=0.01",
-            "accept-language": "en-US,en;q=0.9",
-            "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-site": "same-origin",
-            "x-requested-with": "XMLHttpRequest"
-        },
-        "referrer": "https://www.mousehuntgame.com/travel.php?tab=map",
-        "referrerPolicy": "no-referrer-when-downgrade",
-        "body": "sn=Hitgrab&hg_is_ajax=1&destination=seasonal_garden&uh=JqeHeJjz",
-        "method": "POST",
-        "mode": "cors"
-    });
+function travelToGarden() {
+    app.pages.TravelPage.travel("seasonal_garden");
 }
 
 function travelToSpill(destination) {
-    fetch("https://www.mousehuntgame.com/managers/ajax/users/changeenvironment.php", {
-        "credentials": "include",
-        "headers": {
-            "accept": "application/json, text/javascript, */*; q=0.01",
-            "accept-language": "en-US,en;q=0.9",
-            "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-site": "same-origin",
-            "x-requested-with": "XMLHttpRequest"
-        },
-        "referrer": "https://www.mousehuntgame.com/travel.php?tab=map",
-        "referrerPolicy": "no-referrer-when-downgrade",
-        "body": "sn=Hitgrab&hg_is_ajax=1&destination=pollution_outbreak&uh=JqeHeJjz",
-        "method": "POST",
-        "mode": "cors"
-    });
+    app.pages.TravelPage.travel("pollution_outbreak");
 }
