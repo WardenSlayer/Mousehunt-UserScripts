@@ -2,7 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.2.1
+// @version      1.2.2
 // @description  Handy script to keep track of the various MH location timers
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -347,7 +347,7 @@ function updateForbiddenGroveTimer() {
         forbiddenGrove.append($(".forbiddenGroveOpens"))
         if ((closesHours == 0) && (closesMinutes <= 15) && (localStorage.getItem('RemindGrove') == "Y")) {
             if (confirm('The forbidden grove is closing soon, travel there now?') == true) {
-                travelToGrove();
+                travelToGrove("skip");
             }
         }
     } else {
@@ -361,9 +361,7 @@ function updateForbiddenGroveTimer() {
         $(".forbiddenGroveClosesValue").text((opensHours + 16) + "h " + opensMinutes + "m");
         forbiddenGrove.append($(".forbiddenGroveCloses"))
         if ((opensHours == 0) && (opensMinutes <= 15) && (localStorage.getItem('RemindGrove') == "Y")) {
-            if (confirm('The forbidden grove is opening soon, travel there now?') == true) {
-                travelToGrove();
-            }
+            alert('The forbidden grove is opening soon')
         }
     }
 }
@@ -505,7 +503,7 @@ function updateBalacksCoveTimer() {
         balacksCove.append($(".balacksCoveLow"))
         if ((midHours == 0) && (midMinutes <= 15) && (localStorage.getItem('RemindCove') == "Y")) {
             if (confirm('It will be mid tide soon, travel there now?') == true) {
-                travelToCove();
+                travelToCove("skip");
             }
         }
     } else if ((partialrotation >= 16) && (partialrotation < 17)) {
@@ -529,7 +527,7 @@ function updateBalacksCoveTimer() {
         balacksCove.append($(".balacksCoveLow"))
         if ((highHours == 0) && (highMinutes <= 15) && (localStorage.getItem('RemindCove') == "Y")) {
             if (confirm('It will be high tide soon, travel there now?') == true) {
-                travelToCove();
+                travelToCove("skip");
             }
         }
     } else if ((partialrotation >= 17) && (partialrotation < 17.6666666667)) {
@@ -546,7 +544,7 @@ function updateBalacksCoveTimer() {
         balacksCove.append($(".balacksCoveLow"))
         if ((midHours == 0) && (midMinutes <= 15) && (localStorage.getItem('RemindCove') == "Y")) {
             if (confirm('It will be mid tide soon, travel there now?') == true) {
-                travelToCove();
+                travelToCove("skip");
             }
         }
     } else if (partialrotation >= 17.6666666667) {
@@ -564,7 +562,7 @@ function updateBalacksCoveTimer() {
         balacksCove.append($(".balacksCoveHigh").show())
         if ((lowHours == 0) && (lowMinutes <= 15) && (localStorage.getItem('RemindCove') == "Y")) {
             if (confirm('It will be low tide soon, travel there now?') == true) {
-                travelToCove();
+                travelToCove("skip");
             }
         }
     }
@@ -731,7 +729,7 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenSummer"));
         if ((fallObj.hours == 0) && (fallObj.minutes <= 15) && (localStorage.getItem('RemindGarden') == "Y")) {
             if (confirm('It will be fall in the garden soon, travel there now?') == true) {
-                travelToGarden();
+                travelToGarden("skip");
             }
         }
     } else if ((partialrotation >= 80) && (partialrotation < 160)) {
@@ -754,7 +752,7 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenFall"));
         if ((winterObj.hours == 0) && (winterObj.minutes <= 15) && (localStorage.getItem('RemindGarden') == "Y")) {
             if (confirm('It will be winter in the garden soon, travel there now?') == true) {
-                travelToGarden();
+                travelToGarden("skip");
             }
         }
     } else if ((partialrotation >= 160) && (partialrotation < 240)) {
@@ -777,7 +775,7 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenWinter"));
         if ((springObj.hours == 0) && (springObj.minutes <= 15) && (localStorage.getItem('RemindGarden') == "Y")) {
             if (confirm('It will be spring in the garden soon, travel there now?') == true) {
-                travelToGarden();
+                travelToGarden("skip");
             }
         }
     } else {
@@ -800,7 +798,7 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenSpring"));
         if ((summerObj.hours == 0) && (summerObj.minutes <= 15) && (localStorage.getItem('RemindGarden') == "Y")) {
             if (confirm('It will be summer in the garden soon, travel there now?') == true) {
-                travelToGarden();
+                travelToGarden("skip");
             }
         }
     }
@@ -1067,7 +1065,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillArchduke").hide();
         if ((knightObj.hours == 0) && (knightObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
             if (confirm('It will be Knight level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill();
+                travelToSpill("skip");
             }
         }
     } else if (partialrotation >= 15 && partialrotation < 31) {
@@ -1096,7 +1094,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillArchduke").hide();
         if ((lordObj.hours == 0) && (lordObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
             if (confirm('It will be Lord level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill();
+                travelToSpill("skip");
             }
         }
     } else if (partialrotation >= 31 && partialrotation < 49) {
@@ -1125,7 +1123,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillLord").hide();
         if ((baronObj.hours == 0) && (baronObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
             if (confirm('It will be Baron level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill();
+                travelToSpill("skip");
             }
         }
     } else if (partialrotation >= 49 && partialrotation < 67) {
@@ -1155,7 +1153,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillLord").hide();
         if ((countObj.hours == 0) && (countObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
             if (confirm('It will be Count level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill();
+                travelToSpill("skip");
             }
         }
     } else if (partialrotation >= 67 && partialrotation < 91) {
@@ -1184,7 +1182,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillLord").hide();
         if ((dukeObj.hours == 0) && (dukeObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
             if (confirm('It will be Duke level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill();
+                travelToSpill("skip");
             }
         }
     } else if (partialrotation >= 91 && partialrotation < 115) {
@@ -1213,7 +1211,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillLord").hide();
         if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
             if (confirm('It will be Grand Duke level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill();
+                travelToSpill("skip");
             }
         }
     } else if (partialrotation >= 115 && partialrotation < 139) {
@@ -1242,7 +1240,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillLord").hide();
         if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
             if (confirm('It will be Grand Duke level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill();
+                travelToSpill("skip");
             }
         }
     } else if (partialrotation >= 139 && partialrotation < 151) {
@@ -1295,7 +1293,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillArchduke").hide();
         if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
             if (confirm('It will be Grand Duke level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill();
+                travelToSpill("skip");
             }
         }
     } else if (partialrotation >= 163 && partialrotation < 187) {
@@ -1324,7 +1322,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillArchduke").hide();
         if ((dukeObj.hours == 0) && (dukeObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
             if (confirm('It will be Duke level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill();
+                travelToSpill("skip");
             }
         }
     } else if (partialrotation >= 187 && partialrotation < 211) {
@@ -1353,7 +1351,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillArchduke").hide();
         if ((countObj.hours == 0) && (countObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
             if (confirm('It will be Count level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill();
+                travelToSpill("skip");
             }
         }
     } else if (partialrotation >= 211 && partialrotation < 235) {
@@ -1382,7 +1380,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillArchduke").hide();
         if ((baronObj.hours == 0) && (baronObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
             if (confirm('It will be Baron level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill();
+                travelToSpill("skip");
             }
         }
     } else if (partialrotation >= 235 && partialrotation < 253) {
@@ -1411,7 +1409,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillArchduke").hide();
         if ((lordObj.hours == 0) && (lordObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
             if (confirm('It will be Lord level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill();
+                travelToSpill("skip");
             }
         }
     } else if (partialrotation >= 253 && partialrotation < 271) {
@@ -1440,7 +1438,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillArchduke").hide();
         if ((knightObj.hours == 0) && (knightObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
             if (confirm('It will be Knight level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill();
+                travelToSpill("skip");
             }
         }
     } else if (partialrotation >= 271 && partialrotation < 287) {
@@ -1469,7 +1467,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillArchduke").hide();
         if ((heroObj.hours == 0) && (heroObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
             if (confirm('It will be Hero level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill();
+                travelToSpill("skip");
             }
         }
     } else if (partialrotation >= 287 && partialrotation < 302) {
@@ -1547,18 +1545,28 @@ function convertToDyHrMn(days, hours, minutes) {
     }
 }
 
-function travelToGrove() {
-    app.pages.TravelPage.travel("forbidden_grove");
+function travelToGrove(skip) {
+    if ($(".forbiddenGroveHeaderValue").text() == "CLOSED") {
+        alert('The Forbiddengrove is closed now, you cannot travel there right now')
+    } else if ((confirm('Travel to the Forbidden Grove now?') == true) || (skip == true)) {
+        app.pages.TravelPage.travel("forbidden_grove");
+    }
 }
 
-function travelToCove() {
-    app.pages.TravelPage.travel("balacks_cove");
+function travelToCove(skip) {
+    if ((confirm("Travel to Balack's Cove now?") == true) || (skip == true)) {
+        app.pages.TravelPage.travel("balacks_cove");
+    }
 }
 
-function travelToGarden() {
-    app.pages.TravelPage.travel("seasonal_garden");
+function travelToGarden(skip) {
+    if ((confirm("Travel to the Seasonal Garden now?") == true) || (skip == true)) {
+        app.pages.TravelPage.travel("seasonal_garden");
+    }
 }
 
-function travelToSpill(destination) {
-    app.pages.TravelPage.travel("pollution_outbreak");
+function travelToSpill(skip) {
+    if ((confirm("Travel to the toxic spill now?") == true) || (skip == true)) {
+        app.pages.TravelPage.travel("pollution_outbreak");
+    }
 }
