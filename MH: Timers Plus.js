@@ -19,8 +19,6 @@ $(document).ready(function() {
 function buildTimerBox() {
     if ($(".timerBox").length > 0) return;
     var container = $("#mousehuntContainer");
-    var mainAccordion = document.getElementsByClassName("accordion");
-    var i;
     var timerBox = document.createElement("div");
     timerBox.classList.add("timerBox");
     $(timerBox).css({
@@ -239,7 +237,7 @@ function startTimers() {
 
 function runTimers() {
     updateText();
-    var myTimer = setInterval(updateText, 5000);
+    var myTimer = setInterval(updateText, 300000);
 }
 
 function updateText() {
