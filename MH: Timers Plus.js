@@ -1119,7 +1119,7 @@ function updateToxicSpillTimer() {
                 travelToSpill("skip");
             }
             localStorage.setItem('RemindSpill', "N")
-            $("#toxicSpillCb").prop('checked', false
+            $("#toxicSpillCb").prop('checked', false)
             }
         } else if (partialrotation >= 31 && partialrotation < 49) {
             //Lord Rising
