@@ -2,7 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.2.5
+// @version      1.3
 // @description  Handy script to keep track of the various MH location timers
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -18,9 +18,43 @@ $(document).ready(function() {
 
 function buildTimerBox() {
     if ($(".timerBox").length > 0) return;
+    if ($(".accordion").length > 0) return;
     var container = $("#mousehuntContainer");
+    var accordion = document.createElement("div");
+    accordion.classList.add("accordion");
+    $(accordion).css({
+        'background-image': "url('https://www.toptal.com/designers/subtlepatterns/patterns/interlaced.png')",
+        'width': '98%',
+        'height': '15px',
+        'padding': '5px',
+        'border': '2px solid black',
+    });
+    var accordionPrompt = document.createElement("div");
+    accordionPrompt.classList.add("accordionPrompt");
+    var accordionTitle = document.createElement("div");
+    accordionTitle.classList.add("accordionTitle");
+    $(accordionTitle).text("Mousehunt Timers+").css({
+        'float': 'left',
+        'padding': '1px 0',
+        'font-size': '12px',
+        'font-weight': 'bold'
+    })
+    $(accordionPrompt).text("Click to Hide").css({
+        'float': 'right',
+        'padding': '1px 0',
+        'font-size': '11px',
+        'font-weight': 'bold'
+    })
+    accordion.appendChild(accordionTitle)
+    accordion.appendChild(accordionPrompt)
     var timerBox = document.createElement("div");
-    timerBox.classList.add("timerBox");
+    if (localStorage.getItem('HideTimers') == "Y") {
+        timerBox.classList.add("timerBox")
+        timerBox.classList.add("hide");
+        $(accordionPrompt).text("Click to Show")
+    } else {
+        timerBox.classList.add("timerBox");
+    }
     $(timerBox).css({
         'background-image': "url('https://www.toptal.com/designers/subtlepatterns/patterns/interlaced.png')"
     });
@@ -53,7 +87,23 @@ function buildTimerBox() {
     })
     //LAST
     container.prepend(timerBox)
+    container.prepend(accordion)
+
 }
+$(document).on('click', '.accordion', function() {
+    console.log('clicked')
+    if (localStorage.getItem('HideTimers') == "Y") {
+        //show
+        $('.timerBox').removeClass("hide")
+        $('.accordionPrompt').text("Click to Hide")
+        localStorage.setItem('HideTimers', "N")
+    } else {
+        //hide
+        $('.timerBox').addClass("hide")
+        $('.accordionPrompt').text("Click to Show")
+        localStorage.setItem('HideTimers', "Y")
+    }
+})
 
 function buildControlPanels() {
     var timerBox = $(".timerBox");
@@ -237,7 +287,8 @@ function startTimers() {
 
 function runTimers() {
     updateText();
-    var myTimer = setInterval(updateText, 60000);
+    //var myTimer = setInterval(updateText, 60000);
+    var myTimer = setInterval(updateText, 1000);
 }
 
 function updateText() {
@@ -295,7 +346,6 @@ function buildForbiddenGrove() {
         'font-weight': 700,
         "marginRight": "5px"
     })
-    $(forbiddenGroveClosesValue).css("marginLeft", "50px");
     forbiddenGroveCloses.appendChild(forbiddenGroveClosesLabel);
     forbiddenGroveCloses.appendChild(forbiddenGroveClosesValue);
     //Open
@@ -314,7 +364,6 @@ function buildForbiddenGrove() {
         'font-weight': 700,
         "marginRight": "5px"
     })
-    $(forbiddenGroveOpensValue).css("marginLeft", "50px");
     forbiddenGroveOpens.appendChild(forbiddenGroveOpensLabel);
     forbiddenGroveOpens.appendChild(forbiddenGroveOpensValue);
 
@@ -338,13 +387,22 @@ function updateForbiddenGroveTimer() {
     if (partialrotation < 16) {
         //Open
         $(".forbiddenGroveHeaderValue").text(" OPEN");
+        $(".forbiddenGroveHeaderValue").css({
+            'color': 'green'
+        })
         var timeCloses = (16 - partialrotation).toPrecision(4);
         var closesHours = Math.trunc(timeCloses);
         var closesMinutes = Math.ceil((timeCloses - closesHours) * 60);
         $(".forbiddenGroveClosesValue").text(closesHours + "h " + closesMinutes + "m");
-        $(".forbiddenGroveOpensLabel").text("Opens Again in:");
+        $(".forbiddenGroveClosesValue").css({
+                'float': 'right'
+            }),
+            $(".forbiddenGroveOpensLabel").text("Opens Again in:");
         $(".forbiddenGroveOpensValue").text((closesHours + 4) + "h " + closesMinutes + "m");
-        forbiddenGrove.append($(".forbiddenGroveOpens"))
+        $(".forbiddenGroveOpensValue").css({
+                'float': 'right'
+            }),
+            forbiddenGrove.append($(".forbiddenGroveOpens"))
         if ((closesHours == 0) && (closesMinutes <= 15) && (localStorage.getItem('RemindGrove') == "Y")) {
             if (confirm('The forbidden grove is closing soon, travel there now?') == true) {
                 travelToGrove("skip");
@@ -355,13 +413,22 @@ function updateForbiddenGroveTimer() {
     } else {
         //Closed
         $(".forbiddenGroveHeaderValue").text("CLOSED")
+        $(".forbiddenGroveHeaderValue").css({
+            'color': 'red'
+        })
         var timeOpens = (rotaionLenght - partialrotation).toPrecision(4);
         var opensHours = Math.trunc(timeOpens);
         var opensMinutes = Math.ceil((timeOpens - opensHours) * 60);
         $(".forbiddenGroveOpensValue").text(opensHours + "h " + opensMinutes + "m");
-        $(".forbiddenGroveClosesLabel").text("Next Close in:");
+        $(".forbiddenGroveOpensValue").css({
+                'float': 'right'
+            }),
+            $(".forbiddenGroveClosesLabel").text("Next Close in:");
         $(".forbiddenGroveClosesValue").text((opensHours + 16) + "h " + opensMinutes + "m");
-        forbiddenGrove.append($(".forbiddenGroveCloses"))
+        $(".forbiddenGroveClosesValue").css({
+                'float': 'right'
+            }),
+            forbiddenGrove.append($(".forbiddenGroveCloses"))
         if ((opensHours == 0) && (opensMinutes <= 15) && (localStorage.getItem('RemindGrove') == "Y")) {
             alert('The forbidden grove is opening soon')
             localStorage.setItem('RemindGrove', "N")
@@ -425,10 +492,10 @@ function buildBalacksCove() {
     balacksCoveLowValue.appendChild(balacksCoveLowValueText);
     $(balacksCoveLowLabel).css({
         'float': 'left',
+        'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
     })
-    $(balacksCoveLowValue).css("marginLeft", "50px");
     balacksCoveLow.appendChild(balacksCoveLowLabel);
     balacksCoveLow.appendChild(balacksCoveLowValue);
     //Medium
@@ -444,10 +511,10 @@ function buildBalacksCove() {
     balacksCoveMidValue.appendChild(balacksCoveMidValueText);
     $(balacksCoveMidLabel).css({
         'float': 'left',
+        'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
     })
-    $(balacksCoveMidValue).css("marginLeft", "50px");
     balacksCoveMid.appendChild(balacksCoveMidLabel);
     balacksCoveMid.appendChild(balacksCoveMidValue);
     //High
@@ -463,10 +530,10 @@ function buildBalacksCove() {
     balacksCoveHighValue.appendChild(balacksCoveHighValueText);
     $(balacksCoveHighLabel).css({
         'float': 'left',
+        'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
     })
-    $(balacksCoveHighValue).css("marginLeft", "50px");
     balacksCoveHigh.appendChild(balacksCoveHighLabel);
     balacksCoveHigh.appendChild(balacksCoveHighValue);
     //Append
@@ -490,6 +557,9 @@ function updateBalacksCoveTimer() {
     if (partialrotation < 16) {
         //Low
         $(".balacksCoveHeaderValue").text("LOW");
+        $(".balacksCoveHeaderValue").css({
+            'color': 'green'
+        })
         var timeMid = (16 - partialrotation).toPrecision(4);
         var midHours = Math.trunc(timeMid);
         var midMinutes = Math.ceil((timeMid - midHours) * 60);
@@ -497,6 +567,15 @@ function updateBalacksCoveTimer() {
         $(".balacksCoveMidLabel").text("Mid-Filling in:")
         $(".balacksCoveHighValue").text((midHours + 1) + "h " + midMinutes + "m");
         $(".balacksCoveLowLabel").text("Low Again in:");
+        $(".balacksCoveMidValue").css({
+            'float': 'right'
+        })
+        $(".balacksCoveHighValue").css({
+            'float': 'right'
+        })
+        $(".balacksCoveLowValue").css({
+            'float': 'right'
+        })
         var lowHours = midHours + 2;
         var lowMinutes = midMinutes + 40;
         if (lowMinutes >= 60) {
@@ -515,6 +594,9 @@ function updateBalacksCoveTimer() {
     } else if ((partialrotation >= 16) && (partialrotation < 17)) {
         //Mid (flooding)
         $(".balacksCoveHeaderValue").text("MID-Flooding");
+        $(".balacksCoveHeaderValue").css({
+            'color': 'orange'
+        })
         var timeHigh = (17 - partialrotation).toPrecision(4);
         var highHours = Math.trunc(timeHigh);
         var highMinutes = Math.ceil((timeHigh - highHours) * 60);
@@ -529,6 +611,15 @@ function updateBalacksCoveTimer() {
         $(".balacksCoveMidValue").text(midHours + "h " + midMinutes + "m");
         $(".balacksCoveLowLabel").text("Low Tide in:");
         $(".balacksCoveLowValue").text((midHours + 1) + "h " + (midMinutes) + "m");
+        $(".balacksCoveMidValue").css({
+            'float': 'right'
+        })
+        $(".balacksCoveHighValue").css({
+            'float': 'right'
+        })
+        $(".balacksCoveLowValue").css({
+            'float': 'right'
+        })
         balacksCove.append($(".balacksCoveMid"))
         balacksCove.append($(".balacksCoveLow"))
         if ((highHours == 0) && (highMinutes <= 15) && (localStorage.getItem('RemindCove') == "Y")) {
@@ -541,6 +632,9 @@ function updateBalacksCoveTimer() {
     } else if ((partialrotation >= 17) && (partialrotation < 17.6666666667)) {
         //High
         $(".balacksCoveHeaderValue").text("HIGH");
+        $(".balacksCoveHeaderValue").css({
+            'color': 'red'
+        })
         var timeMid = (17.6666666667 - partialrotation).toPrecision(4);
         var midHours = Math.trunc(timeMid);
         var midMinutes = Math.ceil((timeMid - midHours) * 60);
@@ -548,6 +642,12 @@ function updateBalacksCoveTimer() {
         $(".balacksCoveMidLabel").text("Mid-Ebbing in:")
         $(".balacksCoveLowLabel").text("Low Tide in:")
         $(".balacksCoveLowValue").text((midHours + 1) + "h " + midMinutes + "m");
+        $(".balacksCoveMidValue").css({
+            'float': 'right'
+        })
+        $(".balacksCoveLowValue").css({
+            'float': 'right'
+        })
         $(".balacksCoveHigh").hide();
         balacksCove.append($(".balacksCoveLow"))
         if ((midHours == 0) && (midMinutes <= 15) && (localStorage.getItem('RemindCove') == "Y")) {
@@ -560,6 +660,9 @@ function updateBalacksCoveTimer() {
     } else if (partialrotation >= 17.6666666667) {
         //Mid (ebbing)
         $(".balacksCoveHeaderValue").text("MID-Ebbing");
+        $(".balacksCoveHeaderValue").css({
+            'color': 'orange'
+        })
         var timeLow = (rotaionLenght - partialrotation).toPrecision(4);
         var lowHours = Math.trunc(timeLow);
         var lowMinutes = Math.ceil((timeLow - lowHours) * 60);
@@ -569,6 +672,15 @@ function updateBalacksCoveTimer() {
         $(".balacksCoveMidValue").text(lowHours + 16 + "h " + lowMinutes + "m");
         $(".balacksCoveHighLabel").text("High Tide in:");
         $(".balacksCoveHighValue").text(lowHours + 17 + "h " + (lowMinutes) + "m");
+        $(".balacksCoveMidValue").css({
+            'float': 'right'
+        })
+        $(".balacksCoveHighValue").css({
+            'float': 'right'
+        })
+        $(".balacksCoveLowValue").css({
+            'float': 'right'
+        })
         balacksCove.append($(".balacksCoveHigh").show())
         if ((lowHours == 0) && (lowMinutes <= 15) && (localStorage.getItem('RemindCove') == "Y")) {
             if (confirm('It will be low tide soon, travel there now?') == true) {
@@ -635,10 +747,10 @@ function buildSeasonalGarden() {
     seasonalGardenFallValue.appendChild(seasonalGardenFallValueText);
     $(seasonalGardenFallLabel).css({
         'float': 'left',
+        'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
     })
-    $(seasonalGardenFallValue).css("marginLeft", "50px");
     seasonalGardenFall.appendChild(seasonalGardenFallLabel);
     seasonalGardenFall.appendChild(seasonalGardenFallValue);
     //Winter
@@ -654,10 +766,10 @@ function buildSeasonalGarden() {
     seasonalGardenWinterValue.appendChild(seasonalGardenWinterValueText);
     $(seasonalGardenWinterLabel).css({
         'float': 'left',
+        'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
     })
-    $(seasonalGardenWinterValue).css("marginLeft", "50px");
     seasonalGardenWinter.appendChild(seasonalGardenWinterLabel);
     seasonalGardenWinter.appendChild(seasonalGardenWinterValue);
     //Spring
@@ -673,10 +785,10 @@ function buildSeasonalGarden() {
     seasonalGardenSpringValue.appendChild(seasonalGardenSpringValueText);
     $(seasonalGardenSpringLabel).css({
         'float': 'left',
+        'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
     })
-    $(seasonalGardenSpringValue).css("marginLeft", "50px");
     seasonalGardenSpring.appendChild(seasonalGardenSpringLabel);
     seasonalGardenSpring.appendChild(seasonalGardenSpringValue);
     //Summer
@@ -692,10 +804,10 @@ function buildSeasonalGarden() {
     seasonalGardenSummerValue.appendChild(seasonalGardenSummerValueText);
     $(seasonalGardenSummerLabel).css({
         'float': 'left',
+        'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
     })
-    $(seasonalGardenSummerValue).css("marginLeft", "50px");
     seasonalGardenSummer.appendChild(seasonalGardenSummerLabel);
     seasonalGardenSummer.appendChild(seasonalGardenSummerValue);
     //Append
@@ -724,6 +836,9 @@ function updateSeasonalGardenTimer() {
     if (partialrotation < 80) {
         //Summer
         $(".seasonalGardenHeaderValue").text("SUMMER");
+        $(".seasonalGardenHeaderValue").css({
+            'color': 'red'
+        })
         var timeFall = (80 - partialrotation).toPrecision(4);
         fallObj.hours = Math.floor(timeFall);
         fallObj.minutes = Math.ceil((timeFall - fallObj.hours) * 60);
@@ -749,6 +864,9 @@ function updateSeasonalGardenTimer() {
     } else if ((partialrotation >= 80) && (partialrotation < 160)) {
         //Fall
         $(".seasonalGardenHeaderValue").text("FALL");
+        $(".seasonalGardenHeaderValue").css({
+            'color': 'orange'
+        })
         var timeWinter = (160 - partialrotation).toPrecision(4);
         winterObj.hours = Math.floor(timeWinter);
         winterObj.minutes = Math.ceil((timeWinter - winterObj.hours) * 60);
@@ -774,6 +892,9 @@ function updateSeasonalGardenTimer() {
     } else if ((partialrotation >= 160) && (partialrotation < 240)) {
         //Winter
         $(".seasonalGardenHeaderValue").text("WINTER");
+        $(".seasonalGardenHeaderValue").css({
+            'color': 'blue'
+        })
         var timeSpring = (240 - partialrotation).toPrecision(4);
         springObj.hours = Math.floor(timeSpring);
         springObj.minutes = Math.ceil((timeSpring - springObj.hours) * 60);
@@ -799,6 +920,9 @@ function updateSeasonalGardenTimer() {
     } else {
         //Spring
         $(".seasonalGardenHeaderValue").text("SPRING");
+        $(".seasonalGardenHeaderValue").css({
+            'color': 'green'
+        })
         var timeSummer = (320 - partialrotation).toPrecision(4);
         summerObj.hours = Math.floor(timeSummer);
         summerObj.minutes = Math.ceil((timeSummer - summerObj.hours) * 60);
@@ -826,6 +950,18 @@ function updateSeasonalGardenTimer() {
     $(".seasonalGardenWinterValue").text(winterObj.days + "d " + winterObj.hours + "h " + winterObj.minutes + "m");
     $(".seasonalGardenSpringValue").text(springObj.days + "d " + springObj.hours + "h " + springObj.minutes + "m");
     $(".seasonalGardenSummerValue").text(summerObj.days + "d " + summerObj.hours + "h " + summerObj.minutes + "m");
+    $(".seasonalGardenFallValue").css({
+        'float': 'right'
+    })
+    $(".seasonalGardenWinterValue").css({
+        'float': 'right'
+    })
+    $(".seasonalGardenSpringValue").css({
+        'float': 'right'
+    })
+    $(".seasonalGardenSummerValue").css({
+        'float': 'right'
+    })
 }
 
 function season(days, hours, minutes) {
@@ -888,10 +1024,10 @@ function buildToxicSpill() {
     toxicSpillHeroValue.appendChild(toxicSpillHeroValueText);
     $(toxicSpillHeroLabel).css({
         'float': 'left',
+        'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
     })
-    $(toxicSpillHeroValue).css("marginLeft", "50px");
     toxicSpillHero.appendChild(toxicSpillHeroLabel);
     toxicSpillHero.appendChild(toxicSpillHeroValue);
     //Knight
@@ -907,10 +1043,10 @@ function buildToxicSpill() {
     toxicSpillKnightValue.appendChild(toxicSpillKnightValueText);
     $(toxicSpillKnightLabel).css({
         'float': 'left',
+        'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
     })
-    $(toxicSpillKnightValue).css("marginLeft", "50px");
     toxicSpillKnight.appendChild(toxicSpillKnightLabel);
     toxicSpillKnight.appendChild(toxicSpillKnightValue);
     //Lord
@@ -926,10 +1062,10 @@ function buildToxicSpill() {
     toxicSpillLordValue.appendChild(toxicSpillLordValueText);
     $(toxicSpillLordLabel).css({
         'float': 'left',
+        'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
     })
-    $(toxicSpillLordValue).css("marginLeft", "50px");
     toxicSpillLord.appendChild(toxicSpillLordLabel);
     toxicSpillLord.appendChild(toxicSpillLordValue);
     //Baron
@@ -945,10 +1081,10 @@ function buildToxicSpill() {
     toxicSpillBaronValue.appendChild(toxicSpillBaronValueText);
     $(toxicSpillBaronLabel).css({
         'float': 'left',
+        'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
     })
-    $(toxicSpillBaronValue).css("marginLeft", "50px");
     toxicSpillBaron.appendChild(toxicSpillBaronLabel);
     toxicSpillBaron.appendChild(toxicSpillBaronValue);
     //Count
@@ -964,10 +1100,10 @@ function buildToxicSpill() {
     toxicSpillCountValue.appendChild(toxicSpillCountValueText);
     $(toxicSpillCountLabel).css({
         'float': 'left',
+        'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
     })
-    $(toxicSpillCountValue).css("marginLeft", "50px");
     toxicSpillCount.appendChild(toxicSpillCountLabel);
     toxicSpillCount.appendChild(toxicSpillCountValue);
     //Duke
@@ -983,10 +1119,10 @@ function buildToxicSpill() {
     toxicSpillDukeValue.appendChild(toxicSpillDukeValueText);
     $(toxicSpillDukeLabel).css({
         'float': 'left',
+        'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
     })
-    $(toxicSpillDukeValue).css("marginLeft", "50px");
     toxicSpillDuke.appendChild(toxicSpillDukeLabel);
     toxicSpillDuke.appendChild(toxicSpillDukeValue);
     //Grand Duke
@@ -1002,10 +1138,10 @@ function buildToxicSpill() {
     toxicSpillGrandDukeValue.appendChild(toxicSpillGrandDukeValueText);
     $(toxicSpillGrandDukeLabel).css({
         'float': 'left',
+        'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
     })
-    $(toxicSpillGrandDukeValue).css("marginLeft", "50px");
     toxicSpillGrandDuke.appendChild(toxicSpillGrandDukeLabel);
     toxicSpillGrandDuke.appendChild(toxicSpillGrandDukeValue);
     //Archduke
@@ -1021,10 +1157,10 @@ function buildToxicSpill() {
     toxicSpillArchdukeValue.appendChild(toxicSpillArchdukeValueText);
     $(toxicSpillArchdukeLabel).css({
         'float': 'left',
+        'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
     })
-    $(toxicSpillArchdukeValue).css("marginLeft", "50px");
     toxicSpillArchduke.appendChild(toxicSpillArchdukeLabel);
     toxicSpillArchduke.appendChild(toxicSpillArchdukeValue);
     //Append
@@ -1062,6 +1198,9 @@ function updateToxicSpillTimer() {
     if (partialrotation < 15) {
         //Hero Rising
         $(".toxicSpillHeaderValue").text("HERO-RISING");
+        $(".toxicSpillHeaderValue").css({
+            'color': 'red'
+        });
         var timeKnight = (15 - partialrotation).toPrecision(4);
         knightObj.hours = Math.floor(timeKnight);
         knightObj.minutes = Math.ceil((timeKnight - knightObj.hours) * 60);
@@ -1093,6 +1232,9 @@ function updateToxicSpillTimer() {
     } else if (partialrotation >= 15 && partialrotation < 31) {
         //Knight Rising
         $(".toxicSpillHeaderValue").text("KNIGHT-RISING");
+        $(".toxicSpillHeaderValue").css({
+            'color': 'red'
+        });
         var timeLord = (31 - partialrotation).toPrecision(4);
         lordObj.hours = Math.floor(timeLord);
         lordObj.minutes = Math.ceil((timeLord - lordObj.hours) * 60);
@@ -1124,6 +1266,9 @@ function updateToxicSpillTimer() {
     } else if (partialrotation >= 31 && partialrotation < 49) {
         //Lord Rising
         $(".toxicSpillHeaderValue").text("LORD-RISING");
+        $(".toxicSpillHeaderValue").css({
+            'color': 'red'
+        });
         var timeBaron = (49 - partialrotation).toPrecision(4);
         baronObj.hours = Math.floor(timeBaron);
         baronObj.minutes = Math.ceil((timeBaron - baronObj.hours) * 60);
@@ -1155,6 +1300,9 @@ function updateToxicSpillTimer() {
     } else if (partialrotation >= 49 && partialrotation < 67) {
         //Baron Rising
         $(".toxicSpillHeaderValue").text("BARON-RISING");
+        $(".toxicSpillHeaderValue").css({
+            'color': 'red'
+        });
         var timeCount = (67 - partialrotation).toPrecision(4);
         countObj.hours = Math.floor(timeCount);
         countObj.minutes = Math.ceil((timeCount - countObj.hours) * 60);
@@ -1187,6 +1335,9 @@ function updateToxicSpillTimer() {
     } else if (partialrotation >= 67 && partialrotation < 91) {
         //Count Rising
         $(".toxicSpillHeaderValue").text("COUNT-RISING");
+        $(".toxicSpillHeaderValue").css({
+            'color': 'red'
+        });
         var timeDuke = (91 - partialrotation).toPrecision(4);
         dukeObj.hours = Math.floor(timeDuke);
         dukeObj.minutes = Math.ceil((timeDuke - dukeObj.hours) * 60);
@@ -1218,6 +1369,9 @@ function updateToxicSpillTimer() {
     } else if (partialrotation >= 91 && partialrotation < 115) {
         //Duke Rising
         $(".toxicSpillHeaderValue").text("DUKE-RISING");
+        $(".toxicSpillHeaderValue").css({
+            'color': 'red'
+        });
         var timeGrandDuke = (115 - partialrotation).toPrecision(4);
         granddukeObj.hours = Math.floor(timeGrandDuke);
         granddukeObj.minutes = Math.ceil((timeGrandDuke - granddukeObj.hours) * 60);
@@ -1249,6 +1403,9 @@ function updateToxicSpillTimer() {
     } else if (partialrotation >= 115 && partialrotation < 139) {
         //Grand Duke Rising
         $(".toxicSpillHeaderValue").text("GD-RISING");
+        $(".toxicSpillHeaderValue").css({
+            'color': 'red'
+        });
         var timeArchduke = (139 - partialrotation).toPrecision(4);
         archdukeObj.hours = Math.floor(timeArchduke);
         archdukeObj.minutes = Math.ceil((timeArchduke - archdukeObj.hours) * 60);
@@ -1280,6 +1437,9 @@ function updateToxicSpillTimer() {
     } else if (partialrotation >= 139 && partialrotation < 151) {
         //Archduke Rising
         $(".toxicSpillHeaderValue").text("AD-RISING");
+        $(".toxicSpillHeaderValue").css({
+            'color': 'red'
+        });
         var timeArchduke = (151 - partialrotation).toPrecision(4);
         archdukeObj.hours = Math.floor(timeArchduke);
         archdukeObj.minutes = Math.ceil((timeArchduke - archdukeObj.hours) * 60);
@@ -1304,6 +1464,9 @@ function updateToxicSpillTimer() {
     } else if (partialrotation >= 151 && partialrotation < 163) {
         //Archduke Falling
         $(".toxicSpillHeaderValue").text("AD-FALLING");
+        $(".toxicSpillHeaderValue").css({
+            'color': 'green'
+        });
         var timeGDuke = (163 - partialrotation).toPrecision(4);
         granddukeObj.hours = Math.floor(timeGDuke);
         granddukeObj.minutes = Math.ceil((timeGDuke - granddukeObj.hours) * 60);
@@ -1335,6 +1498,9 @@ function updateToxicSpillTimer() {
     } else if (partialrotation >= 163 && partialrotation < 187) {
         //Grand Duke Falling
         $(".toxicSpillHeaderValue").text("GD-FALLING");
+        $(".toxicSpillHeaderValue").css({
+            'color': 'green'
+        });
         var timeDuke = (187 - partialrotation).toPrecision(4);
         dukeObj.hours = Math.floor(timeDuke);
         dukeObj.minutes = Math.ceil((timeDuke - dukeObj.hours) * 60);
@@ -1366,6 +1532,9 @@ function updateToxicSpillTimer() {
     } else if (partialrotation >= 187 && partialrotation < 211) {
         //Duke Falling
         $(".toxicSpillHeaderValue").text("DUKE-FALLING");
+        $(".toxicSpillHeaderValue").css({
+            'color': 'green'
+        });
         var timeCount = (211 - partialrotation).toPrecision(4);
         countObj.hours = Math.floor(timeCount);
         countObj.minutes = Math.ceil((timeCount - countObj.hours) * 60);
@@ -1397,6 +1566,9 @@ function updateToxicSpillTimer() {
     } else if (partialrotation >= 211 && partialrotation < 235) {
         //Count Falling
         $(".toxicSpillHeaderValue").text("COUNT-FALLING");
+        $(".toxicSpillHeaderValue").css({
+            'color': 'green'
+        });
         var timeBaron = (235 - partialrotation).toPrecision(4);
         baronObj.hours = Math.floor(timeBaron);
         baronObj.minutes = Math.ceil((timeBaron - baronObj.hours) * 60);
@@ -1428,6 +1600,9 @@ function updateToxicSpillTimer() {
     } else if (partialrotation >= 235 && partialrotation < 253) {
         //Baron Falling
         $(".toxicSpillHeaderValue").text("BARON-FALLING");
+        $(".toxicSpillHeaderValue").css({
+            'color': 'green'
+        });
         var timeLord = (253 - partialrotation).toPrecision(4);
         lordObj.hours = Math.floor(timeLord);
         lordObj.minutes = Math.ceil((timeLord - lordObj.hours) * 60);
@@ -1459,6 +1634,9 @@ function updateToxicSpillTimer() {
     } else if (partialrotation >= 253 && partialrotation < 271) {
         //Lord Falling
         $(".toxicSpillHeaderValue").text("LORD-FALLING");
+        $(".toxicSpillHeaderValue").css({
+            'color': 'green'
+        });
         var timeKnight = (271 - partialrotation).toPrecision(4);
         knightObj.hours = Math.floor(timeKnight);
         knightObj.minutes = Math.ceil((timeKnight - knightObj.hours) * 60);
@@ -1490,6 +1668,9 @@ function updateToxicSpillTimer() {
     } else if (partialrotation >= 271 && partialrotation < 287) {
         //Knight Falling
         $(".toxicSpillHeaderValue").text("KNIGHT-FALLING");
+        $(".toxicSpillHeaderValue").css({
+            'color': 'green'
+        });
         var timeHero = (287 - partialrotation).toPrecision(4);
         heroObj.hours = Math.floor(timeHero);
         heroObj.minutes = Math.ceil((timeHero - heroObj.hours) * 60);
@@ -1521,6 +1702,9 @@ function updateToxicSpillTimer() {
     } else if (partialrotation >= 287 && partialrotation < 302) {
         //Hero Falling
         $(".toxicSpillHeaderValue").text("HERO-FALLING");
+        $(".toxicSpillHeaderValue").css({
+            'color': 'green'
+        });
         var timeHero = (302 - partialrotation).toPrecision(4);
         heroObj.hours = Math.floor(timeHero);
         heroObj.minutes = Math.ceil((timeHero - heroObj.hours) * 60);
@@ -1554,6 +1738,30 @@ function updateToxicSpillTimer() {
     $(".toxicSpillKnightValue").text(knightObj.days + "d " + knightObj.hours + "h " + knightObj.minutes + "m");
     $(".toxicSpillHeroValue").text(heroObj.days + "d " + heroObj.hours + "h " + heroObj.minutes + "m");
     //https://mhwiki.hitgrab.com/wiki/index.php/Toxic_Spill#Pollution_Levels
+    $(".toxicSpillArchdukeValue").css({
+        'float': 'right'
+    })
+    $(".toxicSpillGrandDukeValue").css({
+        'float': 'right'
+    })
+    $(".toxicSpillDukeValue").css({
+        'float': 'right'
+    })
+    $(".toxicSpillCountValue").css({
+        'float': 'right'
+    })
+    $(".toxicSpillBaronValue").css({
+        'float': 'right'
+    })
+    $(".toxicSpillLordValue").css({
+        'float': 'right'
+    })
+    $(".toxicSpillKnightValue").css({
+        'float': 'right'
+    })
+    $(".toxicSpillHeroValue").css({
+        'float': 'right'
+    })
 }
 
 function spillLevel(days, hours, minutes) {
