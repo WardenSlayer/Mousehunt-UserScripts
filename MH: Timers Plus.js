@@ -287,8 +287,7 @@ function startTimers() {
 
 function runTimers() {
     updateText();
-    //var myTimer = setInterval(updateText, 60000);
-    var myTimer = setInterval(updateText, 1000);
+    var myTimer = setInterval(updateText, 60000);
 }
 
 function updateText() {
