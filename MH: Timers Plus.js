@@ -2,7 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.3.1
+// @version      1.3.2
 // @description  Handy script to keep track of the various MH location timers
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -91,7 +91,6 @@ function buildTimerBox() {
 
 }
 $(document).on('click', '.accordion', function() {
-    console.log('clicked')
     if (localStorage.getItem('HideTimers') == "Y") {
         //show
         $('.timerBox').removeClass("hide")
@@ -1304,12 +1303,10 @@ function updateToxicSpillTimer() {
         });
         var timeCount = (67 - partialrotation).toPrecision(4);
         countObj.hours = Math.floor(timeCount);
-        countObj.minutes = Math.ceil((timeCount - countObj.hours) * 60);
         countObj = convertToDyHrMn(0, countObj.hours, countObj.minutes);
         dukeObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
         granddukeObj = convertToDyHrMn(dukeObj.days + 1, dukeObj.hours, dukeObj.minutes);
         archdukeObj = convertToDyHrMn(granddukeObj.days + 1, granddukeObj.hours, granddukeObj.minutes);
-        countObj = convertToDyHrMn(archdukeObj.days + 3, archdukeObj.hours, archdukeObj.minutes);
         baronObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
         $(".toxicSpillGrandDukeLabel").text("Grand Duke in:");
         $(".toxicSpillArchdukeLabel").text("Archduke in:");
