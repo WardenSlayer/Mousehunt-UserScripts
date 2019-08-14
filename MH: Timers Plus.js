@@ -2,7 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.3.2
+// @version      1.3.3
 // @description  Handy script to keep track of the various MH location timers
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -1307,7 +1307,7 @@ function updateToxicSpillTimer() {
         dukeObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
         granddukeObj = convertToDyHrMn(dukeObj.days + 1, dukeObj.hours, dukeObj.minutes);
         archdukeObj = convertToDyHrMn(granddukeObj.days + 1, granddukeObj.hours, granddukeObj.minutes);
-        baronObj = convertToDyHrMn(countObj.days + 1, countObj.hours, countObj.minutes);
+        baronObj = convertToDyHrMn(archdukeObj.days + 4, archdukeObj.hours, archdukeObj.minutes);
         $(".toxicSpillGrandDukeLabel").text("Grand Duke in:");
         $(".toxicSpillArchdukeLabel").text("Archduke in:");
         $(".toxicSpillDukeLabel").text("Duke in:");
