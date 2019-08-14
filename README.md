@@ -1,2 +1,2 @@
 # MH-UserScripts
-Scripts for the game Mousehunt
+Fun and helpful scripts for the game Mousehunt (https://www.mousehuntgame.com)
