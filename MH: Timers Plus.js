@@ -2,7 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.3.4
+// @version      1.3.5
 // @description  Handy script to keep track of the various MH location timers
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -391,12 +391,12 @@ function updateForbiddenGroveTimer() {
         var timeCloses = (16 - partialrotation).toPrecision(4);
         var closesHours = Math.trunc(timeCloses);
         var closesMinutes = Math.ceil((timeCloses - closesHours) * 60);
-        $(".forbiddenGroveClosesValue").text(closesHours + "h " + closesMinutes + "m");
+        $(".forbiddenGroveClosesValue").text(formatOutput(0, closesHours, closesMinutes));
         $(".forbiddenGroveClosesValue").css({
                 'float': 'right'
             }),
             $(".forbiddenGroveOpensLabel").text("Opens Again in:");
-        $(".forbiddenGroveOpensValue").text((closesHours + 4) + "h " + closesMinutes + "m");
+        $(".forbiddenGroveOpensValue").text(formatOutput(0, (closesHours + 4), closesMinutes));
         $(".forbiddenGroveOpensValue").css({
                 'float': 'right'
             }),
@@ -417,12 +417,12 @@ function updateForbiddenGroveTimer() {
         var timeOpens = (rotaionLenght - partialrotation).toPrecision(4);
         var opensHours = Math.trunc(timeOpens);
         var opensMinutes = Math.ceil((timeOpens - opensHours) * 60);
-        $(".forbiddenGroveOpensValue").text(opensHours + "h " + opensMinutes + "m");
+        $(".forbiddenGroveOpensValue").text(formatOutput(0, opensHours, opensMinutes));
         $(".forbiddenGroveOpensValue").css({
                 'float': 'right'
             }),
             $(".forbiddenGroveClosesLabel").text("Next Close in:");
-        $(".forbiddenGroveClosesValue").text((opensHours + 16) + "h " + opensMinutes + "m");
+        $(".forbiddenGroveClosesValue").text(formatOutput(0, (opensHours + 16), opensMinutes));
         $(".forbiddenGroveClosesValue").css({
                 'float': 'right'
             }),
@@ -561,9 +561,9 @@ function updateBalacksCoveTimer() {
         var timeMid = (16 - partialrotation).toPrecision(4);
         var midHours = Math.trunc(timeMid);
         var midMinutes = Math.ceil((timeMid - midHours) * 60);
-        $(".balacksCoveMidValue").text(midHours + "h " + midMinutes + "m");
-        $(".balacksCoveMidLabel").text("Mid-Filling in:")
-        $(".balacksCoveHighValue").text((midHours + 1) + "h " + midMinutes + "m");
+        $(".balacksCoveMidValue").text(formatOutput(0, midHours, midMinutes));
+        $(".balacksCoveMidLabel").text("Mid-Flooding in:")
+        $(".balacksCoveHighValue").text(formatOutput(0, (midHours + 1), midMinutes));
         $(".balacksCoveLowLabel").text("Low Again in:");
         $(".balacksCoveMidValue").css({
             'float': 'right'
@@ -580,7 +580,7 @@ function updateBalacksCoveTimer() {
             lowMinutes = lowMinutes - 60;
             lowHours++;
         }
-        $(".balacksCoveLowValue").text((lowHours) + "h " + (lowMinutes) + "m");
+        $(".balacksCoveLowValue").text(formatOutput(0, lowHours, lowMinutes));
         balacksCove.append($(".balacksCoveLow"))
         if ((midHours == 0) && (midMinutes <= 15) && (localStorage.getItem('RemindCove') == "Y")) {
             if (confirm('It will be mid tide soon, travel there now?') == true) {
@@ -598,7 +598,7 @@ function updateBalacksCoveTimer() {
         var timeHigh = (17 - partialrotation).toPrecision(4);
         var highHours = Math.trunc(timeHigh);
         var highMinutes = Math.ceil((timeHigh - highHours) * 60);
-        $(".balacksCoveHighValue").text((highHours) + "h " + highMinutes + "m");
+        $(".balacksCoveHighValue").text(formatOutput(0, highHours, highMinutes));
         $(".balacksCoveMidLabel").text("Mid-Ebbing in:")
         var midHours = highHours;
         var midMinutes = highMinutes + 40;
@@ -606,9 +606,9 @@ function updateBalacksCoveTimer() {
             midMinutes = midMinutes - 60;
             midHours++;
         }
-        $(".balacksCoveMidValue").text(midHours + "h " + midMinutes + "m");
+        $(".balacksCoveMidValue").text(formatOutput(0, midHours, midMinutes));
         $(".balacksCoveLowLabel").text("Low Tide in:");
-        $(".balacksCoveLowValue").text((midHours + 1) + "h " + (midMinutes) + "m");
+        $(".balacksCoveLowValue").text(formatOutput(0, (midHours + 1), midMinutes));
         $(".balacksCoveMidValue").css({
             'float': 'right'
         })
@@ -636,10 +636,10 @@ function updateBalacksCoveTimer() {
         var timeMid = (17.6666666667 - partialrotation).toPrecision(4);
         var midHours = Math.trunc(timeMid);
         var midMinutes = Math.ceil((timeMid - midHours) * 60);
-        $(".balacksCoveMidValue").text((midHours) + "h " + midMinutes + "m");
+        $(".balacksCoveMidValue").text(formatOutput(0, midHours, midMinutes));
         $(".balacksCoveMidLabel").text("Mid-Ebbing in:")
         $(".balacksCoveLowLabel").text("Low Tide in:")
-        $(".balacksCoveLowValue").text((midHours + 1) + "h " + midMinutes + "m");
+        $(".balacksCoveLowValue").text(formatOutput(0, (midHours + 1), midMinutes));
         $(".balacksCoveMidValue").css({
             'float': 'right'
         })
@@ -665,11 +665,11 @@ function updateBalacksCoveTimer() {
         var lowHours = Math.trunc(timeLow);
         var lowMinutes = Math.ceil((timeLow - lowHours) * 60);
         $(".balacksCoveLowLabel").text("Low Tide in:")
-        $(".balacksCoveLowValue").text((lowHours) + "h " + lowMinutes + "m");
+        $(".balacksCoveLowValue").text(formatOutput(0, lowHours, lowMinutes));
         $(".balacksCoveMidLabel").text("Mid-Filling in:")
-        $(".balacksCoveMidValue").text(lowHours + 16 + "h " + lowMinutes + "m");
+        $(".balacksCoveMidValue").text(formatOutput(0, lowHours + 16, lowMinutes));
         $(".balacksCoveHighLabel").text("High Tide in:");
-        $(".balacksCoveHighValue").text(lowHours + 17 + "h " + (lowMinutes) + "m");
+        $(".balacksCoveHighValue").text(formatOutput(0, lowHours + 17, lowMinutes));
         $(".balacksCoveMidValue").css({
             'float': 'right'
         })
@@ -944,10 +944,10 @@ function updateSeasonalGardenTimer() {
             $("#seasonalGardenCb").prop('checked', false)
         }
     }
-    $(".seasonalGardenFallValue").text(fallObj.days + "d " + fallObj.hours + "h " + fallObj.minutes + "m");
-    $(".seasonalGardenWinterValue").text(winterObj.days + "d " + winterObj.hours + "h " + winterObj.minutes + "m");
-    $(".seasonalGardenSpringValue").text(springObj.days + "d " + springObj.hours + "h " + springObj.minutes + "m");
-    $(".seasonalGardenSummerValue").text(summerObj.days + "d " + summerObj.hours + "h " + summerObj.minutes + "m");
+    $(".seasonalGardenFallValue").text(formatOutput(fallObj.days, fallObj.hours, fallObj.minutes));
+    $(".seasonalGardenWinterValue").text(formatOutput(winterObj.days, winterObj.hours, winterObj.minutes));
+    $(".seasonalGardenSpringValue").text(formatOutput(springObj.days, springObj.hours, springObj.minutes));
+    $(".seasonalGardenSummerValue").text(formatOutput(summerObj.days, summerObj.hours, summerObj.minutes));
     $(".seasonalGardenFallValue").css({
         'float': 'right'
     })
@@ -1726,14 +1726,14 @@ function updateToxicSpillTimer() {
     } else {
         //WTF are we?
     }
-    $(".toxicSpillArchdukeValue").text(archdukeObj.days + "d " + archdukeObj.hours + "h " + archdukeObj.minutes + "m");
-    $(".toxicSpillGrandDukeValue").text(granddukeObj.days + "d " + granddukeObj.hours + "h " + granddukeObj.minutes + "m");
-    $(".toxicSpillDukeValue").text(dukeObj.days + "d " + dukeObj.hours + "h " + dukeObj.minutes + "m");
-    $(".toxicSpillCountValue").text(countObj.days + "d " + countObj.hours + "h " + countObj.minutes + "m");
-    $(".toxicSpillBaronValue").text(baronObj.days + "d " + baronObj.hours + "h " + baronObj.minutes + "m");
-    $(".toxicSpillLordValue").text(lordObj.days + "d " + lordObj.hours + "h " + lordObj.minutes + "m");
-    $(".toxicSpillKnightValue").text(knightObj.days + "d " + knightObj.hours + "h " + knightObj.minutes + "m");
-    $(".toxicSpillHeroValue").text(heroObj.days + "d " + heroObj.hours + "h " + heroObj.minutes + "m");
+    $(".toxicSpillArchdukeValue").text(formatOutput(archdukeObj.days, archdukeObj.hours, archdukeObj.minutes));
+    $(".toxicSpillGrandDukeValue").text(formatOutput(granddukeObj.days, granddukeObj.hours, granddukeObj.minutes));
+    $(".toxicSpillDukeValue").text(formatOutput(dukeObj.days, dukeObj.hours, dukeObj.minutes));
+    $(".toxicSpillCountValue").text(formatOutput(countObj.days, countObj.hours, countObj.minutes));
+    $(".toxicSpillBaronValue").text(formatOutput(baronObj.days, baronObj.hours, baronObj.minutes));
+    $(".toxicSpillLordValue").text(formatOutput(lordObj.days, lordObj.hours, lordObj.minutes));
+    $(".toxicSpillKnightValue").text(formatOutput(knightObj.days, knightObj.hours, knightObj.minutes));
+    $(".toxicSpillHeroValue").text(formatOutput(heroObj.days, heroObj.hours, heroObj.minutes));
     //https://mhwiki.hitgrab.com/wiki/index.php/Toxic_Spill#Pollution_Levels
     $(".toxicSpillArchdukeValue").css({
         'float': 'right'
@@ -1796,6 +1796,22 @@ function convertToDyHrMn(days, hours, minutes) {
         hours,
         minutes
     }
+}
+
+function formatOutput(days, hours, minutes) {
+    var dayStr = "";
+    var hourStr = "";
+    var minuteStr = "";
+    if (days > 0) {
+        dayStr = days + "d";
+    }
+    if (hours > 0) {
+        hourStr = hours + "h";
+    }
+    if (minutes > 0) {
+        minuteStr = minutes + "m";
+    }
+    return dayStr + " " + hourStr + " " + minuteStr;
 }
 
 function travelToGrove(skip) {
