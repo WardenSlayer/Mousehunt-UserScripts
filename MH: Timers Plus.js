@@ -2,7 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.3.5
+// @version      1.3.6
 // @description  Handy script to keep track of the various MH location timers
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -13,6 +13,7 @@ $(document).ready(function() {
     console.log("MH Timers+");
     buildTimerBox();
     buildControlPanels();
+    buildTinkerPanel();
     startTimers();
 });
 
@@ -28,6 +29,7 @@ function buildTimerBox() {
         'height': '15px',
         'padding': '5px',
         'border': '2px solid black',
+        'cursor': 'pointer'
     });
     var accordionPrompt = document.createElement("div");
     accordionPrompt.classList.add("accordionPrompt");
@@ -59,7 +61,7 @@ function buildTimerBox() {
         'background-image': "url('https://www.toptal.com/designers/subtlepatterns/patterns/interlaced.png')"
     });
     $(timerBox).css({
-        'height': 112 + "px",
+        'height': 150 + "px",
         'padding': 2 + "px"
     });
     let forbiddenGrove = buildForbiddenGrove();
@@ -98,8 +100,11 @@ $(document).on('click', '.accordion', function() {
         localStorage.setItem('HideTimers', "N")
     } else {
         //hide
+        $('.timerBox').find('*').removeClass("hide")
         $('.timerBox').addClass("hide")
         $('.accordionPrompt').text("Click to Show")
+        $('.tinkerPanel').addClass("hide");
+        $('.tinkerButton').text("Tinker");
         localStorage.setItem('HideTimers', "Y")
     }
 })
@@ -116,7 +121,8 @@ function buildControlPanels() {
     forbiddenGroveControlPanel.appendChild(forbiddenGroveButton);
     $(forbiddenGroveControlPanel).css({
         'float': 'left',
-        'width': '21.5%'
+        'width': '21.5%',
+        'marginTop': 10 + "px"
     })
     $(forbiddenGroveButton).css({
         'width': '75px',
@@ -159,7 +165,8 @@ function buildControlPanels() {
     $(balacksCoveControlPanel).css({
         'float': 'left',
         'width': '25%',
-        'marginLeft': 5 + "px"
+        'marginLeft': 5 + "px",
+        'marginTop': 10 + "px"
     })
     $(balacksCoveButton).css({
         'width': '75px',
@@ -202,7 +209,8 @@ function buildControlPanels() {
     $(seasonalGardenControlPanel).css({
         'float': 'left',
         'width': '24%',
-        'marginLeft': 5 + "px"
+        'marginLeft': 5 + "px",
+        'marginTop': 10 + "px"
     })
     $(seasonalGardenButton).css({
         'width': '75px',
@@ -244,8 +252,9 @@ function buildControlPanels() {
     toxicSpillControlPanel.appendChild(toxicSpillButton);
     $(toxicSpillControlPanel).css({
         'float': 'left',
-        'width': '24%',
-        'marginLeft': 10 + "px"
+        'width': '26%',
+        'marginLeft': 10 + "px",
+        'marginTop': 10 + "px"
     })
     $(toxicSpillButton).css({
         'width': '75px',
@@ -276,8 +285,359 @@ function buildControlPanels() {
         'float': 'left',
         'width': '20px'
     })
+    //tinker button
+    var tinkerButton = document.createElement("div");
+    tinkerButton.classList.add("tinkerButton");
+    $(tinkerButton).text("Tinker");
+    toxicSpillControlPanel.appendChild(tinkerButton);
+    $(tinkerButton).css({
+        'width': '30px',
+        'float': 'right',
+        'padding': 3+'px',
+        'color': 'rgb(4, 44, 202)',
+        'marginRight': 5 + "px"
+    })
     timerBox.append(toxicSpillControlPanel);
 }
+
+$('.tinkerButton').mouseover(function(){
+  $('.tinkerButton').attr('title', 'Tinker Menu');
+    $('.tinkerButton').css('cursor', 'pointer');
+});
+$(document).on('click', '.tinkerButton', function() {
+    var fg = $('.forbiddenGrove');
+    var bc = $('.balacksCove');
+    var sg = $('.seasonalGarden');
+    var ts = $('.toxicSpill');
+    var tp = $('.tinkerPanel');
+    if (fg.hasClass("hide")) {
+        //show
+        fg.removeClass("hide");
+        bc.removeClass("hide");
+        sg.removeClass("hide");
+        ts.removeClass("hide");
+        tp.addClass("hide");
+        $('.tinkerButton').text("Tinker");
+    } else {
+        //hide
+        fg.addClass("hide");
+        bc.addClass("hide");
+        sg.addClass("hide");
+        ts.addClass("hide");
+        tp.removeClass("hide");
+        $('.tinkerButton').text("Close");
+    }
+});
+
+function buildTinkerPanel() {
+    var timerBox = $(".timerBox");
+    var tinkerPanel = document.createElement("div");
+    tinkerPanel.classList.add("tinkerPanel");
+    tinkerPanel.classList.add("hide");
+    $(tinkerPanel).css({
+        'height': '70%',
+        'width': '99%',
+         'float': 'left',
+        'padding': 2 + "px",
+        'background-image': "url('https://www.toptal.com/designers/subtlepatterns/patterns/interlaced.png')",
+        'border': '1px solid black'
+    });
+    //FG Options
+    var forbiddenGroveOptions = document.createElement("div");
+    forbiddenGroveOptions.classList.add("forbiddenGroveOptions");
+    var forbiddenGroveOptionsLabel = document.createElement("div");
+    forbiddenGroveOptionsLabel.classList.add("forbiddenGroveOptionsLabel");
+    var forbiddenGroveOptionsLabelText = document.createTextNode("Forbidden Grove");
+    forbiddenGroveOptionsLabel.appendChild(forbiddenGroveOptionsLabelText);
+    forbiddenGroveOptions.appendChild(forbiddenGroveOptionsLabel);
+    $(forbiddenGroveOptions).css({
+        'float': 'left',
+        'width': '12%',
+    })
+    $(forbiddenGroveOptionsLabel).css({
+        'float': 'left',
+        'width': '100%',
+        'font-weight': 700,
+        "marginRight": "5px"
+    })
+    var forbiddenGroveOpenCb = document.createElement('input');
+    forbiddenGroveOpenCb.type = "checkbox";
+    forbiddenGroveOpenCb.name = "forbiddenGroveOpenCb";
+    forbiddenGroveOpenCb.value = "value";
+    forbiddenGroveOpenCb.id = "forbiddenGroveOpenCb";
+    if (localStorage.getItem('RemindGrove') == "Y") {
+        forbiddenGroveOpenCb.checked = "Yes";
+    } else {
+        forbiddenGroveOpenCb.checked = "";
+    }
+    var forbiddenGroveOpenCbLabel = document.createElement('label')
+    forbiddenGroveOpenCbLabel.htmlFor = "forbiddenGroveOpenCbLabel";
+    forbiddenGroveOpenCbLabel.appendChild(document.createTextNode('Open'));
+    $(forbiddenGroveOpenCbLabel).css({
+        'float': 'left',
+        'width': '30px',
+        'padding': '1px'
+    })
+    $(forbiddenGroveOpenCb).css({
+        'float': 'left',
+        'width': '20px'
+    })
+    forbiddenGroveOptions.appendChild(forbiddenGroveOpenCbLabel);
+    forbiddenGroveOptions.appendChild(forbiddenGroveOpenCb);
+    //
+    var forbiddenGroveCloseCb = document.createElement('input');
+    forbiddenGroveCloseCb.type = "checkbox";
+    forbiddenGroveCloseCb.name = "forbiddenGroveOpenCb";
+    forbiddenGroveCloseCb.value = "value";
+    forbiddenGroveCloseCb.id = "forbiddenGroveOpenCb";
+    if (localStorage.getItem('RemindGrove') == "Y") {
+        forbiddenGroveCloseCb.checked = "Yes";
+    } else {
+        forbiddenGroveCloseCb.checked = "";
+    }
+    var forbiddenGroveCloseCbLabel = document.createElement('label')
+    forbiddenGroveCloseCbLabel.htmlFor = "forbiddenGroveCloseCbLabel";
+    forbiddenGroveCloseCbLabel.appendChild(document.createTextNode('Closed'));
+    $(forbiddenGroveCloseCbLabel).css({
+        'float': 'left',
+        'width': '30px',
+        'padding': '1px'
+    })
+    $(forbiddenGroveCloseCb).css({
+        'float': 'left',
+        'width': '20px'
+    })
+    forbiddenGroveOptions.appendChild(forbiddenGroveCloseCbLabel);
+    forbiddenGroveOptions.appendChild(forbiddenGroveCloseCb);
+    //BC Options
+    var balacksCoveOptions = document.createElement("div");
+    balacksCoveOptions.classList.add("balacksCoveOptions");
+    var balacksCoveOptionsLabel = document.createElement("div");
+    balacksCoveOptionsLabel.classList.add("balacksCoveOptionsLabel");
+    var balacksCoveOptionsLabelText = document.createTextNode("Balack's Cove");
+    balacksCoveOptionsLabel.appendChild(balacksCoveOptionsLabelText);
+    balacksCoveOptions.appendChild(balacksCoveOptionsLabel);
+    $(balacksCoveOptions).css({
+        'float': 'left',
+        'width': '12%',
+    })
+    $(balacksCoveOptionsLabel).css({
+        'float': 'left',
+        'width': '100%',
+        'font-weight': 700,
+        "marginRight": "5px"
+    })
+    var balacksCoveLowCb = document.createElement('input');
+    balacksCoveLowCb.type = "checkbox";
+    balacksCoveLowCb.name = "balacksCoveLowCb";
+    balacksCoveLowCb.value = "value";
+    balacksCoveLowCb.id = "balacksCoveLowCb";
+    if (localStorage.getItem('RemindCove') == "Y") {
+        balacksCoveLowCb.checked = "Yes";
+    } else {
+        balacksCoveLowCb.checked = "";
+    }
+    var balacksCoveLowCbLabel = document.createElement('label')
+    balacksCoveLowCbLabel.htmlFor = "balacksCoveLowCbLabel";
+    balacksCoveLowCbLabel.appendChild(document.createTextNode('Low'));
+    $(balacksCoveLowCbLabel).css({
+        'float': 'left',
+        'width': '30px',
+        'padding': '1px'
+    })
+    $(balacksCoveLowCb).css({
+        'float': 'left',
+        'width': '20px'
+    })
+    balacksCoveOptions.appendChild(balacksCoveLowCbLabel);
+    balacksCoveOptions.appendChild(balacksCoveLowCb);
+    //
+    var balacksCoveMidCb = document.createElement('input');
+    balacksCoveMidCb.type = "checkbox";
+    balacksCoveMidCb.name = "balacksCoveMidCb";
+    balacksCoveMidCb.value = "value";
+    balacksCoveMidCb.id = "balacksCoveMidCb";
+    if (localStorage.getItem('RemindCove') == "Y") {
+        balacksCoveMidCb.checked = "Yes";
+    } else {
+        balacksCoveMidCb.checked = "";
+    }
+    var balacksCoveMidCbLabel = document.createElement('label')
+    balacksCoveMidCbLabel.htmlFor = "balacksCoveMidCbLabel";
+    balacksCoveMidCbLabel.appendChild(document.createTextNode('Mid'));
+    $(balacksCoveMidCbLabel).css({
+        'float': 'left',
+        'width': '30px',
+        'padding': '1px'
+    })
+    $(balacksCoveMidCb).css({
+        'float': 'left',
+        'width': '20px'
+    })
+    balacksCoveOptions.appendChild(balacksCoveMidCbLabel);
+    balacksCoveOptions.appendChild(balacksCoveMidCb);
+    //
+    var balacksCoveHighCb = document.createElement('input');
+    balacksCoveHighCb.type = "checkbox";
+    balacksCoveHighCb.name = "balacksCoveHighCb";
+    balacksCoveHighCb.value = "value";
+    balacksCoveHighCb.id = "balacksCoveHighCb";
+    if (localStorage.getItem('RemindCove') == "Y") {
+        balacksCoveHighCb.checked = "Yes";
+    } else {
+        balacksCoveHighCb.checked = "";
+    }
+    var balacksCoveHighCbLabel = document.createElement('label')
+    balacksCoveHighCbLabel.htmlFor = "balacksCoveHighCbLabel";
+    balacksCoveHighCbLabel.appendChild(document.createTextNode('High'));
+    $(balacksCoveHighCbLabel).css({
+        'float': 'left',
+        'width': '30px',
+        'padding': '1px'
+    })
+    $(balacksCoveHighCb).css({
+        'float': 'left',
+        'width': '20px'
+    })
+    balacksCoveOptions.appendChild(balacksCoveHighCbLabel);
+    balacksCoveOptions.appendChild(balacksCoveHighCb);
+    //SG Options
+    var seasonalGardenOptions = document.createElement("div");
+    seasonalGardenOptions.classList.add("seasonalGardenOptions");
+    var seasonalGardenOptionsLabel = document.createElement("div");
+    seasonalGardenOptionsLabel.classList.add("seasonalGardenOptionsLabel");
+    var seasonalGardenOptionsLabelText = document.createTextNode("Seasonal Garden");
+    seasonalGardenOptionsLabel.appendChild(seasonalGardenOptionsLabelText);
+    seasonalGardenOptions.appendChild(seasonalGardenOptionsLabel);
+    $(seasonalGardenOptions).css({
+        'float': 'left',
+        'width': '13%',
+    })
+    $(seasonalGardenOptionsLabel).css({
+        'float': 'left',
+        'width': '100%',
+        'font-weight': 700,
+        "marginRight": "5px"
+    })
+    var seasonalGardenFallCb = document.createElement('input');
+    seasonalGardenFallCb.type = "checkbox";
+    seasonalGardenFallCb.name = "seasonalGardenFallCb";
+    seasonalGardenFallCb.value = "value";
+    seasonalGardenFallCb.id = "seasonalGardenFallCb";
+    if (localStorage.getItem('RemindGarden') == "Y") {
+        seasonalGardenFallCb.checked = "Yes";
+    } else {
+        seasonalGardenFallCb.checked = "";
+    }
+    var seasonalGardenFallCbLabel = document.createElement('label')
+    seasonalGardenFallCbLabel.htmlFor = "seasonalGardenFallCbLabel";
+    seasonalGardenFallCbLabel.appendChild(document.createTextNode('Fall'));
+    $(seasonalGardenFallCbLabel).css({
+        'float': 'left',
+        'width': '40px',
+        'padding': '1px',
+    })
+    $(seasonalGardenFallCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "25px"
+    })
+    seasonalGardenOptions.appendChild(seasonalGardenFallCbLabel);
+    seasonalGardenOptions.appendChild(seasonalGardenFallCb);
+    //
+    var seasonalGardenWinterCb = document.createElement('input');
+    seasonalGardenWinterCb.type = "checkbox";
+    seasonalGardenWinterCb.name = "seasonalGardenWinterCb";
+    seasonalGardenWinterCb.value = "value";
+    seasonalGardenWinterCb.id = "seasonalGardenWinterCb";
+    if (localStorage.getItem('RemindGarden') == "Y") {
+        seasonalGardenWinterCb.checked = "Yes";
+    } else {
+        seasonalGardenWinterCb.checked = "";
+    }
+    var seasonalGardenWinterCbLabel = document.createElement('label')
+    seasonalGardenWinterCbLabel.htmlFor = "seasonalGardenWinterCbLabel";
+    seasonalGardenWinterCbLabel.appendChild(document.createTextNode('Winter'));
+    $(seasonalGardenWinterCbLabel).css({
+        'float': 'left',
+        'width': '40px',
+        'padding': '1px'
+    })
+    $(seasonalGardenWinterCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "25px"
+    })
+    seasonalGardenOptions.appendChild(seasonalGardenWinterCbLabel);
+    seasonalGardenOptions.appendChild(seasonalGardenWinterCb);
+    //
+    var seasonalGardenSpringCb = document.createElement('input');
+    seasonalGardenSpringCb.type = "checkbox";
+    seasonalGardenSpringCb.name = "seasonalGardenSpringCb";
+    seasonalGardenSpringCb.value = "value";
+    seasonalGardenSpringCb.id = "seasonalGardenSpringCb";
+    if (localStorage.getItem('RemindGarden') == "Y") {
+        seasonalGardenSpringCb.checked = "Yes";
+    } else {
+        seasonalGardenSpringCb.checked = "";
+    }
+    var seasonalGardenSpringCbLabel = document.createElement('label')
+    seasonalGardenSpringCbLabel.htmlFor = "seasonalGardenSpringCbLabel";
+    seasonalGardenSpringCbLabel.appendChild(document.createTextNode('Spring'));
+    $(seasonalGardenSpringCbLabel).css({
+        'float': 'left',
+        'width': '40px',
+        'padding': '1px'
+    })
+    $(seasonalGardenSpringCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "25px"
+    })
+    seasonalGardenOptions.appendChild(seasonalGardenSpringCbLabel);
+    seasonalGardenOptions.appendChild(seasonalGardenSpringCb);
+    //
+    var seasonalGardenSummerCb = document.createElement('input');
+    seasonalGardenSummerCb.type = "checkbox";
+    seasonalGardenSummerCb.name = "seasonalGardenSummerCb";
+    seasonalGardenSummerCb.value = "value";
+    seasonalGardenSummerCb.id = "seasonalGardenSummerCb";
+    if (localStorage.getItem('RemindGarden') == "Y") {
+        seasonalGardenSummerCb.checked = "Yes";
+    } else {
+        seasonalGardenSummerCb.checked = "";
+    }
+    var seasonalGardenSummerCbLabel = document.createElement('label')
+    seasonalGardenSummerCbLabel.htmlFor = "seasonalGardenSummerCbLabel";
+    seasonalGardenSummerCbLabel.appendChild(document.createTextNode('Summer'));
+    $(seasonalGardenSummerCbLabel).css({
+        'float': 'left',
+        'width': '40px',
+        'padding': '1px'
+    })
+    $(seasonalGardenSummerCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "25px"
+    })
+    seasonalGardenOptions.appendChild(seasonalGardenSummerCbLabel);
+    seasonalGardenOptions.appendChild(seasonalGardenSummerCb);
+
+
+
+
+
+
+
+    tinkerPanel.appendChild(forbiddenGroveOptions);
+    tinkerPanel.appendChild(balacksCoveOptions);
+    tinkerPanel.appendChild(seasonalGardenOptions);
+    //Last
+    timerBox.prepend(tinkerPanel)
+}
+
+
+
 
 function startTimers() {
     localStorage.setItem("mainTimer", 0);
@@ -304,7 +664,7 @@ function buildForbiddenGrove() {
     $(forbiddenGrove).css({
         'border': '1px solid black',
         'width': '21%',
-        'height': '75%',
+        'height': '70%',
         'padding': 2 + "px"
     });
     //Header
@@ -453,7 +813,7 @@ function buildBalacksCove() {
     $(balacksCove).css({
         'border': '1px solid black',
         'width': '25%',
-        'height': '75%',
+        'height': '70%',
         'padding': 2 + "px"
     });
     //Header
@@ -708,7 +1068,7 @@ function buildSeasonalGarden() {
     $(seasonalGarden).css({
         'border': '1px solid black',
         'width': '24%',
-        'height': '75%',
+        'height': '70%',
         'padding': 2 + "px"
     });
     //Header
@@ -985,7 +1345,7 @@ function buildToxicSpill() {
     $(toxicSpill).css({
         'border': '1px solid black',
         'width': '26%',
-        'height': '75%',
+        'height': '70%',
         'padding': 2 + "px"
     });
     //Header
