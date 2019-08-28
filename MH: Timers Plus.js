@@ -844,10 +844,10 @@ function updateSeasonalGardenTimer() {
         winterObj = convertToDyHrMn(fallObj.days + 3, fallObj.hours + 8, fallObj.minutes);
         springObj = convertToDyHrMn(winterObj.days + 3, winterObj.hours + 8, winterObj.minutes)
         summerObj = convertToDyHrMn(springObj.days + 3, springObj.hours + 8, springObj.minutes);
-        $(".seasonalGardenFallLabel").text("Next Summer in:")
+        $(".seasonalGardenFallLabel").text("Fall in:")
         $(".seasonalGardenWinterLabel").text("Winter in:")
         $(".seasonalGardenSpringLabel").text("Spring in:")
-        $(".seasonalGardenSummerLabel").text("Summer in:")
+        $(".seasonalGardenSummerLabel").text("Next Summer in:")
         seasonalGarden.append($(".seasonalGardenFall"));
         seasonalGarden.append($(".seasonalGardenWinter"));
         seasonalGarden.append($(".seasonalGardenSpring"));
