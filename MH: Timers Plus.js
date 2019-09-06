@@ -2,7 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.3.6
+// @version      1.3.8
 // @description  Handy script to keep track of the various MH location timers
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -387,9 +387,9 @@ function buildTinkerPanel() {
     //
     var forbiddenGroveCloseCb = document.createElement('input');
     forbiddenGroveCloseCb.type = "checkbox";
-    forbiddenGroveCloseCb.name = "forbiddenGroveOpenCb";
+    forbiddenGroveCloseCb.name = "forbiddenGroveCloseCb";
     forbiddenGroveCloseCb.value = "value";
-    forbiddenGroveCloseCb.id = "forbiddenGroveOpenCb";
+    forbiddenGroveCloseCb.id = "forbiddenGroveCloseCb";
     if (localStorage.getItem('RemindGrove') == "Y") {
         forbiddenGroveCloseCb.checked = "Yes";
     } else {
@@ -622,16 +622,236 @@ function buildTinkerPanel() {
     })
     seasonalGardenOptions.appendChild(seasonalGardenSummerCbLabel);
     seasonalGardenOptions.appendChild(seasonalGardenSummerCb);
-
-
-
-
-
-
-
+    //TS Options
+    var toxicSpillOptions = document.createElement("div");
+    toxicSpillOptions.classList.add("toxicSpillOptions");
+    var toxicSpillOptionsLabel = document.createElement("div");
+    toxicSpillOptionsLabel.classList.add("toxicSpillOptionsLabel");
+    var toxicSpillOptionsLabelText = document.createTextNode("Toxic Spill");
+    toxicSpillOptionsLabel.appendChild(toxicSpillOptionsLabelText);
+    toxicSpillOptions.appendChild(toxicSpillOptionsLabel);
+    $(toxicSpillOptions).css({
+        'float': 'left',
+        'width': '18%',
+        'marginLeft': '10px',
+    })
+    $(toxicSpillOptionsLabel).css({
+        'float': 'left',
+        'width': '100%',
+        'font-weight': 700,
+    })
+    var toxicSpillHeroCb = document.createElement('input');
+    toxicSpillHeroCb.type = "checkbox";
+    toxicSpillHeroCb.name = "toxicSpillHeroCb";
+    toxicSpillHeroCb.value = "value";
+    toxicSpillHeroCb.id = "toxicSpillHeroCb";
+    if (localStorage.getItem('RemindSpill') == "Y") {
+        toxicSpillHeroCb.checked = "Yes";
+    } else {
+        toxicSpillHeroCb.checked = "";
+    }
+    var toxicSpillHeroCbLabel = document.createElement('label')
+    toxicSpillHeroCbLabel.htmlFor = "toxicSpillHeroCbLabel";
+    toxicSpillHeroCbLabel.appendChild(document.createTextNode('Hero'));
+    $(toxicSpillHeroCbLabel).css({
+        'float': 'left',
+        'width': '35px',
+        'padding': '1px',
+    })
+    $(toxicSpillHeroCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "5px"
+    })
+    toxicSpillOptions.appendChild(toxicSpillHeroCbLabel);
+    toxicSpillOptions.appendChild(toxicSpillHeroCb);
+    //
+    var toxicSpillKnightCb = document.createElement('input');
+    toxicSpillKnightCb.type = "checkbox";
+    toxicSpillKnightCb.name = "toxicSpillKnightCb";
+    toxicSpillKnightCb.value = "value";
+    toxicSpillKnightCb.id = "toxicSpillKnightCb";
+    if (localStorage.getItem('RemindSpill') == "Y") {
+        toxicSpillKnightCb.checked = "Yes";
+    } else {
+        toxicSpillKnightCb.checked = "";
+    }
+    var toxicSpillKnightCbLabel = document.createElement('label')
+    toxicSpillKnightCbLabel.htmlFor = "toxicSpillKnightCbLabel";
+    toxicSpillKnightCbLabel.appendChild(document.createTextNode('Knight'));
+    $(toxicSpillKnightCbLabel).css({
+        'float': 'left',
+        'width': '35px',
+        'padding': '1px',
+    })
+    $(toxicSpillKnightCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "5px"
+    })
+    toxicSpillOptions.appendChild(toxicSpillKnightCbLabel);
+    toxicSpillOptions.appendChild(toxicSpillKnightCb);
+    //
+    var toxicSpillLordCb = document.createElement('input');
+    toxicSpillLordCb.type = "checkbox";
+    toxicSpillLordCb.name = "toxicSpillLordCb";
+    toxicSpillLordCb.value = "value";
+    toxicSpillLordCb.id = "toxicSpillLordCb";
+    if (localStorage.getItem('RemindSpill') == "Y") {
+        toxicSpillLordCb.checked = "Yes";
+    } else {
+        toxicSpillLordCb.checked = "";
+    }
+    var toxicSpillLordCbLabel = document.createElement('label')
+    toxicSpillLordCbLabel.htmlFor = "toxicSpillLordCbLabel";
+    toxicSpillLordCbLabel.appendChild(document.createTextNode('Lord'));
+    $(toxicSpillLordCbLabel).css({
+        'float': 'left',
+        'width': '35px',
+        'padding': '1px',
+    })
+    $(toxicSpillLordCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "5px"
+    })
+    toxicSpillOptions.appendChild(toxicSpillLordCbLabel);
+    toxicSpillOptions.appendChild(toxicSpillLordCb);
+    //
+    var toxicSpillBaronCb = document.createElement('input');
+    toxicSpillBaronCb.type = "checkbox";
+    toxicSpillBaronCb.name = "toxicSpillBaronCb";
+    toxicSpillBaronCb.value = "value";
+    toxicSpillBaronCb.id = "toxicSpillBaronCb";
+    if (localStorage.getItem('RemindSpill') == "Y") {
+        toxicSpillBaronCb.checked = "Yes";
+    } else {
+        toxicSpillBaronCb.checked = "";
+    }
+    var toxicSpillBaronCbLabel = document.createElement('label')
+    toxicSpillBaronCbLabel.htmlFor = "toxicSpillBaronCbLabel";
+    toxicSpillBaronCbLabel.appendChild(document.createTextNode('Baron'));
+    $(toxicSpillBaronCbLabel).css({
+        'float': 'left',
+        'width': '35px',
+        'padding': '1px',
+    })
+    $(toxicSpillBaronCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "5px"
+    })
+    toxicSpillOptions.appendChild(toxicSpillBaronCbLabel);
+    toxicSpillOptions.appendChild(toxicSpillBaronCb);
+    //
+    var toxicSpillCountCb = document.createElement('input');
+    toxicSpillCountCb.type = "checkbox";
+    toxicSpillCountCb.name = "toxicSpillCountCb";
+    toxicSpillCountCb.value = "value";
+    toxicSpillCountCb.id = "toxicSpillCountCb";
+    if (localStorage.getItem('RemindSpill') == "Y") {
+        toxicSpillCountCb.checked = "Yes";
+    } else {
+        toxicSpillCountCb.checked = "";
+    }
+    var toxicSpillCountCbLabel = document.createElement('label')
+    toxicSpillCountCbLabel.htmlFor = "toxicSpillCountCbLabel";
+    toxicSpillCountCbLabel.appendChild(document.createTextNode('Count'));
+    $(toxicSpillCountCbLabel).css({
+        'float': 'left',
+        'width': '35px',
+        'padding': '1px',
+    })
+    $(toxicSpillCountCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "5px"
+    })
+    toxicSpillOptions.appendChild(toxicSpillCountCbLabel);
+    toxicSpillOptions.appendChild(toxicSpillCountCb);
+    //
+    var toxicSpillDukeCb = document.createElement('input');
+    toxicSpillDukeCb.type = "checkbox";
+    toxicSpillDukeCb.name = "toxicSpillDukeCb";
+    toxicSpillDukeCb.value = "value";
+    toxicSpillDukeCb.id = "toxicSpillDukeCb";
+    if (localStorage.getItem('RemindSpill') == "Y") {
+        toxicSpillDukeCb.checked = "Yes";
+    } else {
+       toxicSpillDukeCb.checked = "";
+    }
+    var toxicSpillDukeCbLabel = document.createElement('label')
+    toxicSpillDukeCbLabel.htmlFor = "toxicSpillDukeCbLabel";
+    toxicSpillDukeCbLabel.appendChild(document.createTextNode('Duke'));
+    $(toxicSpillDukeCbLabel).css({
+        'float': 'left',
+        'width': '35px',
+        'padding': '1px',
+    })
+    $(toxicSpillDukeCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "5px"
+    })
+    toxicSpillOptions.appendChild(toxicSpillDukeCbLabel);
+    toxicSpillOptions.appendChild(toxicSpillDukeCb);
+    //
+    var toxicSpillGrandDukeCb = document.createElement('input');
+    toxicSpillGrandDukeCb.type = "checkbox";
+    toxicSpillGrandDukeCb.name = "toxicSpillGrandDukeCb";
+    toxicSpillGrandDukeCb.value = "value";
+    toxicSpillGrandDukeCb.id = "toxicSpillGrandDukeCb";
+    if (localStorage.getItem('RemindSpill') == "Y") {
+        toxicSpillGrandDukeCb.checked = "Yes";
+    } else {
+       toxicSpillGrandDukeCb.checked = "";
+    }
+    var toxicSpillGrandDukeCbLabel = document.createElement('label')
+    toxicSpillGrandDukeCbLabel.htmlFor = "toxicSpillGrandDukeCbLabel";
+    toxicSpillGrandDukeCbLabel.appendChild(document.createTextNode('GDuke'));
+    $(toxicSpillGrandDukeCbLabel).css({
+        'float': 'left',
+        'width': '35px',
+        'padding': '1px',
+    })
+    $(toxicSpillGrandDukeCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "5px"
+    })
+    toxicSpillOptions.appendChild(toxicSpillGrandDukeCbLabel);
+    toxicSpillOptions.appendChild(toxicSpillGrandDukeCb);
+    //
+    var toxicSpillArchdukeCb = document.createElement('input');
+    toxicSpillArchdukeCb.type = "checkbox";
+    toxicSpillArchdukeCb.name = "toxicSpillArchdukeCb";
+    toxicSpillArchdukeCb.value = "value";
+    toxicSpillArchdukeCb.id = "toxicSpillArchdukeCb";
+    if (localStorage.getItem('RemindSpill') == "Y") {
+        toxicSpillArchdukeCb.checked = "Yes";
+    } else {
+       toxicSpillArchdukeCb.checked = "";
+    }
+    var toxicSpillArchdukeCbLabel = document.createElement('label')
+    toxicSpillArchdukeCbLabel.htmlFor = "toxicSpillArchdukeCbLabel";
+    toxicSpillArchdukeCbLabel.appendChild(document.createTextNode('ADuke'));
+    $(toxicSpillArchdukeCbLabel).css({
+        'float': 'left',
+        'width': '35px',
+        'padding': '1px',
+    })
+    $(toxicSpillArchdukeCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "5px"
+    })
+    toxicSpillOptions.appendChild(toxicSpillArchdukeCbLabel);
+    toxicSpillOptions.appendChild(toxicSpillArchdukeCb);
+    //
     tinkerPanel.appendChild(forbiddenGroveOptions);
     tinkerPanel.appendChild(balacksCoveOptions);
     tinkerPanel.appendChild(seasonalGardenOptions);
+    tinkerPanel.appendChild(toxicSpillOptions);
     //Last
     timerBox.prepend(tinkerPanel)
 }
@@ -795,14 +1015,44 @@ function updateForbiddenGroveTimer() {
     }
 }
 $(document).on('change', '#forbiddenGroveCb', function() {
+    remindGrove(this.name,this.checked);
     if (this.checked) {
-        localStorage.setItem('RemindGrove', "Y")
         this.checked = "Yes";
     } else {
-        localStorage.setItem('RemindGrove', "N")
         this.checked = "";
     }
 })
+
+$(document).on('change', '#forbiddenGroveOpenCb', function() {
+    remindGrove(this.name,this.checked);
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+})
+
+$(document).on('change', '#forbiddenGroveCloseCb', function() {
+    remindGrove(this.name,this.checked);
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+})
+
+function remindGrove(cb,checked) {
+    console.log(cb,checked)
+    var main = $('#forbiddenGroveCb');
+    var open = $('#forbiddenGroveOpenCb');
+    var closed = $('#forbiddenGroveCloseCb');
+    if (checked == true) {
+        localStorage.setItem('RemindGrove', "Y")
+    } else {
+        localStorage.setItem('RemindGrove', "N")
+    }
+    console.log(localStorage.getItem('RemindGrove'))
+}
 
 //====================================== Balacks's Cove ======================================
 function buildBalacksCove() {
