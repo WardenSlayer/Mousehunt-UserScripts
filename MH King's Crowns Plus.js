@@ -2,7 +2,7 @@
 // @name         MH King's Crowns+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.7.0
+// @version      1.7.2
 // @description  Locked Favorites, Community Ranks, and Copy Crowns Button
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -235,7 +235,7 @@ function showCommunityRanks() {
         .clone()
         .attr("id", "spacer4");
     var communityCrownHeader = $(
-        "<div class='crownheader crownheadercommunity'>Community Ranks <div class='crownnote'>Set by the MH Community Groups</div></div>"
+        "<div class='crownheader crownheadercommunity'>Community Ranks <div class='crownnote'>Crown Summary</div></div>"
     );
     communityCrownHeader.css(
         "background",
@@ -256,12 +256,19 @@ function showCommunityRanks() {
         ".numcatches.gold,.numcatches.platinum,.numcatches.diamond"
     );
     allGold = filterOutTopFavs(allGold);
-    var bronzeHeader = $(".crownheader.crownheaderbronze");
-    var silverHeader = $(".crownheader.crownheadersilver");
-    var goldHeader = $(".crownheader.crownheadergold");
+    var allPlat = allMice.find(
+        ".numcatches.platinum,.numcatches.diamond"
+    );
+    allPlat = filterOutTopFavs(allPlat);
+    var allDiamond = allMice.find(
+        ".numcatches.diamond"
+    );
+    allDiamond = filterOutTopFavs(allDiamond);
     var bronzeCrowns = allBronze.length;
     var silverCrowns = allSilver.length;
     var goldCrowns = allGold.length;
+    var platCrowns = allPlat.length;
+    var diamondCrowns = allDiamond.length;
     var bronzeLink = "https://docs.google.com/spreadsheets/d/19_wHCkwiT5M6LS7XNLt4NYny98fjpg4UlHbgOD05ijw/pub?fbclid=IwAR3a1Ku2xTl1mIDksUr8Lk5ORMEnuv7jnvIy9K6OBeziG6AyvYYlZaIQkHY"
     var silverLink = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQG5g3vp-q7LRYug-yZR3tSwQzAdN7qaYFzhlZYeA32vLtq1mJcq7qhH80planwei99JtLRFAhJuTZn/pubhtml?fbclid=IwAR3sPXNLloGnFk324a0HShroP1E-sNcnQBlRTjJ7gScWTWosqmXv5InB_Ns'
     var goldLink = 'https://docs.google.com/spreadsheets/d/10OGD5OYkGIEAbiez7v92qU5Fdul0ZtCRgEjlECkwZJE/pubhtml?gid=478731024&single=true&fbclid=IwAR28w7IQyMp91I62CR3GOILpbeLwgKaydIoQimMNm7j3S0DL8Mj_IsRpGD4'
@@ -269,9 +276,11 @@ function showCommunityRanks() {
         "<div class='rank summary' style='font-size: 14px'></div>"
     );
     rankSummary.insertAfter(communityCrownHeader);
-    var bronzeText = document.createTextNode("Bronze Crowns: "+ getRankBronze(bronzeCrowns)+" | ");
-    var silverText = document.createTextNode("Silver Crowns: "+ getRankSilver(silverCrowns)+" | ");
-    var goldText = document.createTextNode("Gold Crowns: " + goldCrowns + " or " + ((goldCrowns / totalMice) * 100).toFixed(2) + "%");
+    var bronzeText = document.createTextNode("Bronze: " + bronzeCrowns + " (" + ((bronzeCrowns / totalMice) * 100).toFixed(2) + "%) | ");
+    var silverText = document.createTextNode("Silver: " + silverCrowns + " (" + ((silverCrowns / totalMice) * 100).toFixed(2) + "%) | ");
+    var goldText = document.createTextNode("Gold: " + goldCrowns + " (" + ((goldCrowns / totalMice) * 100).toFixed(2) + "%) | ");
+    var platText = document.createTextNode("Platinum: " + platCrowns + " (" + ((platCrowns / totalMice) * 100).toFixed(2) + "%) | ");
+    var diamondText = document.createTextNode("Diamond: " + diamondCrowns + " (" + ((diamondCrowns / totalMice) * 100).toFixed(2) + "%)");
     var aBronze = document.createElement('a');
     aBronze.appendChild(bronzeText);
     aBronze.title = "90% Crowned Scoreboard";
@@ -287,75 +296,7 @@ function showCommunityRanks() {
     aGold.title = "MHCC Elite Scoreboard";
     aGold.href = goldLink;
     $(aGold).attr("target", "_blank");
-    $(rankSummary).append(aBronze).append(aSilver).append(aGold);
-}
-
-function getRankBronze(crowns) {
-    var totalMice = 979;
-    var crownPrecent = ((crowns / totalMice) * 100).toFixed(2) + "%";
-    var rank = "";
-    if (crowns >= totalMice) {
-        rank = "Hepatizon";
-    } else if (crowns >= 970) {
-        rank = "Electrum";
-    } else if (crowns >= 960) {
-        rank = "Palladium";
-    } else if (crowns >= 931) {
-        rank = "Cobalt";
-    } else if (crowns >= 882) {
-        rank = "Bronze (full)";
-    } else if (crowns >= 833) {
-        rank = "Titanium";
-    } else if (crowns >= 784) {
-        rank = "Pewter";
-    } else if (crowns >= 735) {
-        rank = "Brass";
-    } else if (crowns >= 686) {
-        rank = "Copper";
-    } else if (crowns >= 637) {
-        rank = "Tin";
-    } else {
-        rank = "Rust";
-    }
-
-    return rank + " (" + crowns + " or " + crownPrecent + ")";
-}
-
-function getRankSilver(crowns) {
-    var totalMice = 979;
-    var crownPrecent = ((crowns / totalMice) * 100).toFixed(2) + "%";
-    var rank = "";
-    if (crowns >= 881) {
-        rank = "Super Secret Squirrel";
-    } else if (crowns >= 832) {
-        rank = "Grizzled Squirrel";
-    } else if (crowns >= 783) {
-        rank = "Flying Squirrel";
-    } else if (crowns >= 734) {
-        rank = "Chinchilla";
-    } else if (crowns >= 685) {
-        rank = "Meerkat";
-    } else if (crowns >= 636) {
-        rank = "Ferret";
-    } else if (crowns >= 587) {
-        rank = "Prairie Dog";
-    } else if (crowns >= 538) {
-        rank = "Marmot";
-    } else if (crowns >= 489) {
-        rank = "Woodchuck";
-    } else if (crowns >= 440) {
-        rank = "Wombat";
-    } else if (crowns >= 391) {
-        rank = "Pine Marten";
-    } else if (crowns >= 342) {
-        rank = "Chipmunk";
-    } else if (crowns >= 293) {
-        rank = "Bandicoot";
-    } else {
-        rank = "Weasel";
-    }
-
-    return rank + " (" + crowns + " or " + crownPrecent + ")";
+    $(rankSummary).append(aBronze).append(aSilver).append(aGold).append(platText).append(diamondText);
 }
 
 function hideCommunityRanks() {
