@@ -2,7 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.3.8
+// @version      1.3.9
 // @description  Handy script to keep track of the various MH location timers
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -35,7 +35,7 @@ function buildTimerBox() {
     accordionPrompt.classList.add("accordionPrompt");
     var accordionTitle = document.createElement("div");
     accordionTitle.classList.add("accordionTitle");
-    $(accordionTitle).text("Mousehunt Timers+").css({
+    $(accordionTitle).text("MouseHunt Timers+").css({
         'float': 'left',
         'padding': '1px 0',
         'font-size': '12px',
@@ -111,6 +111,7 @@ $(document).on('click', '.accordion', function() {
 
 function buildControlPanels() {
     var timerBox = $(".timerBox");
+    const remindGrove = localStorage.getItem('RemindGrove');
     //FG
     var forbiddenGroveControlPanel = document.createElement("div");
     forbiddenGroveControlPanel.classList.add("forbiddenGroveControlPanel");
@@ -134,7 +135,7 @@ function buildControlPanels() {
     forbiddenGroveCb.name = "forbiddenGroveCb";
     forbiddenGroveCb.value = "value";
     forbiddenGroveCb.id = "forbiddenGroveCb";
-    if (localStorage.getItem('RemindGrove') == "Y") {
+    if ((remindGrove=="A") || (remindGrove=="O") || (remindGrove=="C")){
         forbiddenGroveCb.checked = "Yes";
     } else {
         forbiddenGroveCb.checked = "";
@@ -331,6 +332,7 @@ $(document).on('click', '.tinkerButton', function() {
 
 function buildTinkerPanel() {
     var timerBox = $(".timerBox");
+    const remindGrove = localStorage.getItem('RemindGrove');
     var tinkerPanel = document.createElement("div");
     tinkerPanel.classList.add("tinkerPanel");
     tinkerPanel.classList.add("hide");
@@ -365,7 +367,7 @@ function buildTinkerPanel() {
     forbiddenGroveOpenCb.name = "forbiddenGroveOpenCb";
     forbiddenGroveOpenCb.value = "value";
     forbiddenGroveOpenCb.id = "forbiddenGroveOpenCb";
-    if (localStorage.getItem('RemindGrove') == "Y") {
+    if ((remindGrove=="O") || (remindGrove=="A")) {
         forbiddenGroveOpenCb.checked = "Yes";
     } else {
         forbiddenGroveOpenCb.checked = "";
@@ -390,7 +392,7 @@ function buildTinkerPanel() {
     forbiddenGroveCloseCb.name = "forbiddenGroveCloseCb";
     forbiddenGroveCloseCb.value = "value";
     forbiddenGroveCloseCb.id = "forbiddenGroveCloseCb";
-    if (localStorage.getItem('RemindGrove') == "Y") {
+    if ((remindGrove=="C") || (remindGrove=="A")) {
         forbiddenGroveCloseCb.checked = "Yes";
     } else {
         forbiddenGroveCloseCb.checked = "";
@@ -866,7 +868,8 @@ function startTimers() {
 
 function runTimers() {
     updateText();
-    var myTimer = setInterval(updateText, 60000);
+    //var myTimer = setInterval(updateText, 60000);
+    var myTimer = setInterval(updateText, 1000);
 }
 
 function updateText() {
@@ -954,6 +957,7 @@ function buildForbiddenGrove() {
 
 function updateForbiddenGroveTimer() {
     if ($(".forbiddenGrove").length < 1) return;
+    const remind = localStorage.getItem('RemindGrove');
     var forbiddenGrove = $(".forbiddenGrove");
     var firstGroveOpen = 1285704000;
     var now = todayNow();
@@ -981,7 +985,7 @@ function updateForbiddenGroveTimer() {
                 'float': 'right'
             }),
             forbiddenGrove.append($(".forbiddenGroveOpens"))
-        if ((closesHours == 0) && (closesMinutes <= 15) && (localStorage.getItem('RemindGrove') == "Y")) {
+        if ((closesHours == 0) && (closesMinutes <= 15) && ((remind=="A") || (remind=="C"))) {
             if (confirm('The forbidden grove is closing soon, travel there now?') == true) {
                 travelToGrove("skip");
             }
@@ -1007,7 +1011,7 @@ function updateForbiddenGroveTimer() {
                 'float': 'right'
             }),
             forbiddenGrove.append($(".forbiddenGroveCloses"))
-        if ((opensHours == 0) && (opensMinutes <= 15) && (localStorage.getItem('RemindGrove') == "Y")) {
+        if ((opensHours == 0) && (opensMinutes <= 15) && ((remind=="A") || (remind=="O"))) {
             alert('The forbidden grove is opening soon')
             localStorage.setItem('RemindGrove', "N")
             $("#forbiddenGroveCb").prop('checked', false)
@@ -1015,41 +1019,100 @@ function updateForbiddenGroveTimer() {
     }
 }
 $(document).on('change', '#forbiddenGroveCb', function() {
-    remindGrove(this.name,this.checked);
     if (this.checked) {
         this.checked = "Yes";
     } else {
         this.checked = "";
     }
+    remindGrove(this.name,this.checked);
 })
 
 $(document).on('change', '#forbiddenGroveOpenCb', function() {
-    remindGrove(this.name,this.checked);
     if (this.checked) {
         this.checked = "Yes";
     } else {
         this.checked = "";
     }
+    remindGrove(this.name,this.checked);
 })
 
 $(document).on('change', '#forbiddenGroveCloseCb', function() {
-    remindGrove(this.name,this.checked);
     if (this.checked) {
         this.checked = "Yes";
     } else {
         this.checked = "";
     }
+    remindGrove(this.name,this.checked);
 })
 
+//if master checked and no other - remind all
+//if master not checked - no reminder
+//if master checked and 1 or more checked - remind the ones checked.
+// A all
+// N none
+// O open
+// C closed
 function remindGrove(cb,checked) {
     console.log(cb,checked)
     var main = $('#forbiddenGroveCb');
     var open = $('#forbiddenGroveOpenCb');
     var closed = $('#forbiddenGroveCloseCb');
-    if (checked == true) {
-        localStorage.setItem('RemindGrove', "Y")
-    } else {
+    const mName = main.prop("name");
+    const oName = open.prop("name");
+    const cName = closed.prop("name");;
+    const mChecked = main.prop("checked");
+    const oChecked = open.prop("checked");
+    const cChecked = closed.prop("checked");
+    //main was checked
+    if ((cb==mName) && (checked==true)) {
+        if ((oChecked==false) && (cChecked==false)) {
+            localStorage.setItem('RemindGrove', "A")
+        } else if ((oChecked==true) && (cChecked==true)) {
+            localStorage.setItem('RemindGrove', "A")
+        } else if (oChecked==true) {
+            localStorage.setItem('RemindGrove', "O")
+        } else if (cChecked==true) {
+            localStorage.setItem('RemindGrove', "C")
+        }
+    //main was unchecked
+    } else if ((cb==mName) && (checked==false)) {
         localStorage.setItem('RemindGrove', "N")
+    //open was checked
+    } else if ((cb==oName) && (checked==true)) {
+        if (mChecked==false) {
+            localStorage.setItem('RemindGrove', "N")
+        } else if ((mChecked==true) && (cChecked==true)) {
+            localStorage.setItem('RemindGrove', "A")
+        } else if ((mChecked==true) && (cChecked==false)) {
+            localStorage.setItem('RemindGrove', "O")
+        }
+    //open was unchecked
+    } else if ((cb==oName) && (checked==false)) {
+        if (mChecked==false) {
+            localStorage.setItem('RemindGrove', "N")
+        } else if ((mChecked==true) && (cChecked==true)) {
+            localStorage.setItem('RemindGrove', "C")
+        } else if ((mChecked==true) && (cChecked==false)) {
+            localStorage.setItem('RemindGrove', "A")
+        }
+    //closed was checked
+    } else if ((cb==cName) && (checked==true)) {
+        if (mChecked==false) {
+            localStorage.setItem('RemindGrove', "N")
+        } else if ((mChecked==true) && (oChecked==true)) {
+            localStorage.setItem('RemindGrove', "A")
+        } else if ((mChecked==true) && (oChecked==false)) {
+            localStorage.setItem('RemindGrove', "C")
+        }
+    //closed was unchecked
+    } else if ((cb==cName) && (checked==false)) {
+        if (mChecked==false) {
+            localStorage.setItem('RemindGrove', "N")
+        } else if ((mChecked==true) && (oChecked==true)) {
+            localStorage.setItem('RemindGrove', "O")
+        } else if ((mChecked==true) && (oChecked==false)) {
+            localStorage.setItem('RemindGrove', "A")
+        }
     }
     console.log(localStorage.getItem('RemindGrove'))
 }
