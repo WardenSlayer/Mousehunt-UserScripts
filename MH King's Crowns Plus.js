@@ -2,7 +2,7 @@
 // @name         MH King's Crowns+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.7.3
+// @version      1.7.4
 // @description  Locked Favorites, Community Ranks, and Copy Crowns Button
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -428,6 +428,7 @@ let newMouseName = "";
     else if (mouseName == "Vincent, The Magnificent"){newMouseName = "Vincent The Magnificent"}
     else if (mouseName == "Corky, the Collector Mouse"){newMouseName = "Corky the Collector Mouse"}
     else if (mouseName == "Record Keeper"){newMouseName = "Record Keeper's Assistant"}
+    else if (mouseName == "Keeper"){newMouseName = "Keeper's Assistant"}
     else {newMouseName = mouseName}
 return newMouseName;
 }
