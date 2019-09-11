@@ -2,7 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.3.7
+// @version      1.3.8
 // @description  Handy script to keep track of the various MH location timers
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -1784,6 +1784,10 @@ function todayNow() {
 }
 
 function convertToDyHrMn(days, hours, minutes) {
+    if (minutes == 60) {
+       hours++;
+       minutes = 0;
+    }
     if (hours >= 24) {
         var daysExact = hours / 24;
         var daysTrunc = Math.floor(daysExact);

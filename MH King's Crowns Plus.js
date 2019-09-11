@@ -2,7 +2,7 @@
 // @name         MH King's Crowns+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.7.2
+// @version      1.7.3
 // @description  Locked Favorites, Community Ranks, and Copy Crowns Button
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -283,12 +283,14 @@ function showCommunityRanks() {
     var diamondText = document.createTextNode("Diamond: " + diamondCrowns + " (" + ((diamondCrowns / totalMice) * 100).toFixed(2) + "%)");
     var aBronze = document.createElement('a');
     aBronze.appendChild(bronzeText);
-    aBronze.title = "90% Crowned Scoreboard";
+    var bronzeRank = getRankBronze(allBronze.length)
+    aBronze.title = "90% Crowned Scoreboard: "+bronzeRank;
     aBronze.href = bronzeLink;
     $(aBronze).attr("target", "_blank");
     var aSilver = document.createElement('a');
     aSilver.appendChild(silverText);
-    aSilver.title = "MHCC Scoreboard";
+    var silverRank = getRankSilver(allSilver.length)
+    aSilver.title = "MHCC Scoreboard: "+silverRank;
     aSilver.href = silverLink;
     $(aSilver).attr("target", "_blank");
     var aGold = document.createElement('a');
@@ -298,6 +300,74 @@ function showCommunityRanks() {
     $(aGold).attr("target", "_blank");
     $(rankSummary).append(aBronze).append(aSilver).append(aGold).append(platText).append(diamondText);
 }
+
+function getRankBronze(crowns) {
+    var totalMice = 979;
+    var crownPrecent = ((crowns / totalMice) * 100).toFixed(2) + "%";
+    var rank = "";
+    if (crowns >= totalMice) {
+        rank = "Hepatizon";
+    } else if (crowns >= 970) {
+        rank = "Electrum";
+    } else if (crowns >= 960) {
+        rank = "Palladium";
+    } else if (crowns >= 931) {
+        rank = "Cobalt";
+    } else if (crowns >= 882) {
+        rank = "Bronze (full)";
+    } else if (crowns >= 833) {
+        rank = "Titanium";
+    } else if (crowns >= 784) {
+        rank = "Pewter";
+    } else if (crowns >= 735) {
+        rank = "Brass";
+    } else if (crowns >= 686) {
+        rank = "Copper";
+    } else if (crowns >= 637) {
+        rank = "Tin";
+    } else {
+        rank = "Rust";
+    }
+
+    return rank;
+}
+
+function getRankSilver(crowns) {
+    var totalMice = 979;
+    var crownPrecent = ((crowns / totalMice) * 100).toFixed(2) + "%";
+    var rank = "";
+    if (crowns >= 881) {
+        rank = "Super Secret Squirrel";
+    } else if (crowns >= 832) {
+        rank = "Grizzled Squirrel";
+    } else if (crowns >= 783) {
+        rank = "Flying Squirrel";
+    } else if (crowns >= 734) {
+        rank = "Chinchilla";
+    } else if (crowns >= 685) {
+        rank = "Meerkat";
+    } else if (crowns >= 636) {
+        rank = "Ferret";
+    } else if (crowns >= 587) {
+        rank = "Prairie Dog";
+    } else if (crowns >= 538) {
+        rank = "Marmot";
+    } else if (crowns >= 489) {
+        rank = "Woodchuck";
+    } else if (crowns >= 440) {
+        rank = "Wombat";
+    } else if (crowns >= 391) {
+        rank = "Pine Marten";
+    } else if (crowns >= 342) {
+        rank = "Chipmunk";
+    } else if (crowns >= 293) {
+        rank = "Bandicoot";
+    } else {
+        rank = "Weasel";
+    }
+    return rank;
+}
+
 
 function hideCommunityRanks() {
     if ($(".crownheader.crownheadercommunity").length > 0) {
