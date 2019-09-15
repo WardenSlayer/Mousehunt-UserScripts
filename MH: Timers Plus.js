@@ -2,7 +2,8 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.3.8
+// @version      1.3.9
+=======
 // @description  Handy script to keep track of the various MH location timers
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -13,6 +14,7 @@ $(document).ready(function() {
     console.log("MH Timers+");
     buildTimerBox();
     buildControlPanels();
+    buildTinkerPanel();
     startTimers();
 });
 
@@ -28,12 +30,13 @@ function buildTimerBox() {
         'height': '15px',
         'padding': '5px',
         'border': '2px solid black',
+        'cursor': 'pointer'
     });
     var accordionPrompt = document.createElement("div");
     accordionPrompt.classList.add("accordionPrompt");
     var accordionTitle = document.createElement("div");
     accordionTitle.classList.add("accordionTitle");
-    $(accordionTitle).text("Mousehunt Timers+").css({
+    $(accordionTitle).text("MouseHunt Timers+").css({
         'float': 'left',
         'padding': '1px 0',
         'font-size': '12px',
@@ -59,13 +62,25 @@ function buildTimerBox() {
         'background-image': "url('https://www.toptal.com/designers/subtlepatterns/patterns/interlaced.png')"
     });
     $(timerBox).css({
-        'height': 112 + "px",
+        'height': 150 + "px",
         'padding': 2 + "px"
     });
     let forbiddenGrove = buildForbiddenGrove();
+    if (localStorage.getItem('RemindGrove') == null) {
+        localStorage.setItem('RemindGrove', 'N')
+    }
     let balacksCove = buildBalacksCove();
+    if (localStorage.getItem('RemindCove') == null) {
+        localStorage.setItem('RemindCove', 'N')
+    }
     let seasonalGarden = buildSeasonalGarden();
+    if (localStorage.getItem('RemindGarden') == null) {
+        localStorage.setItem('RemindGarden', 'N')
+    }
     let toxicSpill = buildToxicSpill();
+    if (localStorage.getItem('RemindSpill') == null) {
+        localStorage.setItem('RemindSpill', 'N')
+    }
     timerBox.appendChild(forbiddenGrove)
     timerBox.appendChild(balacksCove)
     timerBox.appendChild(seasonalGarden)
@@ -98,8 +113,11 @@ $(document).on('click', '.accordion', function() {
         localStorage.setItem('HideTimers', "N")
     } else {
         //hide
+        $('.timerBox').find('*').removeClass("hide")
         $('.timerBox').addClass("hide")
         $('.accordionPrompt').text("Click to Show")
+        $('.tinkerPanel').addClass("hide");
+        $('.tinkerButton').text("Tinker");
         localStorage.setItem('HideTimers', "Y")
     }
 })
@@ -107,6 +125,7 @@ $(document).on('click', '.accordion', function() {
 function buildControlPanels() {
     var timerBox = $(".timerBox");
     //FG
+    const remindGrove = localStorage.getItem('RemindGrove');
     var forbiddenGroveControlPanel = document.createElement("div");
     forbiddenGroveControlPanel.classList.add("forbiddenGroveControlPanel");
     var forbiddenGroveButton = document.createElement("button");
@@ -116,7 +135,8 @@ function buildControlPanels() {
     forbiddenGroveControlPanel.appendChild(forbiddenGroveButton);
     $(forbiddenGroveControlPanel).css({
         'float': 'left',
-        'width': '21.5%'
+        'width': '21.5%',
+        'marginTop': 10 + "px"
     })
     $(forbiddenGroveButton).css({
         'width': '75px',
@@ -128,7 +148,7 @@ function buildControlPanels() {
     forbiddenGroveCb.name = "forbiddenGroveCb";
     forbiddenGroveCb.value = "value";
     forbiddenGroveCb.id = "forbiddenGroveCb";
-    if (localStorage.getItem('RemindGrove') == "Y") {
+    if (remindGrove.search("N") < 0) {
         forbiddenGroveCb.checked = "Yes";
     } else {
         forbiddenGroveCb.checked = "";
@@ -149,6 +169,7 @@ function buildControlPanels() {
     })
     timerBox.append(forbiddenGroveControlPanel);
     //BC
+    const remindCove = localStorage.getItem('RemindCove');
     var balacksCoveControlPanel = document.createElement("div");
     balacksCoveControlPanel.classList.add("balacksCoveControlPanel");
     var balacksCoveButton = document.createElement("button");
@@ -159,7 +180,8 @@ function buildControlPanels() {
     $(balacksCoveControlPanel).css({
         'float': 'left',
         'width': '25%',
-        'marginLeft': 5 + "px"
+        'marginLeft': 5 + "px",
+        'marginTop': 10 + "px"
     })
     $(balacksCoveButton).css({
         'width': '75px',
@@ -171,7 +193,7 @@ function buildControlPanels() {
     balacksCoveCb.name = "balacksCoveCb";
     balacksCoveCb.value = "value";
     balacksCoveCb.id = "balacksCoveCb";
-    if (localStorage.getItem('RemindCove') == "Y") {
+    if (remindCove.search("N") < 0) {
         balacksCoveCb.checked = "Yes";
     } else {
         balacksCoveCb.checked = "";
@@ -192,6 +214,7 @@ function buildControlPanels() {
     })
     timerBox.append(balacksCoveControlPanel);
     //SG
+    const remindGarden = localStorage.getItem('RemindGarden');
     var seasonalGardenControlPanel = document.createElement("div");
     seasonalGardenControlPanel.classList.add("seasonalGardenControlPanel");
     var seasonalGardenButton = document.createElement("button");
@@ -202,7 +225,8 @@ function buildControlPanels() {
     $(seasonalGardenControlPanel).css({
         'float': 'left',
         'width': '24%',
-        'marginLeft': 5 + "px"
+        'marginLeft': 5 + "px",
+        'marginTop': 10 + "px"
     })
     $(seasonalGardenButton).css({
         'width': '75px',
@@ -214,7 +238,7 @@ function buildControlPanels() {
     seasonalGardenCb.name = "seasonalGardenCb";
     seasonalGardenCb.value = "value";
     seasonalGardenCb.id = "seasonalGardenCb";
-    if (localStorage.getItem('RemindGarden') == "Y") {
+    if (remindGarden.search("N") < 0) {
         seasonalGardenCb.checked = "Yes";
     } else {
         seasonalGardenCb.checked = "";
@@ -235,6 +259,7 @@ function buildControlPanels() {
     })
     timerBox.append(seasonalGardenControlPanel);
     //TS
+    const remindSpill = localStorage.getItem('RemindSpill');
     var toxicSpillControlPanel = document.createElement("div");
     toxicSpillControlPanel.classList.add("toxicSpillControlPanel");
     var toxicSpillButton = document.createElement("button");
@@ -244,8 +269,9 @@ function buildControlPanels() {
     toxicSpillControlPanel.appendChild(toxicSpillButton);
     $(toxicSpillControlPanel).css({
         'float': 'left',
-        'width': '24%',
-        'marginLeft': 10 + "px"
+        'width': '26%',
+        'marginLeft': 10 + "px",
+        'marginTop': 10 + "px"
     })
     $(toxicSpillButton).css({
         'width': '75px',
@@ -257,7 +283,7 @@ function buildControlPanels() {
     toxicSpillCb.name = "toxicSpillCb";
     toxicSpillCb.value = "value";
     toxicSpillCb.id = "toxicSpillCb";
-    if (localStorage.getItem('RemindSpill') == "Y") {
+    if (remindSpill.search("N") < 0) {
         toxicSpillCb.checked = "Yes";
     } else {
         toxicSpillCb.checked = "";
@@ -276,8 +302,583 @@ function buildControlPanels() {
         'float': 'left',
         'width': '20px'
     })
+    //tinker button
+    var tinkerButton = document.createElement("div");
+    tinkerButton.classList.add("tinkerButton");
+    $(tinkerButton).text("Tinker");
+    toxicSpillControlPanel.appendChild(tinkerButton);
+    $(tinkerButton).css({
+        'width': '30px',
+        'float': 'right',
+        'padding': 3 + 'px',
+        'color': 'rgb(4, 44, 202)',
+        'marginRight': 5 + "px"
+    })
     timerBox.append(toxicSpillControlPanel);
 }
+
+$('.tinkerButton').mouseover(function() {
+    $('.tinkerButton').attr('title', 'Tinker Menu');
+    $('.tinkerButton').css('cursor', 'pointer');
+});
+$(document).on('click', '.tinkerButton', function() {
+    var fg = $('.forbiddenGrove');
+    var bc = $('.balacksCove');
+    var sg = $('.seasonalGarden');
+    var ts = $('.toxicSpill');
+    var tp = $('.tinkerPanel');
+    if (fg.hasClass("hide")) {
+        //show
+        fg.removeClass("hide");
+        bc.removeClass("hide");
+        sg.removeClass("hide");
+        ts.removeClass("hide");
+        tp.addClass("hide");
+        $('.tinkerButton').text("Tinker");
+    } else {
+        //hide
+        fg.addClass("hide");
+        bc.addClass("hide");
+        sg.addClass("hide");
+        ts.addClass("hide");
+        tp.removeClass("hide");
+        $('.tinkerButton').text("Close");
+    }
+});
+
+function buildTinkerPanel() {
+    var timerBox = $(".timerBox");
+    var tinkerPanel = document.createElement("div");
+    tinkerPanel.classList.add("tinkerPanel");
+    tinkerPanel.classList.add("hide");
+    $(tinkerPanel).css({
+        'height': '70%',
+        'width': '99%',
+        'float': 'left',
+        'padding': 2 + "px",
+        'background-image': "url('https://www.toptal.com/designers/subtlepatterns/patterns/interlaced.png')",
+        'border': '1px solid black'
+    });
+    //FG Options
+    const remindGrove = localStorage.getItem('RemindGrove');
+    var forbiddenGroveOptions = document.createElement("div");
+    forbiddenGroveOptions.classList.add("forbiddenGroveOptions");
+    var forbiddenGroveOptionsLabel = document.createElement("div");
+    forbiddenGroveOptionsLabel.classList.add("forbiddenGroveOptionsLabel");
+    var forbiddenGroveOptionsLabelText = document.createTextNode("Forbidden Grove");
+    forbiddenGroveOptionsLabel.appendChild(forbiddenGroveOptionsLabelText);
+    forbiddenGroveOptions.appendChild(forbiddenGroveOptionsLabel);
+    $(forbiddenGroveOptions).css({
+        'float': 'left',
+        'width': '12%',
+    })
+    $(forbiddenGroveOptionsLabel).css({
+        'float': 'left',
+        'width': '100%',
+        'font-weight': 700,
+        "marginRight": "5px"
+    })
+    var forbiddenGroveOpenCb = document.createElement('input');
+    forbiddenGroveOpenCb.type = "checkbox";
+    forbiddenGroveOpenCb.name = "forbiddenGroveOpenCb";
+    forbiddenGroveOpenCb.value = "value";
+    forbiddenGroveOpenCb.id = "forbiddenGroveOpenCb";
+    if (remindGrove.search("O") >= 0) {
+        forbiddenGroveOpenCb.checked = "Yes";
+    } else {
+        forbiddenGroveOpenCb.checked = "";
+    }
+    var forbiddenGroveOpenCbLabel = document.createElement('label')
+    forbiddenGroveOpenCbLabel.htmlFor = "forbiddenGroveOpenCbLabel";
+    forbiddenGroveOpenCbLabel.appendChild(document.createTextNode('Open'));
+    $(forbiddenGroveOpenCbLabel).css({
+        'float': 'left',
+        'width': '30px',
+        'padding': '1px'
+    })
+    $(forbiddenGroveOpenCb).css({
+        'float': 'left',
+        'width': '20px'
+    })
+    forbiddenGroveOptions.appendChild(forbiddenGroveOpenCbLabel);
+    forbiddenGroveOptions.appendChild(forbiddenGroveOpenCb);
+    //
+    var forbiddenGroveCloseCb = document.createElement('input');
+    forbiddenGroveCloseCb.type = "checkbox";
+    forbiddenGroveCloseCb.name = "forbiddenGroveCloseCb";
+    forbiddenGroveCloseCb.value = "value";
+    forbiddenGroveCloseCb.id = "forbiddenGroveCloseCb";
+    if (remindGrove.search("C") >= 0) {
+        forbiddenGroveCloseCb.checked = "Yes";
+    } else {
+        forbiddenGroveCloseCb.checked = "";
+    }
+    var forbiddenGroveCloseCbLabel = document.createElement('label')
+    forbiddenGroveCloseCbLabel.htmlFor = "forbiddenGroveCloseCbLabel";
+    forbiddenGroveCloseCbLabel.appendChild(document.createTextNode('Closed'));
+    $(forbiddenGroveCloseCbLabel).css({
+        'float': 'left',
+        'width': '30px',
+        'padding': '1px'
+    })
+    $(forbiddenGroveCloseCb).css({
+        'float': 'left',
+        'width': '20px'
+    })
+    forbiddenGroveOptions.appendChild(forbiddenGroveCloseCbLabel);
+    forbiddenGroveOptions.appendChild(forbiddenGroveCloseCb);
+    //BC Options
+    const remindCove = localStorage.getItem('RemindCove');
+    var balacksCoveOptions = document.createElement("div");
+    balacksCoveOptions.classList.add("balacksCoveOptions");
+    var balacksCoveOptionsLabel = document.createElement("div");
+    balacksCoveOptionsLabel.classList.add("balacksCoveOptionsLabel");
+    var balacksCoveOptionsLabelText = document.createTextNode("Balack's Cove");
+    balacksCoveOptionsLabel.appendChild(balacksCoveOptionsLabelText);
+    balacksCoveOptions.appendChild(balacksCoveOptionsLabel);
+    $(balacksCoveOptions).css({
+        'float': 'left',
+        'width': '12%',
+    })
+    $(balacksCoveOptionsLabel).css({
+        'float': 'left',
+        'width': '100%',
+        'font-weight': 700,
+        "marginRight": "5px"
+    })
+    var balacksCoveLowCb = document.createElement('input');
+    balacksCoveLowCb.type = "checkbox";
+    balacksCoveLowCb.name = "balacksCoveLowCb";
+    balacksCoveLowCb.value = "value";
+    balacksCoveLowCb.id = "balacksCoveLowCb";
+    if ((remindCove.search("L") >= 0) && (remindCove.search("N") < 0)) {
+        balacksCoveLowCb.checked = "Yes";
+    } else {
+        balacksCoveLowCb.checked = "";
+    }
+    var balacksCoveLowCbLabel = document.createElement('label')
+    balacksCoveLowCbLabel.htmlFor = "balacksCoveLowCbLabel";
+    balacksCoveLowCbLabel.appendChild(document.createTextNode('Low'));
+    $(balacksCoveLowCbLabel).css({
+        'float': 'left',
+        'width': '30px',
+        'padding': '1px'
+    })
+    $(balacksCoveLowCb).css({
+        'float': 'left',
+        'width': '20px'
+    })
+    balacksCoveOptions.appendChild(balacksCoveLowCbLabel);
+    balacksCoveOptions.appendChild(balacksCoveLowCb);
+    //
+    var balacksCoveMidCb = document.createElement('input');
+    balacksCoveMidCb.type = "checkbox";
+    balacksCoveMidCb.name = "balacksCoveMidCb";
+    balacksCoveMidCb.value = "value";
+    balacksCoveMidCb.id = "balacksCoveMidCb";
+    if (remindCove.search("M") >= 0) {
+        balacksCoveMidCb.checked = "Yes";
+    } else {
+        balacksCoveMidCb.checked = "";
+    }
+    var balacksCoveMidCbLabel = document.createElement('label')
+    balacksCoveMidCbLabel.htmlFor = "balacksCoveMidCbLabel";
+    balacksCoveMidCbLabel.appendChild(document.createTextNode('Mid'));
+    $(balacksCoveMidCbLabel).css({
+        'float': 'left',
+        'width': '30px',
+        'padding': '1px'
+    })
+    $(balacksCoveMidCb).css({
+        'float': 'left',
+        'width': '20px'
+    })
+    balacksCoveOptions.appendChild(balacksCoveMidCbLabel);
+    balacksCoveOptions.appendChild(balacksCoveMidCb);
+    //
+    var balacksCoveHighCb = document.createElement('input');
+    balacksCoveHighCb.type = "checkbox";
+    balacksCoveHighCb.name = "balacksCoveHighCb";
+    balacksCoveHighCb.value = "value";
+    balacksCoveHighCb.id = "balacksCoveHighCb";
+    if (remindCove.search("H") >= 0) {
+        balacksCoveHighCb.checked = "Yes";
+    } else {
+        balacksCoveHighCb.checked = "";
+    }
+    var balacksCoveHighCbLabel = document.createElement('label')
+    balacksCoveHighCbLabel.htmlFor = "balacksCoveHighCbLabel";
+    balacksCoveHighCbLabel.appendChild(document.createTextNode('High'));
+    $(balacksCoveHighCbLabel).css({
+        'float': 'left',
+        'width': '30px',
+        'padding': '1px'
+    })
+    $(balacksCoveHighCb).css({
+        'float': 'left',
+        'width': '20px'
+    })
+    balacksCoveOptions.appendChild(balacksCoveHighCbLabel);
+    balacksCoveOptions.appendChild(balacksCoveHighCb);
+    //SG Options
+    const remindGarden = localStorage.getItem('RemindGarden');
+    var seasonalGardenOptions = document.createElement("div");
+    seasonalGardenOptions.classList.add("seasonalGardenOptions");
+    var seasonalGardenOptionsLabel = document.createElement("div");
+    seasonalGardenOptionsLabel.classList.add("seasonalGardenOptionsLabel");
+    var seasonalGardenOptionsLabelText = document.createTextNode("Seasonal Garden");
+    seasonalGardenOptionsLabel.appendChild(seasonalGardenOptionsLabelText);
+    seasonalGardenOptions.appendChild(seasonalGardenOptionsLabel);
+    $(seasonalGardenOptions).css({
+        'float': 'left',
+        'width': '13%',
+    })
+    $(seasonalGardenOptionsLabel).css({
+        'float': 'left',
+        'width': '100%',
+        'font-weight': 700,
+        "marginRight": "5px"
+    })
+    var seasonalGardenFallCb = document.createElement('input');
+    seasonalGardenFallCb.type = "checkbox";
+    seasonalGardenFallCb.name = "seasonalGardenFallCb";
+    seasonalGardenFallCb.value = "value";
+    seasonalGardenFallCb.id = "seasonalGardenFallCb";
+    if (remindGarden.search("F") >= 0) {
+        seasonalGardenFallCb.checked = "Yes";
+    } else {
+        seasonalGardenFallCb.checked = "";
+    }
+    var seasonalGardenFallCbLabel = document.createElement('label')
+    seasonalGardenFallCbLabel.htmlFor = "seasonalGardenFallCbLabel";
+    seasonalGardenFallCbLabel.appendChild(document.createTextNode('Fall'));
+    $(seasonalGardenFallCbLabel).css({
+        'float': 'left',
+        'width': '40px',
+        'padding': '1px',
+    })
+    $(seasonalGardenFallCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "25px"
+    })
+    seasonalGardenOptions.appendChild(seasonalGardenFallCbLabel);
+    seasonalGardenOptions.appendChild(seasonalGardenFallCb);
+    //
+    var seasonalGardenWinterCb = document.createElement('input');
+    seasonalGardenWinterCb.type = "checkbox";
+    seasonalGardenWinterCb.name = "seasonalGardenWinterCb";
+    seasonalGardenWinterCb.value = "value";
+    seasonalGardenWinterCb.id = "seasonalGardenWinterCb";
+    if (remindGarden.search("W") >= 0) {
+        seasonalGardenWinterCb.checked = "Yes";
+    } else {
+        seasonalGardenWinterCb.checked = "";
+    }
+    var seasonalGardenWinterCbLabel = document.createElement('label')
+    seasonalGardenWinterCbLabel.htmlFor = "seasonalGardenWinterCbLabel";
+    seasonalGardenWinterCbLabel.appendChild(document.createTextNode('Winter'));
+    $(seasonalGardenWinterCbLabel).css({
+        'float': 'left',
+        'width': '40px',
+        'padding': '1px'
+    })
+    $(seasonalGardenWinterCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "25px"
+    })
+    seasonalGardenOptions.appendChild(seasonalGardenWinterCbLabel);
+    seasonalGardenOptions.appendChild(seasonalGardenWinterCb);
+    //
+    var seasonalGardenSpringCb = document.createElement('input');
+    seasonalGardenSpringCb.type = "checkbox";
+    seasonalGardenSpringCb.name = "seasonalGardenSpringCb";
+    seasonalGardenSpringCb.value = "value";
+    seasonalGardenSpringCb.id = "seasonalGardenSpringCb";
+    if (remindGarden.search("S") >= 0) {
+        seasonalGardenSpringCb.checked = "Yes";
+    } else {
+        seasonalGardenSpringCb.checked = "";
+    }
+    var seasonalGardenSpringCbLabel = document.createElement('label')
+    seasonalGardenSpringCbLabel.htmlFor = "seasonalGardenSpringCbLabel";
+    seasonalGardenSpringCbLabel.appendChild(document.createTextNode('Spring'));
+    $(seasonalGardenSpringCbLabel).css({
+        'float': 'left',
+        'width': '40px',
+        'padding': '1px'
+    })
+    $(seasonalGardenSpringCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "25px"
+    })
+    seasonalGardenOptions.appendChild(seasonalGardenSpringCbLabel);
+    seasonalGardenOptions.appendChild(seasonalGardenSpringCb);
+    //
+    var seasonalGardenSummerCb = document.createElement('input');
+    seasonalGardenSummerCb.type = "checkbox";
+    seasonalGardenSummerCb.name = "seasonalGardenSummerCb";
+    seasonalGardenSummerCb.value = "value";
+    seasonalGardenSummerCb.id = "seasonalGardenSummerCb";
+    if (remindGarden.search("R") >= 0) {
+        seasonalGardenSummerCb.checked = "Yes";
+    } else {
+        seasonalGardenSummerCb.checked = "";
+    }
+    var seasonalGardenSummerCbLabel = document.createElement('label')
+    seasonalGardenSummerCbLabel.htmlFor = "seasonalGardenSummerCbLabel";
+    seasonalGardenSummerCbLabel.appendChild(document.createTextNode('Summer'));
+    $(seasonalGardenSummerCbLabel).css({
+        'float': 'left',
+        'width': '40px',
+        'padding': '1px'
+    })
+    $(seasonalGardenSummerCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "25px"
+    })
+    seasonalGardenOptions.appendChild(seasonalGardenSummerCbLabel);
+    seasonalGardenOptions.appendChild(seasonalGardenSummerCb);
+    //TS Options
+    const remindSpill = localStorage.getItem('RemindSpill');
+    var toxicSpillOptions = document.createElement("div");
+    toxicSpillOptions.classList.add("toxicSpillOptions");
+    var toxicSpillOptionsLabel = document.createElement("div");
+    toxicSpillOptionsLabel.classList.add("toxicSpillOptionsLabel");
+    var toxicSpillOptionsLabelText = document.createTextNode("Toxic Spill");
+    toxicSpillOptionsLabel.appendChild(toxicSpillOptionsLabelText);
+    toxicSpillOptions.appendChild(toxicSpillOptionsLabel);
+    $(toxicSpillOptions).css({
+        'float': 'left',
+        'width': '18%',
+        'marginLeft': '10px',
+    })
+    $(toxicSpillOptionsLabel).css({
+        'float': 'left',
+        'width': '100%',
+        'font-weight': 700,
+    })
+    var toxicSpillHeroCb = document.createElement('input');
+    toxicSpillHeroCb.type = "checkbox";
+    toxicSpillHeroCb.name = "toxicSpillHeroCb";
+    toxicSpillHeroCb.value = "value";
+    toxicSpillHeroCb.id = "toxicSpillHeroCb";
+    if (remindSpill.search("H") >= 0) {
+        toxicSpillHeroCb.checked = "Yes";
+    } else {
+        toxicSpillHeroCb.checked = "";
+    }
+    var toxicSpillHeroCbLabel = document.createElement('label')
+    toxicSpillHeroCbLabel.htmlFor = "toxicSpillHeroCbLabel";
+    toxicSpillHeroCbLabel.appendChild(document.createTextNode('Hero'));
+    $(toxicSpillHeroCbLabel).css({
+        'float': 'left',
+        'width': '35px',
+        'padding': '1px',
+    })
+    $(toxicSpillHeroCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "5px"
+    })
+    toxicSpillOptions.appendChild(toxicSpillHeroCbLabel);
+    toxicSpillOptions.appendChild(toxicSpillHeroCb);
+    //
+    var toxicSpillKnightCb = document.createElement('input');
+    toxicSpillKnightCb.type = "checkbox";
+    toxicSpillKnightCb.name = "toxicSpillKnightCb";
+    toxicSpillKnightCb.value = "value";
+    toxicSpillKnightCb.id = "toxicSpillKnightCb";
+    if (remindSpill.search("K") >= 0) {
+        toxicSpillKnightCb.checked = "Yes";
+    } else {
+        toxicSpillKnightCb.checked = "";
+    }
+    var toxicSpillKnightCbLabel = document.createElement('label')
+    toxicSpillKnightCbLabel.htmlFor = "toxicSpillKnightCbLabel";
+    toxicSpillKnightCbLabel.appendChild(document.createTextNode('Knight'));
+    $(toxicSpillKnightCbLabel).css({
+        'float': 'left',
+        'width': '35px',
+        'padding': '1px',
+    })
+    $(toxicSpillKnightCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "5px"
+    })
+    toxicSpillOptions.appendChild(toxicSpillKnightCbLabel);
+    toxicSpillOptions.appendChild(toxicSpillKnightCb);
+    //
+    var toxicSpillLordCb = document.createElement('input');
+    toxicSpillLordCb.type = "checkbox";
+    toxicSpillLordCb.name = "toxicSpillLordCb";
+    toxicSpillLordCb.value = "value";
+    toxicSpillLordCb.id = "toxicSpillLordCb";
+    if (remindSpill.search("L") >= 0) {
+        toxicSpillLordCb.checked = "Yes";
+    } else {
+        toxicSpillLordCb.checked = "";
+    }
+    var toxicSpillLordCbLabel = document.createElement('label')
+    toxicSpillLordCbLabel.htmlFor = "toxicSpillLordCbLabel";
+    toxicSpillLordCbLabel.appendChild(document.createTextNode('Lord'));
+    $(toxicSpillLordCbLabel).css({
+        'float': 'left',
+        'width': '35px',
+        'padding': '1px',
+    })
+    $(toxicSpillLordCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "5px"
+    })
+    toxicSpillOptions.appendChild(toxicSpillLordCbLabel);
+    toxicSpillOptions.appendChild(toxicSpillLordCb);
+    //
+    var toxicSpillBaronCb = document.createElement('input');
+    toxicSpillBaronCb.type = "checkbox";
+    toxicSpillBaronCb.name = "toxicSpillBaronCb";
+    toxicSpillBaronCb.value = "value";
+    toxicSpillBaronCb.id = "toxicSpillBaronCb";
+    if (remindSpill.search("B") >= 0) {
+        toxicSpillBaronCb.checked = "Yes";
+    } else {
+        toxicSpillBaronCb.checked = "";
+    }
+    var toxicSpillBaronCbLabel = document.createElement('label')
+    toxicSpillBaronCbLabel.htmlFor = "toxicSpillBaronCbLabel";
+    toxicSpillBaronCbLabel.appendChild(document.createTextNode('Baron'));
+    $(toxicSpillBaronCbLabel).css({
+        'float': 'left',
+        'width': '35px',
+        'padding': '1px',
+    })
+    $(toxicSpillBaronCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "5px"
+    })
+    toxicSpillOptions.appendChild(toxicSpillBaronCbLabel);
+    toxicSpillOptions.appendChild(toxicSpillBaronCb);
+    //
+    var toxicSpillCountCb = document.createElement('input');
+    toxicSpillCountCb.type = "checkbox";
+    toxicSpillCountCb.name = "toxicSpillCountCb";
+    toxicSpillCountCb.value = "value";
+    toxicSpillCountCb.id = "toxicSpillCountCb";
+    if (remindSpill.search("C") >= 0) {
+        toxicSpillCountCb.checked = "Yes";
+    } else {
+        toxicSpillCountCb.checked = "";
+    }
+    var toxicSpillCountCbLabel = document.createElement('label')
+    toxicSpillCountCbLabel.htmlFor = "toxicSpillCountCbLabel";
+    toxicSpillCountCbLabel.appendChild(document.createTextNode('Count'));
+    $(toxicSpillCountCbLabel).css({
+        'float': 'left',
+        'width': '35px',
+        'padding': '1px',
+    })
+    $(toxicSpillCountCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "5px"
+    })
+    toxicSpillOptions.appendChild(toxicSpillCountCbLabel);
+    toxicSpillOptions.appendChild(toxicSpillCountCb);
+    //
+    var toxicSpillDukeCb = document.createElement('input');
+    toxicSpillDukeCb.type = "checkbox";
+    toxicSpillDukeCb.name = "toxicSpillDukeCb";
+    toxicSpillDukeCb.value = "value";
+    toxicSpillDukeCb.id = "toxicSpillDukeCb";
+    if (remindSpill.search("D") >= 0) {
+        toxicSpillDukeCb.checked = "Yes";
+    } else {
+        toxicSpillDukeCb.checked = "";
+    }
+    var toxicSpillDukeCbLabel = document.createElement('label')
+    toxicSpillDukeCbLabel.htmlFor = "toxicSpillDukeCbLabel";
+    toxicSpillDukeCbLabel.appendChild(document.createTextNode('Duke'));
+    $(toxicSpillDukeCbLabel).css({
+        'float': 'left',
+        'width': '35px',
+        'padding': '1px',
+    })
+    $(toxicSpillDukeCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "5px"
+    })
+    toxicSpillOptions.appendChild(toxicSpillDukeCbLabel);
+    toxicSpillOptions.appendChild(toxicSpillDukeCb);
+    //
+    var toxicSpillGrandDukeCb = document.createElement('input');
+    toxicSpillGrandDukeCb.type = "checkbox";
+    toxicSpillGrandDukeCb.name = "toxicSpillGrandDukeCb";
+    toxicSpillGrandDukeCb.value = "value";
+    toxicSpillGrandDukeCb.id = "toxicSpillGrandDukeCb";
+    if (remindSpill.search("G") >= 0) {
+        toxicSpillGrandDukeCb.checked = "Yes";
+    } else {
+        toxicSpillGrandDukeCb.checked = "";
+    }
+    var toxicSpillGrandDukeCbLabel = document.createElement('label')
+    toxicSpillGrandDukeCbLabel.htmlFor = "toxicSpillGrandDukeCbLabel";
+    toxicSpillGrandDukeCbLabel.appendChild(document.createTextNode('GDuke'));
+    $(toxicSpillGrandDukeCbLabel).css({
+        'float': 'left',
+        'width': '35px',
+        'padding': '1px',
+    })
+    $(toxicSpillGrandDukeCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "5px"
+    })
+    toxicSpillOptions.appendChild(toxicSpillGrandDukeCbLabel);
+    toxicSpillOptions.appendChild(toxicSpillGrandDukeCb);
+    //
+    var toxicSpillArchdukeCb = document.createElement('input');
+    toxicSpillArchdukeCb.type = "checkbox";
+    toxicSpillArchdukeCb.name = "toxicSpillArchdukeCb";
+    toxicSpillArchdukeCb.value = "value";
+    toxicSpillArchdukeCb.id = "toxicSpillArchdukeCb";
+    if (remindSpill.search("A") >= 0) {
+        toxicSpillArchdukeCb.checked = "Yes";
+    } else {
+        toxicSpillArchdukeCb.checked = "";
+    }
+    var toxicSpillArchdukeCbLabel = document.createElement('label')
+    toxicSpillArchdukeCbLabel.htmlFor = "toxicSpillArchdukeCbLabel";
+    toxicSpillArchdukeCbLabel.appendChild(document.createTextNode('ADuke'));
+    $(toxicSpillArchdukeCbLabel).css({
+        'float': 'left',
+        'width': '35px',
+        'padding': '1px',
+    })
+    $(toxicSpillArchdukeCb).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "5px"
+    })
+    toxicSpillOptions.appendChild(toxicSpillArchdukeCbLabel);
+    toxicSpillOptions.appendChild(toxicSpillArchdukeCb);
+    //
+    tinkerPanel.appendChild(forbiddenGroveOptions);
+    tinkerPanel.appendChild(balacksCoveOptions);
+    tinkerPanel.appendChild(seasonalGardenOptions);
+    tinkerPanel.appendChild(toxicSpillOptions);
+    //Last
+    timerBox.prepend(tinkerPanel)
+}
+
+
+
 
 function startTimers() {
     localStorage.setItem("mainTimer", 0);
@@ -304,7 +905,7 @@ function buildForbiddenGrove() {
     $(forbiddenGrove).css({
         'border': '1px solid black',
         'width': '21%',
-        'height': '75%',
+        'height': '70%',
         'padding': 2 + "px"
     });
     //Header
@@ -374,6 +975,7 @@ function buildForbiddenGrove() {
 
 function updateForbiddenGroveTimer() {
     if ($(".forbiddenGrove").length < 1) return;
+    const remind = localStorage.getItem('RemindGrove');
     var forbiddenGrove = $(".forbiddenGrove");
     var firstGroveOpen = 1285704000;
     var now = todayNow();
@@ -401,12 +1003,11 @@ function updateForbiddenGroveTimer() {
                 'float': 'right'
             }),
             forbiddenGrove.append($(".forbiddenGroveOpens"))
-        if ((closesHours == 0) && (closesMinutes <= 15) && (localStorage.getItem('RemindGrove') == "Y")) {
+        if ((closesHours == 0) && (closesMinutes <= 15) && (remind.search('O') >= 0) && (remind.search('N') < 0)) {
             if (confirm('The forbidden grove is closing soon, travel there now?') == true) {
                 travelToGrove("skip");
             }
-            localStorage.setItem('RemindGrove', "N")
-            $("#forbiddenGroveCb").prop('checked', false)
+            $("#forbiddenGroveCb").click();
         }
     } else {
         //Closed
@@ -427,22 +1028,141 @@ function updateForbiddenGroveTimer() {
                 'float': 'right'
             }),
             forbiddenGrove.append($(".forbiddenGroveCloses"))
-        if ((opensHours == 0) && (opensMinutes <= 15) && (localStorage.getItem('RemindGrove') == "Y")) {
+        if ((opensHours == 0) && (opensMinutes <= 15) && (remind.search('C') >= 0) && (remind.search('N') < 0)) {
             alert('The forbidden grove is opening soon')
-            localStorage.setItem('RemindGrove', "N")
-            $("#forbiddenGroveCb").prop('checked', false)
+            $("#forbiddenGroveCb").click()
         }
     }
 }
 $(document).on('change', '#forbiddenGroveCb', function() {
     if (this.checked) {
-        localStorage.setItem('RemindGrove', "Y")
         this.checked = "Yes";
     } else {
-        localStorage.setItem('RemindGrove', "N")
         this.checked = "";
     }
+    remindGrove(this.name, this.checked);
 })
+
+$(document).on('change', '#forbiddenGroveOpenCb', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+    remindGrove(this.name, this.checked);
+})
+
+$(document).on('change', '#forbiddenGroveCloseCb', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+    remindGrove(this.name, this.checked);
+})
+
+//if master checked and no other - remind all
+//if master not checked - no reminder
+//if master checked and 1 or more checked - remind the ones checked.
+// N none
+// O open
+// C closed
+function remindGrove(cb, checked) {
+    var main = $('#forbiddenGroveCb');
+    var open = $('#forbiddenGroveOpenCb');
+    var closed = $('#forbiddenGroveCloseCb');
+    const mName = main.prop("name");
+    const oName = open.prop("name");
+    const cName = closed.prop("name");;
+    const mChecked = main.prop("checked");
+    const oChecked = open.prop("checked");
+    const cChecked = closed.prop("checked");
+    //-----------------------------------------------------------------------
+    var remindGrove = localStorage.getItem('RemindGrove')
+    var remindNone = remindGrove.search("N");
+    var remindOpen = remindGrove.search("O");
+    var remindClosed = remindGrove.search("C");
+    //main was checked
+    if ((cb == mName) && (checked == true)) {
+        if ((oChecked == false) && (cChecked == false)) {
+            remindGrove = "CO";
+        } else if ((oChecked == true) && (cChecked == true)) {
+            remindGrove = "CO";
+        } else if ((oChecked == true) && (cChecked == false)) {
+            remindGrove = remindGrove.replace("N", "");
+            if (remindOpen < 0) {
+                remindGrove = remindGrove.concat("O");
+            }
+        } else if ((oChecked == false) && (cChecked == true)) {
+            remindGrove = remindGrove.replace("N", "");
+            if (remindClosed < 0) {
+                remindGrove = remindGrove.concat("C");
+            }
+        }
+        //main was unchecked
+    } else if ((cb == mName) && (checked == false)) {
+        if ((oChecked == false) && (cChecked == false)) {
+            remindGrove = 'N';
+        } else if (remindNone < 0) {
+            remindGrove = remindGrove.concat("N");
+        }
+        //open was checked
+    } else if ((cb == oName) && (checked == true)) {
+        if (mChecked == false) {
+            if (remindOpen < 0) {
+                remindGrove = remindGrove.concat("O");
+            }
+        } else if (cChecked == true) {
+            remindGrove = remindGrove.replace("N", "");
+            if (remindOpen < 0) {
+                remindGrove = remindGrove.concat("O");
+            }
+        } else {
+            remindGrove = "O";
+        }
+        //open was unchecked
+    } else if ((cb == oName) && (checked == false)) {
+        if (mChecked == false) {
+            if (remindOpen >= 0) {
+                remindGrove = remindGrove.replace("O", "");
+            }
+        } else if (cChecked == true) {
+            if (remindOpen >= 0) {
+                remindGrove = remindGrove.replace("O", "");
+            }
+        } else if ((oChecked == false) && (cChecked == false)) {
+            remindGrove = "CO";
+        }
+        //closed was checked
+    } else if ((cb == cName) && (checked == true)) {
+        if (mChecked == false) {
+            if (remindClosed < 0) {
+                remindGrove = remindGrove.concat("C");
+            }
+        } else if (oChecked == true) {
+            remindGrove = remindGrove.replace("N", "");
+            if (remindClosed < 0) {
+                remindGrove = remindGrove.concat("C");
+            }
+        } else {
+            remindGrove = "C";
+        }
+        //closed was unchecked
+    } else if ((cb == cName) && (checked == false)) {
+        if (mChecked == false) {
+            if (remindClosed >= 0) {
+                remindGrove = remindGrove.replace("C", "");
+            }
+        } else if (oChecked == true) {
+            if (remindClosed >= 0) {
+                remindGrove = remindGrove.replace("C", "");
+            }
+        } else if ((oChecked == false) && (cChecked == false)) {
+            remindGrove = "CO";
+        }
+    }
+    localStorage.setItem('RemindGrove', remindGrove)
+}
 
 //====================================== Balacks's Cove ======================================
 function buildBalacksCove() {
@@ -453,7 +1173,7 @@ function buildBalacksCove() {
     $(balacksCove).css({
         'border': '1px solid black',
         'width': '25%',
-        'height': '75%',
+        'height': '70%',
         'padding': 2 + "px"
     });
     //Header
@@ -544,6 +1264,7 @@ function buildBalacksCove() {
 
 function updateBalacksCoveTimer() {
     if ($(".balacksCove").length < 1) return;
+    const remind = localStorage.getItem('RemindCove');
     var balacksCove = $(".balacksCove");
     var firstCoveLow = 1294680060;
     var now = todayNow();
@@ -582,12 +1303,11 @@ function updateBalacksCoveTimer() {
         }
         $(".balacksCoveLowValue").text(formatOutput(0, lowHours, lowMinutes));
         balacksCove.append($(".balacksCoveLow"))
-        if ((midHours == 0) && (midMinutes <= 15) && (localStorage.getItem('RemindCove') == "Y")) {
+        if ((midHours == 0) && (midMinutes <= 15) && (remind.search('M') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be mid tide soon, travel there now?') == true) {
                 travelToCove("skip");
             }
-            localStorage.setItem('RemindCove', "N")
-            $("#balacksCoveCb").prop('checked', false)
+            $("#balacksCoveCb").click()
         }
     } else if ((partialrotation >= 16) && (partialrotation < 17)) {
         //Mid (flooding)
@@ -620,12 +1340,11 @@ function updateBalacksCoveTimer() {
         })
         balacksCove.append($(".balacksCoveMid"))
         balacksCove.append($(".balacksCoveLow"))
-        if ((highHours == 0) && (highMinutes <= 15) && (localStorage.getItem('RemindCove') == "Y")) {
+        if ((highHours == 0) && (highMinutes <= 15) && (remind.search('H') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be high tide soon, travel there now?') == true) {
                 travelToCove("skip");
             }
-            localStorage.setItem('RemindCove', "N")
-            $("#balacksCoveCb").prop('checked', false)
+            $("#balacksCoveCb").click();
         }
     } else if ((partialrotation >= 17) && (partialrotation < 17.6666666667)) {
         //High
@@ -648,12 +1367,11 @@ function updateBalacksCoveTimer() {
         })
         $(".balacksCoveHigh").hide();
         balacksCove.append($(".balacksCoveLow"))
-        if ((midHours == 0) && (midMinutes <= 15) && (localStorage.getItem('RemindCove') == "Y")) {
+        if ((midHours == 0) && (midMinutes <= 15) && (remind.search('M') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be mid tide soon, travel there now?') == true) {
                 travelToCove("skip");
             }
-            localStorage.setItem('RemindCove', "N")
-            $("#balacksCoveCb").prop('checked', false)
+            $("#balacksCoveCb").click();
         }
     } else if (partialrotation >= 17.6666666667) {
         //Mid (ebbing)
@@ -680,25 +1398,211 @@ function updateBalacksCoveTimer() {
             'float': 'right'
         })
         balacksCove.append($(".balacksCoveHigh").show())
-        if ((lowHours == 0) && (lowMinutes <= 15) && (localStorage.getItem('RemindCove') == "Y")) {
+        if ((lowHours == 0) && (lowMinutes <= 15) && (remind.search('L') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be low tide soon, travel there now?') == true) {
                 travelToCove("skip");
             }
-            localStorage.setItem('RemindCove', "N")
-            $("#balacksCoveCb").prop('checked', false)
+            $("#balacksCoveCb").click();
         }
     }
 }
-
 $(document).on('change', '#balacksCoveCb', function() {
     if (this.checked) {
-        localStorage.setItem('RemindCove', "Y")
         this.checked = "Yes";
     } else {
-        localStorage.setItem('RemindCove', "N")
         this.checked = "";
     }
+    remindCove(this.name, this.checked);
 })
+
+$(document).on('change', '#balacksCoveLowCb', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+    remindCove(this.name, this.checked);
+})
+
+$(document).on('change', '#balacksCoveMidCb', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+    remindCove(this.name, this.checked);
+})
+
+$(document).on('change', '#balacksCoveHighCb', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+    remindCove(this.name, this.checked);
+})
+//if master checked and no other - remind all
+//if master not checked - no reminder
+//if master checked and 1 or more checked - remind the ones checked.
+// N none
+// L low
+// M mid
+// H high
+function remindCove(cb, checked) {
+    var main = $('#balacksCoveCb');
+    var low = $('#balacksCoveLowCb');
+    var mid = $('#balacksCoveMidCb');
+    var high = $('#balacksCoveHighCb');
+    const mainName = main.prop("name");
+    const lName = low.prop("name");
+    const mName = mid.prop("name");
+    const hName = high.prop("name");
+    const mainChecked = main.prop("checked");
+    const lChecked = low.prop("checked");
+    const mChecked = mid.prop("checked");
+    const hChecked = high.prop("checked");
+    var remindCove = localStorage.getItem('RemindCove')
+    var remindNone = remindCove.search("N");
+    var remindLow = remindCove.search("L");
+    var remindMid = remindCove.search("M");
+    var remindHigh = remindCove.search("H");
+    //main was checked
+    if ((cb == mainName) && (checked == true)) {
+        if ((lChecked == false) && (mChecked == false) && (hChecked == false)) {
+            remindCove = "LMH";
+        } else if ((lChecked == true) && (mChecked == true) && (hChecked == true)) {
+            remindCove = "LMH";
+        } else if ((lChecked == true) && (mChecked == false) && (hChecked == false)) {
+            remindCove = remindCove.replace("N", "");
+            if (remindLow < 0) {
+                remindCove = remindCove.concat("L");
+            }
+        } else if ((lChecked == false) && (mChecked == true) && (hChecked == false)) {
+            remindCove = remindCove.replace("N", "");
+            if (remindMid < 0) {
+                remindCove = remindCove.concat("M");
+            }
+        } else if ((lChecked == false) && (mChecked == false) && (hChecked == true)) {
+            remindCove = remindCove.replace("N", "");
+            if (remindHigh < 0) {
+                remindCove = remindCove.concat("H");
+            }
+        } else if ((lChecked == true) && (mChecked == true) && (hChecked == false)) {
+            remindCove = remindCove.replace("N", "");
+            if (remindLow < 0) {
+                remindCove = remindCove.concat("L");
+            }
+            if (remindMid < 0) {
+                remindCove = remindCove.concat("M");
+            }
+        } else if ((lChecked == true) && (mChecked == false) && (hChecked == true)) {
+            remindCove = remindCove.replace("N", "");
+            if (remindLow < 0) {
+                remindCove = remindCove.concat("L");
+            }
+            if (remindHigh < 0) {
+                remindCove = remindCove.concat("H");
+            }
+        } else if ((lChecked == false) && (mChecked == true) && (hChecked == true)) {
+            remindCove = remindCove.replace("N", "");
+            if (remindMid < 0) {
+                remindCove = remindCove.concat("M");
+            }
+            if (remindHigh < 0) {
+                remindCove = remindCove.concat("H");
+            }
+        }
+        //main was unchecked
+    } else if ((cb == mainName) && (checked == false)) {
+        if ((lChecked == false) && (mChecked == false) && (hChecked == false)) {
+            remindCove = 'N';
+        } else if (remindNone < 0) {
+            remindCove = remindCove.concat("N");
+        }
+        //low was checked
+    } else if ((cb == lName) && (checked == true)) {
+        if (mainChecked == false) {
+            if (remindLow < 0) {
+                remindCove = remindCove.concat("L");
+            }
+        } else if ((mChecked == true) || (hChecked == true)) {
+            remindCove = remindCove.replace("N", "");
+            if (remindLow < 0) {
+                remindCove = remindCove.concat("L");
+            }
+        } else {
+            remindCove = "L";
+        }
+        //low was unchecked
+    } else if ((cb == lName) && (checked == false)) {
+        if (mainChecked == false) {
+            if (remindLow >= 0) {
+                remindCove = remindCove.replace("L", "");
+            }
+        } else if ((mChecked == true) || (hChecked == true)) {
+            if (remindLow >= 0) {
+                remindCove = remindCove.replace("L", "");
+            }
+        } else if ((mChecked == false) && (hChecked == false)) {
+            remindCove = "LMH";
+        }
+        //mid was checked
+    } else if ((cb == mName) && (checked == true)) {
+        if (mainChecked == false) {
+            if (remindMid < 0) {
+                remindCove = remindCove.concat("M");
+            }
+        } else if ((lChecked == true) || (hChecked == true)) {
+            remindCove = remindCove.replace("N", "");
+            if (remindMid < 0) {
+                remindCove = remindCove.concat("M");
+            }
+        } else {
+            remindCove = "M";
+        }
+        //mid was unchecked
+    } else if ((cb == mName) && (checked == false)) {
+        if (mainChecked == false) {
+            if (remindMid >= 0) {
+                remindCove = remindCove.replace("M", "");
+            }
+        } else if ((lChecked == true) || (hChecked == true)) {
+            if (remindMid >= 0) {
+                remindCove = remindCove.replace("M", "");
+            }
+        } else if ((lChecked == false) && (hChecked == false)) {
+            remindCove = "LMH";
+        }
+        //high was checked
+    } else if ((cb == hName) && (checked == true)) {
+        if (mainChecked == false) {
+            if (remindHigh < 0) {
+                remindCove = remindCove.concat("H");
+            }
+        } else if ((lChecked == true) || (mChecked == true)) {
+            remindCove = remindCove.replace("N", "");
+            if (remindHigh < 0) {
+                remindCove = remindCove.concat("H");
+            }
+        } else {
+            remindCove = "H";
+        }
+        //high was unchecked
+    } else if ((cb == hName) && (checked == false)) {
+        if (mainChecked == false) {
+            if (remindHigh >= 0) {
+                remindCove = remindCove.replace("H", "");
+            }
+        } else if ((lChecked == true) || (mChecked == true)) {
+            if (remindHigh >= 0) {
+                remindCove = remindCove.replace("H", "");
+            }
+        } else if ((lChecked == false) && (mChecked == false)) {
+            remindCove = "LMH";
+        }
+    }
+    localStorage.setItem('RemindCove', remindCove)
+}
 //====================================== Seasonal Garden ======================================
 function buildSeasonalGarden() {
     if ($(".seasonalGarden").length > 0) return;
@@ -708,7 +1612,7 @@ function buildSeasonalGarden() {
     $(seasonalGarden).css({
         'border': '1px solid black',
         'width': '24%',
-        'height': '75%',
+        'height': '70%',
         'padding': 2 + "px"
     });
     //Header
@@ -820,6 +1724,7 @@ function buildSeasonalGarden() {
 function updateSeasonalGardenTimer() {
     if ($(".seasonalGarden").length < 1) return;
     var seasonalGarden = $(".seasonalGarden");
+    const remind = localStorage.getItem('RemindGarden');
     var firstFall = 288000;
     var now = todayNow();
     let timePassedHours = (now - firstFall) / 3600;
@@ -852,12 +1757,11 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenWinter"));
         seasonalGarden.append($(".seasonalGardenSpring"));
         seasonalGarden.append($(".seasonalGardenSummer"));
-        if ((fallObj.hours == 0) && (fallObj.minutes <= 15) && (localStorage.getItem('RemindGarden') == "Y")) {
+        if ((fallObj.hours == 0) && (fallObj.minutes <= 15) && (remind.search('F') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be fall in the garden soon, travel there now?') == true) {
                 travelToGarden("skip");
             }
-            localStorage.setItem('RemindGarden', "N")
-            $("#seasonalGardenCb").prop('checked', false)
+            $("#seasonalGardenCb").click();
         }
     } else if ((partialrotation >= 80) && (partialrotation < 160)) {
         //Fall
@@ -880,12 +1784,11 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenSpring"));
         seasonalGarden.append($(".seasonalGardenSummer"));
         seasonalGarden.append($(".seasonalGardenFall"));
-        if ((winterObj.hours == 0) && (winterObj.minutes <= 15) && (localStorage.getItem('RemindGarden') == "Y")) {
+        if ((winterObj.hours == 0) && (winterObj.minutes <= 15) && (remind.search('W') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be winter in the garden soon, travel there now?') == true) {
                 travelToGarden("skip");
             }
-            localStorage.setItem('RemindGarden', "N")
-            $("#seasonalGardenCb").prop('checked', false)
+            $("#seasonalGardenCb").click();
         }
     } else if ((partialrotation >= 160) && (partialrotation < 240)) {
         //Winter
@@ -908,12 +1811,11 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenSummer"));
         seasonalGarden.append($(".seasonalGardenFall"));
         seasonalGarden.append($(".seasonalGardenWinter"));
-        if ((springObj.hours == 0) && (springObj.minutes <= 15) && (localStorage.getItem('RemindGarden') == "Y")) {
+        if ((springObj.hours == 0) && (springObj.minutes <= 15) && (remind.search('S') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be spring in the garden soon, travel there now?') == true) {
                 travelToGarden("skip");
             }
-            localStorage.setItem('RemindGarden', "N")
-            $("#seasonalGardenCb").prop('checked', false)
+            $("#seasonalGardenCb").click();
         }
     } else {
         //Spring
@@ -936,12 +1838,11 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenFall"));
         seasonalGarden.append($(".seasonalGardenWinter"));
         seasonalGarden.append($(".seasonalGardenSpring"));
-        if ((summerObj.hours == 0) && (summerObj.minutes <= 15) && (localStorage.getItem('RemindGarden') == "Y")) {
+        if ((summerObj.hours == 0) && (summerObj.minutes <= 15) && (remind.search('R') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be summer in the garden soon, travel there now?') == true) {
                 travelToGarden("skip");
             }
-            localStorage.setItem('RemindGarden', "N")
-            $("#seasonalGardenCb").prop('checked', false)
+            $("#seasonalGardenCb").click();
         }
     }
     $(".seasonalGardenFallValue").text(formatOutput(fallObj.days, fallObj.hours, fallObj.minutes));
@@ -969,13 +1870,216 @@ function season(days, hours, minutes) {
 }
 $(document).on('change', '#seasonalGardenCb', function() {
     if (this.checked) {
-        localStorage.setItem('RemindGarden', "Y")
         this.checked = "Yes";
     } else {
-        localStorage.setItem('RemindGarden', "N")
         this.checked = "";
     }
+    remindGarden(this.name, this.checked);
 })
+
+$(document).on('change', '#seasonalGardenFallCb', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+    remindGarden(this.name, this.checked);
+})
+
+$(document).on('change', '#seasonalGardenWinterCb', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+    remindGarden(this.name, this.checked);
+})
+
+$(document).on('change', '#seasonalGardenSpringCb', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+    remindGarden(this.name, this.checked);
+})
+$(document).on('change', '#seasonalGardenSummerCb', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+    remindGarden(this.name, this.checked);
+})
+//if master checked and no other - remind all
+//if master not checked - no reminder
+//if master checked and 1 or more checked - remind the ones checked.
+// N none
+// F Fall
+// W Winter
+// S Spring
+// R Summer
+function remindGarden(cb, checked) {
+    var main = $('#seasonalGardenCb');
+    var fall = $('#seasonalGardenFallCb');
+    var winter = $('#seasonalGardenWinterCb');
+    var spring = $('#seasonalGardenSpringCb');
+    var summer = $('#seasonalGardenSummerCb');
+    const mainName = main.prop("name");
+    const fName = fall.prop("name");
+    const wName = winter.prop("name");
+    const sName = spring.prop("name");
+    const rName = summer.prop("name");
+    const mainChecked = main.prop("checked");
+    const fChecked = fall.prop("checked");
+    const wChecked = winter.prop("checked");
+    const sChecked = spring.prop("checked");
+    const rChecked = summer.prop("checked");
+    var remindGarden = localStorage.getItem('RemindGarden')
+    var remindNone = remindGarden.search("N");
+    var remindFall = remindGarden.search("F");
+    var remindWinter = remindGarden.search("W");
+    var remindSpring = remindGarden.search("S");
+    var remindSummer = remindGarden.search("R");
+    //main was checked
+    if ((cb == mainName) && (checked == true)) {
+        if ((fChecked == false) && (wChecked == false) && (sChecked == false) && (rChecked == false)) {
+            remindGarden = "FWSR";
+        } else if ((fChecked == true) && (wChecked == true) && (sChecked == true) && (rChecked == true)) {
+            remindGarden = "FWSR";
+        } else {
+            remindGarden = remindGarden.replace("N", "");
+            if ((fChecked == true) && (remindFall < 0)) {
+                remindGarden = remindGarden.concat("F");
+            }
+            if ((wChecked == true) && (remindWinter < 0)) {
+                remindGarden = remindGarden.concat("W");
+            }
+            if ((sChecked == true) && (remindSpring < 0)) {
+                remindGarden = remindGarden.concat("S");
+            }
+            if ((rChecked == true) && (remindSummer < 0)) {
+                remindGarden = remindGarden.concat("R");
+            }
+        }
+        //main was unchecked
+    } else if ((cb == mainName) && (checked == false)) {
+        if ((fChecked == false) && (wChecked == false) && (sChecked == false) && (rChecked == false)) {
+            remindGarden = 'N';
+        } else if (remindNone < 0) {
+            remindGarden = remindGarden.concat("N");
+        }
+        //fall was checked
+    } else if ((cb == fName) && (checked == true)) {
+        if (mainChecked == false) {
+            if (remindFall < 0) {
+                remindGarden = remindGarden.concat("F");
+            }
+        } else if ((wChecked == true) || (sChecked == true) || (rChecked == true)) {
+            remindGarden = remindGarden.replace("N", "");
+            if (remindFall < 0) {
+                remindGarden = remindGarden.concat("F");
+            }
+        } else {
+            remindGarden = "F";
+        }
+        //fall was unchecked
+    } else if ((cb == fName) && (checked == false)) {
+        if (mainChecked == false) {
+            if (remindFall >= 0) {
+                remindGarden = remindGarden.replace("F", "");
+            }
+        } else if ((wChecked == false) && (sChecked == false) && (rChecked == false)) {
+            remindGarden = "FWSR";
+        } else {
+            if (remindFall >= 0) {
+                remindGarden = remindGarden.replace("F", "");
+            }
+        }
+        //winter was checked
+    } else if ((cb == wName) && (checked == true)) {
+        if (mainChecked == false) {
+            if (remindWinter < 0) {
+                remindGarden = remindGarden.concat("W");
+            }
+        } else if ((fChecked == true) || (sChecked == true) || (rChecked == true)) {
+            remindGarden = remindGarden.replace("N", "");
+            if (remindWinter < 0) {
+                remindGarden = remindGarden.concat("W");
+            }
+        } else {
+            remindGarden = "W";
+        }
+        //winter was unchecked
+    } else if ((cb == wName) && (checked == false)) {
+        if (mainChecked == false) {
+            if (remindWinter >= 0) {
+                remindGarden = remindGarden.replace("W", "");
+            }
+        } else if ((fChecked == false) && (sChecked == false) && (rChecked == false)) {
+            remindGarden = "FWSR";
+        } else {
+            if (remindWinter >= 0) {
+                remindGarden = remindGarden.replace("F", "");
+            }
+        }
+        //spring was checked
+    } else if ((cb == sName) && (checked == true)) {
+        if (mainChecked == false) {
+            if (remindSpring < 0) {
+                remindGarden = remindGarden.concat("S");
+            }
+        } else if ((fChecked == true) || (wChecked == true) || (rChecked == true)) {
+            remindGarden = remindGarden.replace("N", "");
+            if (remindSpring < 0) {
+                remindGarden = remindGarden.concat("S");
+            }
+        } else {
+            remindGarden = "S";
+        }
+        //Spring was unchecked
+    } else if ((cb == sName) && (checked == false)) {
+        if (mainChecked == false) {
+            if (remindSpring >= 0) {
+                remindGarden = remindGarden.replace("S", "");
+            }
+        } else if ((fChecked == false) && (wChecked == false) && (rChecked == false)) {
+            remindGarden = "FWSR";
+        } else {
+            if (remindSpring >= 0) {
+                remindGarden = remindGarden.replace("S", "");
+            }
+        }
+        //summer was checked
+    } else if ((cb == rName) && (checked == true)) {
+        if (mainChecked == false) {
+            if (remindSummer < 0) {
+                remindGarden = remindGarden.concat("R");
+            }
+        } else if ((fChecked == true) || (wChecked == true) || (sChecked == true)) {
+            remindGarden = remindGarden.replace("N", "");
+            if (remindSpring < 0) {
+                remindGarden = remindGarden.concat("R");
+            }
+        } else {
+            remindGarden = "R";
+        }
+        //summer was unchecked
+    } else if ((cb == rName) && (checked == false)) {
+        if (mainChecked == false) {
+            if (remindSummer >= 0) {
+                remindGarden = remindGarden.replace("R", "");
+            }
+        } else if ((fChecked == false) && (wChecked == false) && (sChecked == false)) {
+            remindGarden = "FWSR";
+        } else {
+            if (remindSummer >= 0) {
+                remindGarden = remindGarden.replace("R", "");
+            }
+        }
+    }
+    localStorage.setItem('RemindGarden', remindGarden)
+}
 //====================================== Toxic Spill ======================================
 function buildToxicSpill() {
     if ($(".toxicSpill").length > 0) return;
@@ -985,7 +2089,7 @@ function buildToxicSpill() {
     $(toxicSpill).css({
         'border': '1px solid black',
         'width': '26%',
-        'height': '75%',
+        'height': '70%',
         'padding': 2 + "px"
     });
     //Header
@@ -1177,6 +2281,7 @@ function buildToxicSpill() {
 function updateToxicSpillTimer() {
     if ($(".toxicSpill").length < 1) return;
     var toxicSpill = $(".toxicSpill");
+    const remind = localStorage.getItem('RemindSpill')
     $(".toxicSpill").children().show();
     var firstHero = 1503597600;
     var now = todayNow();
@@ -1220,12 +2325,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
-        if ((knightObj.hours == 0) && (knightObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+        if ((knightObj.hours == 0) && (knightObj.minutes <= 15) && (remind.search('K') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Knight level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            localStorage.setItem('RemindSpill', "N")
-            $("#toxicSpillCb").prop('checked', false)
+            $("#toxicSpillCb").click();
         }
     } else if (partialrotation >= 15 && partialrotation < 31) {
         //Knight Rising
@@ -1254,12 +2358,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillArchduke").hide();
-        if ((lordObj.hours == 0) && (lordObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+        if ((lordObj.hours == 0) && (lordObj.minutes <= 15) && (remind.search('L') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Lord level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            localStorage.setItem('RemindSpill', "N")
-            $("#toxicSpillCb").prop('checked', false)
+            $("#toxicSpillCb").click();
         }
     } else if (partialrotation >= 31 && partialrotation < 49) {
         //Lord Rising
@@ -1288,12 +2391,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
-        if ((baronObj.hours == 0) && (baronObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+        if ((baronObj.hours == 0) && (baronObj.minutes <= 15) && (remind.search('B') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Baron level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            localStorage.setItem('RemindSpill', "N")
-            $("#toxicSpillCb").prop('checked', false)
+            $("#toxicSpillCb").click();
         }
     } else if (partialrotation >= 49 && partialrotation < 67) {
         //Baron Rising
@@ -1322,12 +2424,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
-        if ((countObj.hours == 0) && (countObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+        if ((countObj.hours == 0) && (countObj.minutes <= 15) && (remind.search('C') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Count level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            localStorage.setItem('RemindSpill', "N")
-            $("#toxicSpillCb").prop('checked', false)
+            $("#toxicSpillCb").click();
         }
     } else if (partialrotation >= 67 && partialrotation < 91) {
         //Count Rising
@@ -1356,12 +2457,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
-        if ((dukeObj.hours == 0) && (dukeObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+        if ((dukeObj.hours == 0) && (dukeObj.minutes <= 15) && (remind.search('D') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Duke level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            localStorage.setItem('RemindSpill', "N")
-            $("#toxicSpillCb").prop('checked', false)
+            $("#toxicSpillCb").click();
         }
     } else if (partialrotation >= 91 && partialrotation < 115) {
         //Duke Rising
@@ -1390,12 +2490,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
-        if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+        if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= 15) && (remind.search('G') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Grand Duke level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            localStorage.setItem('RemindSpill', "N")
-            $("#toxicSpillCb").prop('checked', false)
+            $("#toxicSpillCb").click();
         }
     } else if (partialrotation >= 115 && partialrotation < 139) {
         //Grand Duke Rising
@@ -1424,12 +2523,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
-        if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
-            if (confirm('It will be Grand Duke level soon at the toxic spill, travel there now?') == true) {
+        if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= 15) && (remind.search('A') >= 0) && (remind.search('N') < 0)) {
+            if (confirm('It will be Archduke level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            localStorage.setItem('RemindSpill', "N")
-            $("#toxicSpillCb").prop('checked', false)
+            $("#toxicSpillCb").click();
         }
     } else if (partialrotation >= 139 && partialrotation < 151) {
         //Archduke Rising
@@ -1485,12 +2583,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillArchduke").hide();
-        if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+        if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= 15) && (remind.search('G') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Grand Duke level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            localStorage.setItem('RemindSpill', "N")
-            $("#toxicSpillCb").prop('checked', false)
+            $("#toxicSpillCb").click();
         }
     } else if (partialrotation >= 163 && partialrotation < 187) {
         //Grand Duke Falling
@@ -1519,12 +2616,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
-        if ((dukeObj.hours == 0) && (dukeObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+        if ((dukeObj.hours == 0) && (dukeObj.minutes <= 15) && (remind.search('D') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Duke level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            localStorage.setItem('RemindSpill', "N")
-            $("#toxicSpillCb").prop('checked', false)
+            $("#toxicSpillCb").click();
         }
     } else if (partialrotation >= 187 && partialrotation < 211) {
         //Duke Falling
@@ -1553,12 +2649,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillDuke").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
-        if ((countObj.hours == 0) && (countObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+        if ((countObj.hours == 0) && (countObj.minutes <= 15) && (remind.search('C') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Count level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            localStorage.setItem('RemindSpill', "N")
-            $("#toxicSpillCb").prop('checked', false)
+            $("#toxicSpillCb").click();
         }
     } else if (partialrotation >= 211 && partialrotation < 235) {
         //Count Falling
@@ -1587,12 +2682,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillDuke").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
-        if ((baronObj.hours == 0) && (baronObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+        if ((baronObj.hours == 0) && (baronObj.minutes <= 15) && (remind.search('B') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Baron level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            localStorage.setItem('RemindSpill', "N")
-            $("#toxicSpillCb").prop('checked', false)
+            $("#toxicSpillCb").click();
         }
     } else if (partialrotation >= 235 && partialrotation < 253) {
         //Baron Falling
@@ -1621,12 +2715,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillDuke").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
-        if ((lordObj.hours == 0) && (lordObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+        if ((lordObj.hours == 0) && (lordObj.minutes <= 15) && (remind.search('L') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Lord level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            localStorage.setItem('RemindSpill', "N")
-            $("#toxicSpillCb").prop('checked', false)
+            $("#toxicSpillCb").click();
         }
     } else if (partialrotation >= 253 && partialrotation < 271) {
         //Lord Falling
@@ -1655,12 +2748,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillDuke").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
-        if ((knightObj.hours == 0) && (knightObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+        if ((knightObj.hours == 0) && (knightObj.minutes <= 15) && (remind.search('K') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Knight level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            localStorage.setItem('RemindSpill', "N")
-            $("#toxicSpillCb").prop('checked', false)
+            $("#toxicSpillCb").click();
         }
     } else if (partialrotation >= 271 && partialrotation < 287) {
         //Knight Falling
@@ -1689,12 +2781,11 @@ function updateToxicSpillTimer() {
         $(".toxicSpillDuke").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
-        if ((heroObj.hours == 0) && (heroObj.minutes <= 15) && (localStorage.getItem('RemindSpill') == "Y")) {
+        if ((heroObj.hours == 0) && (heroObj.minutes <= 15) && (remind.search('H') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Hero level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            localStorage.setItem('RemindSpill', "N")
-            $("#toxicSpillCb").prop('checked', false)
+            $("#toxicSpillCb").click();
         }
     } else if (partialrotation >= 287 && partialrotation < 302) {
         //Hero Falling
@@ -1766,16 +2857,391 @@ function spillLevel(days, hours, minutes) {
     this.hours = hours;
     this.minutes = minutes;
 }
-
 $(document).on('change', '#toxicSpillCb', function() {
     if (this.checked) {
-        localStorage.setItem('RemindSpill', "Y")
         this.checked = "Yes";
     } else {
-        localStorage.setItem('RemindSpill', "N")
         this.checked = "";
     }
+    remindSpill(this.name, this.checked);
 })
+
+$(document).on('change', '#toxicSpillHeroCb', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+    remindSpill(this.name, this.checked);
+})
+
+$(document).on('change', '#toxicSpillKnightCb', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+    remindSpill(this.name, this.checked);
+})
+
+$(document).on('change', '#toxicSpillLordCb', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+    remindSpill(this.name, this.checked);
+})
+$(document).on('change', '#toxicSpillBaronCb', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+    remindSpill(this.name, this.checked);
+})
+$(document).on('change', '#toxicSpillCountCb', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+    remindSpill(this.name, this.checked);
+})
+$(document).on('change', '#toxicSpillDukeCb', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+    remindSpill(this.name, this.checked);
+})
+$(document).on('change', '#toxicSpillGrandDukeCb', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+    remindSpill(this.name, this.checked);
+})
+$(document).on('change', '#toxicSpillArchdukeCb', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+    } else {
+        this.checked = "";
+    }
+    remindSpill(this.name, this.checked);
+})
+//if master checked and no other - remind all
+//if master not checked - no reminder
+//if master checked and 1 or more checked - remind the ones checked.
+// N none
+// H Hero
+// K Knight
+// L Lord
+// B Baron
+// C Count
+// D Duke
+// G Grand Duke
+// A Archduke
+function remindSpill(cb, checked) {
+    var main = $('#toxicSpillCb');
+    var hero = $('#toxicSpillHeroCb');
+    var knight = $('#toxicSpillKnightCb');
+    var lord = $('#toxicSpillLordCb');
+    var baron = $('#toxicSpillBaronCb');
+    var count = $('#toxicSpillCountCb');
+    var duke = $('#toxicSpillDukeCb');
+    var gduke = $('#toxicSpillGrandDukeCb');
+    var aduke = $('#toxicSpillArchdukeCb');
+    const mainName = main.prop("name");
+    const hName = hero.prop("name");
+    const kName = knight.prop("name");
+    const lName = lord.prop("name");
+    const bName = baron.prop("name");
+    const cName = count.prop("name");
+    const dName = duke.prop("name");
+    const gName = gduke.prop("name");
+    const aName = aduke.prop("name");
+    const mainChecked = main.prop("checked");
+    const hChecked = hero.prop("checked");
+    const kChecked = knight.prop("checked");
+    const lChecked = lord.prop("checked");
+    const bChecked = baron.prop("checked");
+    const cChecked = count.prop("checked");
+    const dChecked = duke.prop("checked");
+    const gChecked = gduke.prop("checked");
+    const aChecked = aduke.prop("checked");
+    var remindSpill = localStorage.getItem('RemindSpill')
+    var remindNone = remindSpill.search("N");
+    var remindHero = remindSpill.search("H");
+    var remindKnight = remindSpill.search("K");
+    var remindLord = remindSpill.search("L");
+    var remindBaron = remindSpill.search("B");
+    var remindCount = remindSpill.search("C");
+    var remindDuke = remindSpill.search("D");
+    var remindGduke = remindSpill.search("G");
+    var remindAduke = remindSpill.search("A");
+    //main was checked
+    if ((cb == mainName) && (checked == true)) {
+        if ((hChecked == false) && (kChecked == false) && (lChecked == false) && (bChecked == false) && (cChecked == false) && (dChecked == false) && (gChecked == false) && (aChecked == false)) {
+            remindSpill = "HKLBCDGA";
+        } else if ((hChecked == true) && (kChecked == true) && (lChecked == true) && (bChecked == true) && (cChecked == true) && (dChecked == true) && (gChecked == true) && (aChecked == true)) {
+            remindSpill = "HKLBCDGA";
+        } else {
+            remindSpill = remindSpill.replace("N", "");
+            if ((hChecked == true) && (remindHero < 0)) {
+                remindSpill = remindSpill.concat("H");
+            }
+            if ((kChecked == true) && (remindKnight < 0)) {
+                remindSpill = remindSpill.concat("K");
+            }
+            if ((lChecked == true) && (remindLord < 0)) {
+                remindSpill = remindSpill.concat("L");
+            }
+            if ((bChecked == true) && (remindBaron < 0)) {
+                remindSpill = remindSpill.concat("B");
+            }
+            if ((cChecked == true) && (remindCount < 0)) {
+                remindSpill = remindSpill.concat("C");
+            }
+            if ((dChecked == true) && (remindDuke < 0)) {
+                remindSpill = remindSpill.concat("G");
+            }
+            if ((gChecked == true) && (remindGduke < 0)) {
+                remindSpill = remindSpill.concat("G");
+            }
+            if ((aChecked == true) && (remindAduke < 0)) {
+                remindSpill = remindSpill.concat("A");
+            }
+        }
+        //main was unchecked
+    } else if ((cb == mainName) && (checked == false)) {
+        if ((hChecked == false) && (kChecked == false) && (lChecked == false) && (bChecked == false) && (cChecked == false) && (dChecked == false) && (gChecked == false) && (aChecked == false)) {
+            remindSpill = 'N';
+        } else if (remindNone < 0) {
+            remindSpill = remindSpill.concat("N");
+        }
+        //hero was checked
+    } else if ((cb == hName) && (checked == true)) {
+        if (mainChecked == false) {
+            if (remindHero < 0) {
+                remindSpill = remindSpill.concat("H");
+            }
+        } else if ((kChecked == true) || (lChecked == true) || (bChecked == true) || (cChecked == true) || (dChecked == true) || (gChecked == true) || (aChecked == true)) {
+            remindSpill = remindSpill.replace("N", "");
+            if (remindHero < 0) {
+                remindSpill = remindSpill.concat("H");
+            }
+        } else {
+            remindSpill = "H";
+        }
+        //hero was unchecked
+    } else if ((cb == hName) && (checked == false)) {
+        if (mainChecked == false) {
+            if (remindHero >= 0) {
+                remindSpill = remindSpill.replace("H", "");
+            }
+        } else if ((kChecked == false) && (lChecked == false) && (bChecked == false) && (cChecked == false) && (dChecked == false) && (gChecked == false) && (aChecked == false)) {
+            remindSpill = "HKLBCDGA";
+        } else {
+            if (remindHero >= 0) {
+                remindSpill = remindSpill.replace("H", "");
+            }
+        }
+        //knight was checked
+    } else if ((cb == kName) && (checked == true)) {
+        if (mainChecked == false) {
+            if (remindKnight < 0) {
+                remindSpill = remindSpill.concat("K");
+            }
+        } else if ((hChecked == true) || (lChecked == true) || (bChecked == true) || (cChecked == true) || (dChecked == true) || (gChecked == true) || (aChecked == true)) {
+            remindSpill = remindSpill.replace("N", "");
+            if (remindKnight < 0) {
+                remindSpill = remindSpill.concat("K");
+            }
+        } else {
+            remindSpill = "K";
+        }
+        //knight was unchecked
+    } else if ((cb == kName) && (checked == false)) {
+        if (mainChecked == false) {
+            if (remindKnight >= 0) {
+                remindSpill = remindSpill.replace("K", "");
+            }
+        } else if ((hChecked == false) && (lChecked == false) && (bChecked == false) && (cChecked == false) && (dChecked == false) && (gChecked == false) && (aChecked == false)) {
+            remindSpill = "HKLBCDGA";
+        } else {
+            if (remindKnight >= 0) {
+                remindSpill = remindSpill.replace("K", "");
+            }
+        }
+        //lord was checked
+    } else if ((cb == lName) && (checked == true)) {
+        if (mainChecked == false) {
+            if (remindLord < 0) {
+                remindSpill = remindSpill.concat("L");
+            }
+        } else if ((hChecked == true) || (kChecked == true) || (bChecked == true) || (cChecked == true) || (dChecked == true) || (gChecked == true) || (aChecked == true)) {
+            remindSpill = remindSpill.replace("N", "");
+            if (remindLord < 0) {
+                remindSpill = remindSpill.concat("L");
+            }
+        } else {
+            remindSpill = "L";
+        }
+        //lord was unchecked
+    } else if ((cb == lName) && (checked == false)) {
+        if (mainChecked == false) {
+            if (remindLord >= 0) {
+                remindSpill = remindSpill.replace("L", "");
+            }
+        } else if ((hChecked == false) && (kChecked == false) && (bChecked == false) && (cChecked == false) && (dChecked == false) && (gChecked == false) && (aChecked == false)) {
+            remindSpill = "HKLBCDGA";
+        } else {
+            if (remindLord >= 0) {
+                remindSpill = remindSpill.replace("L", "");
+            }
+        }
+        //baron was checked
+    } else if ((cb == bName) && (checked == true)) {
+        if (mainChecked == false) {
+            if (remindBaron < 0) {
+                remindSpill = remindSpill.concat("B");
+            }
+        } else if ((hChecked == true) || (kChecked == true) || (lChecked == true) || (cChecked == true) || (dChecked == true) || (gChecked == true) || (aChecked == true)) {
+            remindSpill = remindSpill.replace("N", "");
+            if (remindBaron < 0) {
+                remindSpill = remindSpill.concat("B");
+            }
+        } else {
+            remindSpill = "B";
+        }
+        //baron was unchecked
+    } else if ((cb == bName) && (checked == false)) {
+        if (mainChecked == false) {
+            if (remindBaron >= 0) {
+                remindSpill = remindSpill.replace("B", "");
+            }
+        } else if ((hChecked == false) && (kChecked == false) && (lChecked == false) && (cChecked == false) && (dChecked == false) && (gChecked == false) && (aChecked == false)) {
+            remindSpill = "HKLBCDGA";
+        } else {
+            if (remindBaron >= 0) {
+                remindSpill = remindSpill.replace("B", "");
+            }
+        }
+        //count was checked
+    } else if ((cb == cName) && (checked == true)) {
+        if (mainChecked == false) {
+            if (remindCount < 0) {
+                remindSpill = remindSpill.concat("C");
+            }
+        } else if ((hChecked == true) || (kChecked == true) || (lChecked == true) || (bChecked == true) || (dChecked == true) || (gChecked == true) || (aChecked == true)) {
+            remindSpill = remindSpill.replace("N", "");
+            if (remindCount < 0) {
+                remindSpill = remindSpill.concat("C");
+            }
+        } else {
+            remindSpill = "C";
+        }
+        //count was unchecked
+    } else if ((cb == cName) && (checked == false)) {
+        if (mainChecked == false) {
+            if (remindCount >= 0) {
+                remindSpill = remindSpill.replace("C", "");
+            }
+        } else if ((hChecked == false) && (kChecked == false) && (lChecked == false) && (bChecked == false) && (dChecked == false) && (gChecked == false) && (aChecked == false)) {
+            remindSpill = "HKLBCDGA";
+        } else {
+            if (remindCount >= 0) {
+                remindSpill = remindSpill.replace("C", "");
+            }
+        }
+        //duke was checked
+    } else if ((cb == dName) && (checked == true)) {
+        if (mainChecked == false) {
+            if (remindDuke < 0) {
+                remindSpill = remindSpill.concat("D");
+            }
+        } else if ((hChecked == true) || (kChecked == true) || (lChecked == true) || (bChecked == true) || (cChecked == true) || (gChecked == true) || (aChecked == true)) {
+            remindSpill = remindSpill.replace("N", "");
+            if (remindDuke < 0) {
+                remindSpill = remindSpill.concat("D");
+            }
+        } else {
+            remindSpill = "D";
+        }
+        //duke was unchecked
+    } else if ((cb == dName) && (checked == false)) {
+        if (mainChecked == false) {
+            if (remindDuke >= 0) {
+                remindSpill = remindSpill.replace("D", "");
+            }
+        } else if ((hChecked == false) && (kChecked == false) && (lChecked == false) && (bChecked == false) && (cChecked == false) && (gChecked == false) && (aChecked == false)) {
+            remindSpill = "HKLBCDGA";
+        } else {
+            if (remindDuke >= 0) {
+                remindSpill = remindSpill.replace("D", "");
+            }
+        }
+        //grand duke was checked
+    } else if ((cb == gName) && (checked == true)) {
+        if (mainChecked == false) {
+            if (remindGduke < 0) {
+                remindSpill = remindSpill.concat("G");
+            }
+        } else if ((hChecked == true) || (kChecked == true) || (lChecked == true) || (bChecked == true) || (cChecked == true) || (dChecked == true) || (aChecked == true)) {
+            remindSpill = remindSpill.replace("N", "");
+            if (remindGduke < 0) {
+                remindSpill = remindSpill.concat("G");
+            }
+        } else {
+            remindSpill = "G";
+        }
+        //grand duke was unchecked
+    } else if ((cb == gName) && (checked == false)) {
+        if (mainChecked == false) {
+            if (remindGduke >= 0) {
+                remindSpill = remindSpill.replace("G", "");
+            }
+        } else if ((hChecked == false) && (kChecked == false) && (lChecked == false) && (bChecked == false) && (cChecked == false) && (dChecked == false) && (aChecked == false)) {
+            remindSpill = "HKLBCDGA";
+        } else {
+            if (remindGduke >= 0) {
+                remindSpill = remindSpill.replace("G", "");
+            }
+        }
+        //archduke was checked
+    } else if ((cb == aName) && (checked == true)) {
+        if (mainChecked == false) {
+            if (remindAduke < 0) {
+                remindSpill = remindSpill.concat("A");
+            }
+        } else if ((hChecked == true) || (kChecked == true) || (lChecked == true) || (bChecked == true) || (cChecked == true) || (dChecked == true) || (gChecked == true)) {
+            remindSpill = remindSpill.replace("N", "");
+            if (remindGduke < 0) {
+                remindSpill = remindSpill.concat("A");
+            }
+        } else {
+            remindSpill = "G";
+        }
+        //archduke was unchecked
+    } else if ((cb == gName) && (checked == false)) {
+        if (mainChecked == false) {
+            if (remindGduke >= 0) {
+                remindSpill = remindSpill.replace("A", "");
+            }
+        } else if ((hChecked == false) && (kChecked == false) && (lChecked == false) && (bChecked == false) && (cChecked == false) && (dChecked == false) && (gChecked == false)) {
+            remindSpill = "HKLBCDGA";
+        } else {
+            if (remindAduke >= 0) {
+                remindSpill = remindSpill.replace("A", "");
+            }
+        }
+    }
+    localStorage.setItem('RemindSpill', remindSpill)
+}
+
 //============================================================================================
 function todayNow() {
     var today = new Date();
