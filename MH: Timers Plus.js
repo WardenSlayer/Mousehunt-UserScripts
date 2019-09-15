@@ -3,6 +3,7 @@
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
 // @version      1.3.9
+=======
 // @description  Handy script to keep track of the various MH location timers
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -1748,10 +1749,10 @@ function updateSeasonalGardenTimer() {
         winterObj = convertToDyHrMn(fallObj.days + 3, fallObj.hours + 8, fallObj.minutes);
         springObj = convertToDyHrMn(winterObj.days + 3, winterObj.hours + 8, winterObj.minutes)
         summerObj = convertToDyHrMn(springObj.days + 3, springObj.hours + 8, springObj.minutes);
-        $(".seasonalGardenFallLabel").text("Next Summer in:")
+        $(".seasonalGardenFallLabel").text("Fall in:")
         $(".seasonalGardenWinterLabel").text("Winter in:")
         $(".seasonalGardenSpringLabel").text("Spring in:")
-        $(".seasonalGardenSummerLabel").text("Summer in:")
+        $(".seasonalGardenSummerLabel").text("Next Summer in:")
         seasonalGarden.append($(".seasonalGardenFall"));
         seasonalGarden.append($(".seasonalGardenWinter"));
         seasonalGarden.append($(".seasonalGardenSpring"));
@@ -3249,11 +3250,15 @@ function todayNow() {
 }
 
 function convertToDyHrMn(days, hours, minutes) {
+    if (minutes == 60) {
+       hours++;
+       minutes = 0;
+    }
     if (hours >= 24) {
         var daysExact = hours / 24;
         var daysTrunc = Math.floor(daysExact);
         var partialDays = daysExact - daysTrunc;
-        hours = Math.floor(partialDays * 24);
+        hours = Math.round(partialDays * 24);
         days = daysTrunc + days;
     }
     return {
