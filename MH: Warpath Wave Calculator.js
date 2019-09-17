@@ -2,7 +2,7 @@
 // @name         MH: Warpath Wave Calculator
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.1
+// @version      1.1.1
 // @description  Keeps track of remaining wave mice to help you manage the wave.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -51,6 +51,7 @@ function updateWave() {
     var streakedM = 0;
     var streakedF = 0;
     var retreatText = "";
+    var resultString = "";
     var streak = parseInt($('.warpathHUD-streak-quantity').text(), 10)
     if ($('.warpathHUD.showPortal.wave_1').get(0)) {
         wave = 1;
@@ -169,7 +170,11 @@ function updateWave() {
         const plus = "+";
         highLow = plus.concat(highLow);
     }
-    var resultString = "Wave commander cutoff: " + waveRetreat + "\nMice left after commander: " + (totalRemaining - streaked) + " (" + highLow + ")";
+    if (retreatText == "Retreated") {
+        resultString = "The commnders have retreated";
+    } else {
+        resultString = "Wave commander cutoff: " + waveRetreat + "\nMice left after commander: " + (totalRemaining - streaked) + " (" + highLow + ")";
+    }
     return resultString
 }
 $('.warpathHUD-moraleBar.mousehuntTooltipParent').mouseover(function() {
