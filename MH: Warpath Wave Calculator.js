@@ -2,8 +2,8 @@
 // @name         MH: Warpath Wave Calculator
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.0
-// @description  Keeps track of reamining wave mice to help you manage the wave.
+// @version      1.1
+// @description  Keeps track of remaining wave mice to help you manage the wave.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
 // @include      https://www.mousehuntgame.com/*
