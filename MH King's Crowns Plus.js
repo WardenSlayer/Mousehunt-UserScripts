@@ -2,7 +2,7 @@
 // @name         MH King's Crowns+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.7.4
+// @version      1.7.5
 // @description  Locked Favorites, Community Ranks, and Copy Crowns Button
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -10,7 +10,6 @@
 // @grant GM_setClipboard
 // ==/UserScript==
 $(document).ready(function() {
-    console.log("King's Crown+");
     var observer = new MutationObserver(callback);
     var observerOptions = {
         childList: true,
