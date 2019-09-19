@@ -2,8 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.3.9
-=======
+// @version      1.3.10
 // @description  Handy script to keep track of the various MH location timers
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -11,7 +10,6 @@
 // @grant GM_setClipboard
 // ==/UserScript==
 $(document).ready(function() {
-    console.log("MH Timers+");
     buildTimerBox();
     buildControlPanels();
     buildTinkerPanel();
@@ -869,10 +867,196 @@ function buildTinkerPanel() {
     toxicSpillOptions.appendChild(toxicSpillArchdukeCbLabel);
     toxicSpillOptions.appendChild(toxicSpillArchdukeCb);
     //
+    //Timer Options
+    //const remindGrove = localStorage.getItem('RemindGrove');
+    var timerOptions = document.createElement("div");
+    timerOptions.classList.add("timerOptions");
+    var timerOptionsLabel = document.createElement("div");
+    timerOptionsLabel.classList.add("timerOptionsLabel");
+    var timerOptionsLabelText = document.createTextNode("Timer Options");
+    timerOptionsLabel.appendChild(timerOptionsLabelText);
+    timerOptions.appendChild(timerOptionsLabel);
+    $(timerOptions).css({
+        'float': 'left',
+        'width': '40%',
+    })
+    $(timerOptionsLabel).css({
+        'float': 'left',
+        'width': '100%',
+        'font-weight': 700,
+        "marginRight": "5px"
+    })
+    var timerOptionsUpdate = document.createElement("div");
+    timerOptionsUpdate.classList.add("timerOptionsUpdate");
+    var timerOptionsUpdateLabel = document.createElement("div");
+    timerOptionsUpdateLabel.classList.add("timerOptionsUpdateLabel");
+    var timerOptionsUpdateLabelText = document.createTextNode('Update Interval (min)');
+    $(timerOptionsUpdate).css({
+        'float': 'left',
+        'width': '100%',
+        'vertical-align': 'middle',
+        'margin-bottom': '3px'
+    })
+    $(timerOptionsUpdateLabel).css({
+        'float': 'left',
+        'width': '40%',
+        'vertical-align': 'middle',
+    })
+    timerOptionsUpdateLabel.appendChild(timerOptionsUpdateLabelText);
+    timerOptionsUpdate.appendChild(timerOptionsUpdateLabel)
+    //Timer  Interval
+    var timerOptionsUpdateRadioA = document.createElement('input');
+    timerOptionsUpdateRadioA.type = "radio";
+    timerOptionsUpdateRadioA.name = "timerOptionsUpdateRadioA";
+    timerOptionsUpdateRadioA.value = "value";
+    timerOptionsUpdateRadioA.id = "timerOptionsUpdateRadioA";
+    var timerOptionsUpdateRadioALabel = document.createElement('label')
+    timerOptionsUpdateRadioALabel.htmlFor = "timerOptionsUpdateRadioLabel";
+    timerOptionsUpdateRadioALabel.appendChild(document.createTextNode('1'));
+    $(timerOptionsUpdateRadioALabel).css({
+        'float': 'left',
+        'width': '10px',
+        'vertical-align': 'middle'
+    })
+    $(timerOptionsUpdateRadioA).css({
+        'float': 'left',
+        'width': '15px',
+        'vertical-align': 'middle'
+    })
+    timerOptionsUpdate.appendChild(timerOptionsUpdateRadioA);
+    timerOptionsUpdate.appendChild(timerOptionsUpdateRadioALabel);
+    //
+    var timerOptionsUpdateRadioB = document.createElement('input');
+    timerOptionsUpdateRadioB .type = "radio";
+    timerOptionsUpdateRadioB .name = "timerOptionsUpdateRadioB";
+    timerOptionsUpdateRadioB .value = "value";
+    timerOptionsUpdateRadioB .id = "timerOptionsUpdateRadioB";
+    var timerOptionsUpdateRadioBLabel = document.createElement('label')
+    timerOptionsUpdateRadioBLabel.htmlFor = "timerOptionsUpdateRadioBLabel";
+    timerOptionsUpdateRadioBLabel.appendChild(document.createTextNode('5'));
+    $(timerOptionsUpdateRadioBLabel).css({
+        'float': 'left',
+        'width': '10px',
+        'vertical-align': 'middle'
+    })
+    $(timerOptionsUpdateRadioB).css({
+        'float': 'left',
+        'width': '15px',
+        'vertical-align': 'middle'
+    })
+    timerOptionsUpdate.appendChild(timerOptionsUpdateRadioB);
+    timerOptionsUpdate.appendChild(timerOptionsUpdateRadioBLabel);
+    //
+    var timerOptionsUpdateRadioC = document.createElement('input');
+    timerOptionsUpdateRadioC.type = "radio";
+    timerOptionsUpdateRadioC.name = "timerOptionsUpdateRadioC";
+    timerOptionsUpdateRadioC.value = "value";
+    timerOptionsUpdateRadioC.id = "timerOptionsUpdateRadioC";
+    var timerOptionsUpdateRadioCLabel = document.createElement('label')
+    timerOptionsUpdateRadioCLabel.htmlFor = "timerOptionsUpdateRadioCLabel";
+    timerOptionsUpdateRadioCLabel.appendChild(document.createTextNode('15'));
+    $(timerOptionsUpdateRadioCLabel).css({
+        'float': 'left',
+        'width': '10px',
+        'vertical-align': 'middle'
+    })
+    $(timerOptionsUpdateRadioC).css({
+        'float': 'left',
+        'width': '15px',
+        'vertical-align': 'middle'
+    })
+    timerOptionsUpdate.appendChild(timerOptionsUpdateRadioC);
+    timerOptionsUpdate.appendChild(timerOptionsUpdateRadioCLabel);
+    timerOptions.appendChild(timerOptionsUpdate);
+    //Reminder Window
+    var timerOptionsWindow = document.createElement("div");
+    timerOptionsWindow.classList.add("timerOptionsWindow");
+    var timerOptionsWindowLabel = document.createElement("div");
+    timerOptionsWindowLabel.classList.add("timerOptionsWindowLabel");
+    var timerOptionsWindowLabelText = document.createTextNode('Remind Me Within (min)');
+    $(timerOptionsWindow).css({
+        'float': 'left',
+        'width': '100%',
+        'vertical-align': 'middle',
+        'margin-bottom': '3px'
+    })
+    $(timerOptionsWindowLabel).css({
+        'float': 'left',
+        'width': '40%',
+        'vertical-align': 'middle'
+    })
+    timerOptionsWindowLabel.appendChild(timerOptionsWindowLabelText);
+    timerOptionsWindow.appendChild(timerOptionsWindowLabel);
+    var timerOptionsWindowRadioA = document.createElement('input');
+    timerOptionsWindowRadioA.type = "radio";
+    timerOptionsWindowRadioA.name = "timerOptionsWindowRadioA";
+    timerOptionsWindowRadioA.value = "value";
+    timerOptionsWindowRadioA.id = "timerOptionsWindowRadioA";
+    var timerOptionsWindowRadioALabel = document.createElement('label')
+    timerOptionsWindowRadioALabel.htmlFor = "timerOptionsWindowRadioALabel";
+    timerOptionsWindowRadioALabel.appendChild(document.createTextNode('5'));
+    $(timerOptionsWindowRadioALabel).css({
+        'float': 'left',
+        'width': '10px',
+        'vertical-align': 'middle'
+    })
+    $(timerOptionsWindowRadioA).css({
+        'float': 'left',
+        'width': '15px',
+        'vertical-align': 'middle'
+    })
+    timerOptionsWindow.appendChild(timerOptionsWindowRadioA);
+    timerOptionsWindow.appendChild(timerOptionsWindowRadioALabel);
+    //
+    var timerOptionsWindowRadioB = document.createElement('input');
+    timerOptionsWindowRadioB .type = "radio";
+    timerOptionsWindowRadioB .name = "timerOptionsWindowRadioB";
+    timerOptionsWindowRadioB .value = "value";
+    timerOptionsWindowRadioB .id = "timerOptionsWindowRadioB";
+    var timerOptionsWindowRadioBLabel = document.createElement('label')
+    timerOptionsWindowRadioBLabel.htmlFor = "timerOptionsWindowRadioBLabel";
+    timerOptionsWindowRadioBLabel.appendChild(document.createTextNode('10'));
+    $(timerOptionsWindowRadioBLabel).css({
+        'float': 'left',
+        'width': '10px',
+        'vertical-align': 'middle'
+    })
+    $(timerOptionsWindowRadioB).css({
+        'float': 'left',
+        'width': '15px',
+        'vertical-align': 'middle'
+    })
+    timerOptionsWindow.appendChild(timerOptionsWindowRadioB);
+    timerOptionsWindow.appendChild(timerOptionsWindowRadioBLabel);
+    //
+    var timerOptionsWindowRadioC = document.createElement('input');
+    timerOptionsWindowRadioC.type = "radio";
+    timerOptionsWindowRadioC.name = "timerOptionsWindowRadioC";
+    timerOptionsWindowRadioC.value = "value";
+    timerOptionsWindowRadioC.id = "timerOptionsWindowRadioC";
+    var timerOptionsWindowRadioCLabel = document.createElement('label')
+    timerOptionsWindowRadioCLabel.htmlFor = "timerOptionsWindowRadioCLabel";
+    timerOptionsWindowRadioCLabel.appendChild(document.createTextNode('15'));
+    $(timerOptionsWindowRadioCLabel).css({
+        'float': 'left',
+        'width': '10px',
+        'vertical-align': 'middle'
+    })
+    $(timerOptionsWindowRadioC).css({
+        'float': 'left',
+        'width': '15px',
+        'vertical-align': 'middle'
+    })
+    timerOptionsWindow.appendChild(timerOptionsWindowRadioC);
+    timerOptionsWindow.appendChild(timerOptionsWindowRadioCLabel);
+    timerOptions.appendChild(timerOptionsWindow);
+    //
+    //
     tinkerPanel.appendChild(forbiddenGroveOptions);
     tinkerPanel.appendChild(balacksCoveOptions);
     tinkerPanel.appendChild(seasonalGardenOptions);
     tinkerPanel.appendChild(toxicSpillOptions);
+    tinkerPanel.appendChild(timerOptions);
     //Last
     timerBox.prepend(tinkerPanel)
 }
