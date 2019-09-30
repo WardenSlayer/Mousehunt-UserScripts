@@ -2,7 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.3.10
+// @version      1.4
 // @description  Handy script to keep track of the various MH location timers
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -868,7 +868,6 @@ function buildTinkerPanel() {
     toxicSpillOptions.appendChild(toxicSpillArchdukeCb);
     //
     //Timer Options
-    //const remindGrove = localStorage.getItem('RemindGrove');
     var timerOptions = document.createElement("div");
     timerOptions.classList.add("timerOptions");
     var timerOptionsLabel = document.createElement("div");
@@ -879,12 +878,13 @@ function buildTinkerPanel() {
     $(timerOptions).css({
         'float': 'left',
         'width': '40%',
+        'marginLeft': '25px',
     })
     $(timerOptionsLabel).css({
         'float': 'left',
         'width': '100%',
         'font-weight': 700,
-        "marginRight": "5px"
+        "marginRight": "5px",
     })
     var timerOptionsUpdate = document.createElement("div");
     timerOptionsUpdate.classList.add("timerOptionsUpdate");
@@ -905,11 +905,15 @@ function buildTinkerPanel() {
     timerOptionsUpdateLabel.appendChild(timerOptionsUpdateLabelText);
     timerOptionsUpdate.appendChild(timerOptionsUpdateLabel)
     //Timer  Interval
+    var updateInterval = localStorage.getItem('UpdateInterval');
     var timerOptionsUpdateRadioA = document.createElement('input');
     timerOptionsUpdateRadioA.type = "radio";
     timerOptionsUpdateRadioA.name = "timerOptionsUpdateRadioA";
     timerOptionsUpdateRadioA.value = "value";
     timerOptionsUpdateRadioA.id = "timerOptionsUpdateRadioA";
+    if (updateInterval == 1) {
+        timerOptionsUpdateRadioA.checked = true;
+    }
     var timerOptionsUpdateRadioALabel = document.createElement('label')
     timerOptionsUpdateRadioALabel.htmlFor = "timerOptionsUpdateRadioLabel";
     timerOptionsUpdateRadioALabel.appendChild(document.createTextNode('1'));
@@ -927,10 +931,13 @@ function buildTinkerPanel() {
     timerOptionsUpdate.appendChild(timerOptionsUpdateRadioALabel);
     //
     var timerOptionsUpdateRadioB = document.createElement('input');
-    timerOptionsUpdateRadioB .type = "radio";
-    timerOptionsUpdateRadioB .name = "timerOptionsUpdateRadioB";
-    timerOptionsUpdateRadioB .value = "value";
-    timerOptionsUpdateRadioB .id = "timerOptionsUpdateRadioB";
+    timerOptionsUpdateRadioB.type = "radio";
+    timerOptionsUpdateRadioB.name = "timerOptionsUpdateRadioB";
+    timerOptionsUpdateRadioB.value = "value";
+    timerOptionsUpdateRadioB.id = "timerOptionsUpdateRadioB";
+    if ((updateInterval == null) || (updateInterval == 5)) {
+        timerOptionsUpdateRadioB.checked = true;
+    }
     var timerOptionsUpdateRadioBLabel = document.createElement('label')
     timerOptionsUpdateRadioBLabel.htmlFor = "timerOptionsUpdateRadioBLabel";
     timerOptionsUpdateRadioBLabel.appendChild(document.createTextNode('5'));
@@ -952,6 +959,9 @@ function buildTinkerPanel() {
     timerOptionsUpdateRadioC.name = "timerOptionsUpdateRadioC";
     timerOptionsUpdateRadioC.value = "value";
     timerOptionsUpdateRadioC.id = "timerOptionsUpdateRadioC";
+    if (updateInterval == 15) {
+        timerOptionsUpdateRadioC.checked = true;
+    }
     var timerOptionsUpdateRadioCLabel = document.createElement('label')
     timerOptionsUpdateRadioCLabel.htmlFor = "timerOptionsUpdateRadioCLabel";
     timerOptionsUpdateRadioCLabel.appendChild(document.createTextNode('15'));
@@ -969,6 +979,7 @@ function buildTinkerPanel() {
     timerOptionsUpdate.appendChild(timerOptionsUpdateRadioCLabel);
     timerOptions.appendChild(timerOptionsUpdate);
     //Reminder Window
+    var remindInterval = localStorage.getItem('RemindInterval');
     var timerOptionsWindow = document.createElement("div");
     timerOptionsWindow.classList.add("timerOptionsWindow");
     var timerOptionsWindowLabel = document.createElement("div");
@@ -992,6 +1003,9 @@ function buildTinkerPanel() {
     timerOptionsWindowRadioA.name = "timerOptionsWindowRadioA";
     timerOptionsWindowRadioA.value = "value";
     timerOptionsWindowRadioA.id = "timerOptionsWindowRadioA";
+    if (remindInterval == 5) {
+        timerOptionsWindowRadioA.checked = true;
+    }
     var timerOptionsWindowRadioALabel = document.createElement('label')
     timerOptionsWindowRadioALabel.htmlFor = "timerOptionsWindowRadioALabel";
     timerOptionsWindowRadioALabel.appendChild(document.createTextNode('5'));
@@ -1009,10 +1023,13 @@ function buildTinkerPanel() {
     timerOptionsWindow.appendChild(timerOptionsWindowRadioALabel);
     //
     var timerOptionsWindowRadioB = document.createElement('input');
-    timerOptionsWindowRadioB .type = "radio";
-    timerOptionsWindowRadioB .name = "timerOptionsWindowRadioB";
-    timerOptionsWindowRadioB .value = "value";
-    timerOptionsWindowRadioB .id = "timerOptionsWindowRadioB";
+    timerOptionsWindowRadioB.type = "radio";
+    timerOptionsWindowRadioB.name = "timerOptionsWindowRadioB";
+    timerOptionsWindowRadioB.value = "value";
+    timerOptionsWindowRadioB.id = "timerOptionsWindowRadioB";
+    if ((remindInterval == null) || (remindInterval == 10)) {
+        timerOptionsWindowRadioB.checked = true;
+    }
     var timerOptionsWindowRadioBLabel = document.createElement('label')
     timerOptionsWindowRadioBLabel.htmlFor = "timerOptionsWindowRadioBLabel";
     timerOptionsWindowRadioBLabel.appendChild(document.createTextNode('10'));
@@ -1034,6 +1051,9 @@ function buildTinkerPanel() {
     timerOptionsWindowRadioC.name = "timerOptionsWindowRadioC";
     timerOptionsWindowRadioC.value = "value";
     timerOptionsWindowRadioC.id = "timerOptionsWindowRadioC";
+    if (remindInterval == 15) {
+        timerOptionsWindowRadioC.checked = true;
+    }
     var timerOptionsWindowRadioCLabel = document.createElement('label')
     timerOptionsWindowRadioCLabel.htmlFor = "timerOptionsWindowRadioCLabel";
     timerOptionsWindowRadioCLabel.appendChild(document.createTextNode('15'));
@@ -1050,7 +1070,72 @@ function buildTinkerPanel() {
     timerOptionsWindow.appendChild(timerOptionsWindowRadioC);
     timerOptionsWindow.appendChild(timerOptionsWindowRadioCLabel);
     timerOptions.appendChild(timerOptionsWindow);
+    //Other Options
+    const killSwitch = localStorage.getItem('KillSwitch')
+    var killSwitchCB = document.createElement('input');
+    killSwitchCB.type = "checkbox";
+    killSwitchCB.name = "killSwitchCB";
+    killSwitchCB.value = "value";
+    killSwitchCB.id = "killSwitchCB";
+    if (killSwitch == "Y") {
+        killSwitchCB.checked = "Yes";
+    } else {
+        killSwitchCB.checked = "";
+    }
+    var killSwitchCBLabel = document.createElement('label')
+    killSwitchCBLabel.htmlFor = "killSwitchCBLabel";
+    killSwitchCBLabel.appendChild(document.createTextNode('Remind Me Only Once'));
+    $(killSwitchCBLabel).css({
+        'float': 'left',
+        'width': '118px',
+        'padding': '1px',
+    })
+    $(killSwitchCB).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "100px"
+    })
+    timerOptions.appendChild(killSwitchCBLabel);
+    timerOptions.appendChild(killSwitchCB);
     //
+    const disarm = localStorage.getItem('DAT')
+    var disarmCB = document.createElement('input');
+    disarmCB.type = "checkbox";
+    disarmCB.name = "disarmCB";
+    disarmCB.value = "value";
+    disarmCB.id = "disarmCB";
+    if (disarm == "Y") {
+        disarmCB.checked = "Yes";
+    } else {
+        disarmCB.checked = "";
+    }
+    var disarmCBLabel = document.createElement('label')
+    disarmCBLabel.htmlFor = "disarmCBLabel";
+    disarmCBLabel.appendChild(document.createTextNode('Disarm Bait After Travel'));
+    $(disarmCBLabel).css({
+        'float': 'left',
+        'width': '118px',
+        'padding': '1px',
+    })
+    $(disarmCB).css({
+        'float': 'left',
+        'width': '20px',
+        "marginRight": "5px"
+    })
+    timerOptions.appendChild(disarmCBLabel);
+    timerOptions.appendChild(disarmCB);
+    //Panic Button
+    var panicButton = document.createElement("button");
+    panicButton.id = "panicButton";
+    panicButton.innerText = "Travel Back";
+    panicButton.addEventListener("click", travelBack);
+    timerOptions.appendChild(panicButton);
+    $(panicButton).css({
+        'width': '100px',
+        'float': 'left',
+        'marginRight': 5 + "px",
+        'marginLeft': 35 + "px"
+    })
     //
     tinkerPanel.appendChild(forbiddenGroveOptions);
     tinkerPanel.appendChild(balacksCoveOptions);
@@ -1060,10 +1145,60 @@ function buildTinkerPanel() {
     //Last
     timerBox.prepend(tinkerPanel)
 }
+$(document).on('click', '#timerOptionsUpdateRadioA', function() {
+    $('#timerOptionsUpdateRadioB').prop("checked", false);
+    $('#timerOptionsUpdateRadioC').prop("checked", false);
+    localStorage.setItem('UpdateInterval', 1)
+})
+$(document).on('click', '#timerOptionsUpdateRadioB', function() {
+    $('#timerOptionsUpdateRadioA').prop("checked", false);
+    $('#timerOptionsUpdateRadioC').prop("checked", false);
+    localStorage.setItem('UpdateInterval', 5)
+})
+$(document).on('click', '#timerOptionsUpdateRadioC', function() {
+    $('#timerOptionsUpdateRadioA').prop("checked", false);
+    $('#timerOptionsUpdateRadioB').prop("checked", false);
+    localStorage.setItem('UpdateInterval', 15)
+})
+$(document).on('click', '#timerOptionsWindowRadioA', function() {
+    $('#timerOptionsWindowRadioB').prop("checked", false);
+    $('#timerOptionsWindowRadioC').prop("checked", false);
+    localStorage.setItem('RemindInterval', 5)
+})
+$(document).on('click', '#timerOptionsWindowRadioB', function() {
+    $('#timerOptionsWindowRadioA').prop("checked", false);
+    $('#timerOptionsWindowRadioC').prop("checked", false);
+    localStorage.setItem('RemindInterval', 10)
+})
+$(document).on('click', '#timerOptionsWindowRadioC', function() {
+    $('#timerOptionsWindowRadioA').prop("checked", false);
+    $('#timerOptionsWindowRadioB').prop("checked", false);
+    localStorage.setItem('RemindInterval', 15)
+})
+$(document).on('change', '#killSwitchCB', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+        localStorage.setItem('KillSwitch', 'Y')
+    } else {
+        this.checked = "";
+        localStorage.setItem('KillSwitch', 'N')
+    }
+})
+$(document).on('change', '#disarmCB', function() {
+    if (this.checked) {
+        this.checked = "Yes";
+        localStorage.setItem('DAT', 'Y')
+    } else {
+        this.checked = "";
+        localStorage.setItem('DAT', 'N')
+    }
+})
 
 
-
-
+//===================================== Timers ======================================
+//
+//
+//===================================================================================
 function startTimers() {
     localStorage.setItem("mainTimer", 0);
     runTimers();
@@ -1071,7 +1206,13 @@ function startTimers() {
 
 function runTimers() {
     updateText();
-    var myTimer = setInterval(updateText, 60000);
+    var myTimer = "";
+    const updateInterval = parseInt(localStorage.getItem('UpdateInterval'), 10)
+    if (updateInterval == null) {
+        myTimer = setInterval(updateText, 60000);
+    } else {
+        myTimer = setInterval(updateText, updateInterval * 60000);
+    }
 }
 
 function updateText() {
@@ -1160,6 +1301,7 @@ function buildForbiddenGrove() {
 function updateForbiddenGroveTimer() {
     if ($(".forbiddenGrove").length < 1) return;
     const remind = localStorage.getItem('RemindGrove');
+    const remindInterval = parseInt(localStorage.getItem('RemindInterval'), 10);
     var forbiddenGrove = $(".forbiddenGrove");
     var firstGroveOpen = 1285704000;
     var now = todayNow();
@@ -1187,11 +1329,13 @@ function updateForbiddenGroveTimer() {
                 'float': 'right'
             }),
             forbiddenGrove.append($(".forbiddenGroveOpens"))
-        if ((closesHours == 0) && (closesMinutes <= 15) && (remind.search('O') >= 0) && (remind.search('N') < 0)) {
+        if ((closesHours == 0) && (closesMinutes <= remindInterval) && (remind.search('C') >= 0) && (remind.search('N') < 0)) {
             if (confirm('The forbidden grove is closing soon, travel there now?') == true) {
                 travelToGrove("skip");
             }
-            $("#forbiddenGroveCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#forbiddenGroveCb").click();
+            }
         }
     } else {
         //Closed
@@ -1212,9 +1356,11 @@ function updateForbiddenGroveTimer() {
                 'float': 'right'
             }),
             forbiddenGrove.append($(".forbiddenGroveCloses"))
-        if ((opensHours == 0) && (opensMinutes <= 15) && (remind.search('C') >= 0) && (remind.search('N') < 0)) {
+        if ((opensHours == 0) && (opensMinutes <= remindInterval) && (remind.search('O') >= 0) && (remind.search('N') < 0)) {
             alert('The forbidden grove is opening soon')
-            $("#forbiddenGroveCb").click()
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#forbiddenGroveCb").click();
+            }
         }
     }
 }
@@ -1449,6 +1595,7 @@ function buildBalacksCove() {
 function updateBalacksCoveTimer() {
     if ($(".balacksCove").length < 1) return;
     const remind = localStorage.getItem('RemindCove');
+    const remindInterval = parseInt(localStorage.getItem('RemindInterval'), 10);
     var balacksCove = $(".balacksCove");
     var firstCoveLow = 1294680060;
     var now = todayNow();
@@ -1487,11 +1634,13 @@ function updateBalacksCoveTimer() {
         }
         $(".balacksCoveLowValue").text(formatOutput(0, lowHours, lowMinutes));
         balacksCove.append($(".balacksCoveLow"))
-        if ((midHours == 0) && (midMinutes <= 15) && (remind.search('M') >= 0) && (remind.search('N') < 0)) {
+        if ((midHours == 0) && (midMinutes <= remindInterval) && (remind.search('M') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be mid tide soon, travel there now?') == true) {
                 travelToCove("skip");
             }
-            $("#balacksCoveCb").click()
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#balacksCoveCb").click();
+            }
         }
     } else if ((partialrotation >= 16) && (partialrotation < 17)) {
         //Mid (flooding)
@@ -1524,11 +1673,13 @@ function updateBalacksCoveTimer() {
         })
         balacksCove.append($(".balacksCoveMid"))
         balacksCove.append($(".balacksCoveLow"))
-        if ((highHours == 0) && (highMinutes <= 15) && (remind.search('H') >= 0) && (remind.search('N') < 0)) {
+        if ((highHours == 0) && (highMinutes <= remindInterval) && (remind.search('H') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be high tide soon, travel there now?') == true) {
                 travelToCove("skip");
             }
-            $("#balacksCoveCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#balacksCoveCb").click();
+            }
         }
     } else if ((partialrotation >= 17) && (partialrotation < 17.6666666667)) {
         //High
@@ -1551,11 +1702,13 @@ function updateBalacksCoveTimer() {
         })
         $(".balacksCoveHigh").hide();
         balacksCove.append($(".balacksCoveLow"))
-        if ((midHours == 0) && (midMinutes <= 15) && (remind.search('M') >= 0) && (remind.search('N') < 0)) {
+        if ((midHours == 0) && (midMinutes <= remindInterval) && (remind.search('M') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be mid tide soon, travel there now?') == true) {
                 travelToCove("skip");
             }
-            $("#balacksCoveCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#balacksCoveCb").click();
+            }
         }
     } else if (partialrotation >= 17.6666666667) {
         //Mid (ebbing)
@@ -1582,11 +1735,13 @@ function updateBalacksCoveTimer() {
             'float': 'right'
         })
         balacksCove.append($(".balacksCoveHigh").show())
-        if ((lowHours == 0) && (lowMinutes <= 15) && (remind.search('L') >= 0) && (remind.search('N') < 0)) {
+        if ((lowHours == 0) && (lowMinutes <= remindInterval) && (remind.search('L') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be low tide soon, travel there now?') == true) {
                 travelToCove("skip");
             }
-            $("#balacksCoveCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#balacksCoveCb").click();
+            }
         }
     }
 }
@@ -1909,6 +2064,7 @@ function updateSeasonalGardenTimer() {
     if ($(".seasonalGarden").length < 1) return;
     var seasonalGarden = $(".seasonalGarden");
     const remind = localStorage.getItem('RemindGarden');
+    const remindInterval = parseInt(localStorage.getItem('RemindInterval'), 10);
     var firstFall = 288000;
     var now = todayNow();
     let timePassedHours = (now - firstFall) / 3600;
@@ -1941,11 +2097,13 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenWinter"));
         seasonalGarden.append($(".seasonalGardenSpring"));
         seasonalGarden.append($(".seasonalGardenSummer"));
-        if ((fallObj.hours == 0) && (fallObj.minutes <= 15) && (remind.search('F') >= 0) && (remind.search('N') < 0)) {
+        if ((fallObj.hours == 0) && (fallObj.minutes <= remindInterval) && (remind.search('F') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be fall in the garden soon, travel there now?') == true) {
                 travelToGarden("skip");
             }
-            $("#seasonalGardenCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#seasonalGardenCb").click();
+            }
         }
     } else if ((partialrotation >= 80) && (partialrotation < 160)) {
         //Fall
@@ -1968,11 +2126,13 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenSpring"));
         seasonalGarden.append($(".seasonalGardenSummer"));
         seasonalGarden.append($(".seasonalGardenFall"));
-        if ((winterObj.hours == 0) && (winterObj.minutes <= 15) && (remind.search('W') >= 0) && (remind.search('N') < 0)) {
+        if ((winterObj.hours == 0) && (winterObj.minutes <= remindInterval) && (remind.search('W') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be winter in the garden soon, travel there now?') == true) {
                 travelToGarden("skip");
             }
-            $("#seasonalGardenCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#seasonalGardenCb").click();
+            }
         }
     } else if ((partialrotation >= 160) && (partialrotation < 240)) {
         //Winter
@@ -1995,11 +2155,13 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenSummer"));
         seasonalGarden.append($(".seasonalGardenFall"));
         seasonalGarden.append($(".seasonalGardenWinter"));
-        if ((springObj.hours == 0) && (springObj.minutes <= 15) && (remind.search('S') >= 0) && (remind.search('N') < 0)) {
+        if ((springObj.hours == 0) && (springObj.minutes <= remindInterval) && (remind.search('S') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be spring in the garden soon, travel there now?') == true) {
                 travelToGarden("skip");
             }
-            $("#seasonalGardenCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#seasonalGardenCb").click();
+            }
         }
     } else {
         //Spring
@@ -2022,11 +2184,13 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenFall"));
         seasonalGarden.append($(".seasonalGardenWinter"));
         seasonalGarden.append($(".seasonalGardenSpring"));
-        if ((summerObj.hours == 0) && (summerObj.minutes <= 15) && (remind.search('R') >= 0) && (remind.search('N') < 0)) {
+        if ((summerObj.hours == 0) && (summerObj.minutes <= remindInterval) && (remind.search('R') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be summer in the garden soon, travel there now?') == true) {
                 travelToGarden("skip");
             }
-            $("#seasonalGardenCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#seasonalGardenCb").click();
+            }
         }
     }
     $(".seasonalGardenFallValue").text(formatOutput(fallObj.days, fallObj.hours, fallObj.minutes));
@@ -2465,7 +2629,8 @@ function buildToxicSpill() {
 function updateToxicSpillTimer() {
     if ($(".toxicSpill").length < 1) return;
     var toxicSpill = $(".toxicSpill");
-    const remind = localStorage.getItem('RemindSpill')
+    const remind = localStorage.getItem('RemindSpill');
+    const remindInterval = parseInt(localStorage.getItem('RemindInterval'), 10);
     $(".toxicSpill").children().show();
     var firstHero = 1503597600;
     var now = todayNow();
@@ -2509,11 +2674,13 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
-        if ((knightObj.hours == 0) && (knightObj.minutes <= 15) && (remind.search('K') >= 0) && (remind.search('N') < 0)) {
+        if ((knightObj.hours == 0) && (knightObj.minutes <= remindInterval) && (remind.search('K') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Knight level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            $("#toxicSpillCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#toxicSpillCb").click();
+            }
         }
     } else if (partialrotation >= 15 && partialrotation < 31) {
         //Knight Rising
@@ -2542,11 +2709,13 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillArchduke").hide();
-        if ((lordObj.hours == 0) && (lordObj.minutes <= 15) && (remind.search('L') >= 0) && (remind.search('N') < 0)) {
+        if ((lordObj.hours == 0) && (lordObj.minutes <= remindInterval) && (remind.search('L') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Lord level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            $("#toxicSpillCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#toxicSpillCb").click();
+            }
         }
     } else if (partialrotation >= 31 && partialrotation < 49) {
         //Lord Rising
@@ -2575,11 +2744,13 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
-        if ((baronObj.hours == 0) && (baronObj.minutes <= 15) && (remind.search('B') >= 0) && (remind.search('N') < 0)) {
+        if ((baronObj.hours == 0) && (baronObj.minutes <= remindInterval) && (remind.search('B') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Baron level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            $("#toxicSpillCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#toxicSpillCb").click();
+            }
         }
     } else if (partialrotation >= 49 && partialrotation < 67) {
         //Baron Rising
@@ -2608,11 +2779,13 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
-        if ((countObj.hours == 0) && (countObj.minutes <= 15) && (remind.search('C') >= 0) && (remind.search('N') < 0)) {
+        if ((countObj.hours == 0) && (countObj.minutes <= remindInterval) && (remind.search('C') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Count level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            $("#toxicSpillCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#toxicSpillCb").click();
+            }
         }
     } else if (partialrotation >= 67 && partialrotation < 91) {
         //Count Rising
@@ -2641,11 +2814,13 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
-        if ((dukeObj.hours == 0) && (dukeObj.minutes <= 15) && (remind.search('D') >= 0) && (remind.search('N') < 0)) {
+        if ((dukeObj.hours == 0) && (dukeObj.minutes <= remindInterval) && (remind.search('D') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Duke level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            $("#toxicSpillCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#toxicSpillCb").click();
+            }
         }
     } else if (partialrotation >= 91 && partialrotation < 115) {
         //Duke Rising
@@ -2674,11 +2849,13 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
-        if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= 15) && (remind.search('G') >= 0) && (remind.search('N') < 0)) {
+        if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= remindInterval) && (remind.search('G') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Grand Duke level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            $("#toxicSpillCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#toxicSpillCb").click();
+            }
         }
     } else if (partialrotation >= 115 && partialrotation < 139) {
         //Grand Duke Rising
@@ -2707,11 +2884,13 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
-        if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= 15) && (remind.search('A') >= 0) && (remind.search('N') < 0)) {
+        if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= remindInterval) && (remind.search('A') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Archduke level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            $("#toxicSpillCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#toxicSpillCb").click();
+            }
         }
     } else if (partialrotation >= 139 && partialrotation < 151) {
         //Archduke Rising
@@ -2767,11 +2946,13 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillKnight").hide();
         $(".toxicSpillArchduke").hide();
-        if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= 15) && (remind.search('G') >= 0) && (remind.search('N') < 0)) {
+        if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= remindInterval) && (remind.search('G') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Grand Duke level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            $("#toxicSpillCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#toxicSpillCb").click();
+            }
         }
     } else if (partialrotation >= 163 && partialrotation < 187) {
         //Grand Duke Falling
@@ -2800,11 +2981,13 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHero").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
-        if ((dukeObj.hours == 0) && (dukeObj.minutes <= 15) && (remind.search('D') >= 0) && (remind.search('N') < 0)) {
+        if ((dukeObj.hours == 0) && (dukeObj.minutes <= remindInterval) && (remind.search('D') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Duke level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            $("#toxicSpillCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#toxicSpillCb").click();
+            }
         }
     } else if (partialrotation >= 187 && partialrotation < 211) {
         //Duke Falling
@@ -2833,11 +3016,13 @@ function updateToxicSpillTimer() {
         $(".toxicSpillDuke").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
-        if ((countObj.hours == 0) && (countObj.minutes <= 15) && (remind.search('C') >= 0) && (remind.search('N') < 0)) {
+        if ((countObj.hours == 0) && (countObj.minutes <= remindInterval) && (remind.search('C') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Count level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            $("#toxicSpillCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#toxicSpillCb").click();
+            }
         }
     } else if (partialrotation >= 211 && partialrotation < 235) {
         //Count Falling
@@ -2866,11 +3051,13 @@ function updateToxicSpillTimer() {
         $(".toxicSpillDuke").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
-        if ((baronObj.hours == 0) && (baronObj.minutes <= 15) && (remind.search('B') >= 0) && (remind.search('N') < 0)) {
+        if ((baronObj.hours == 0) && (baronObj.minutes <= remindInterval) && (remind.search('B') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Baron level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            $("#toxicSpillCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#toxicSpillCb").click();
+            }
         }
     } else if (partialrotation >= 235 && partialrotation < 253) {
         //Baron Falling
@@ -2899,11 +3086,13 @@ function updateToxicSpillTimer() {
         $(".toxicSpillDuke").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
-        if ((lordObj.hours == 0) && (lordObj.minutes <= 15) && (remind.search('L') >= 0) && (remind.search('N') < 0)) {
+        if ((lordObj.hours == 0) && (lordObj.minutes <= remindInterval) && (remind.search('L') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Lord level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            $("#toxicSpillCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#toxicSpillCb").click();
+            }
         }
     } else if (partialrotation >= 253 && partialrotation < 271) {
         //Lord Falling
@@ -2932,11 +3121,13 @@ function updateToxicSpillTimer() {
         $(".toxicSpillDuke").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
-        if ((knightObj.hours == 0) && (knightObj.minutes <= 15) && (remind.search('K') >= 0) && (remind.search('N') < 0)) {
+        if ((knightObj.hours == 0) && (knightObj.minutes <= remindInterval) && (remind.search('K') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Knight level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            $("#toxicSpillCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#toxicSpillCb").click();
+            }
         }
     } else if (partialrotation >= 271 && partialrotation < 287) {
         //Knight Falling
@@ -2965,11 +3156,13 @@ function updateToxicSpillTimer() {
         $(".toxicSpillDuke").hide();
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
-        if ((heroObj.hours == 0) && (heroObj.minutes <= 15) && (remind.search('H') >= 0) && (remind.search('N') < 0)) {
+        if ((heroObj.hours == 0) && (heroObj.minutes <= remindInterval) && (remind.search('H') >= 0) && (remind.search('N') < 0)) {
             if (confirm('It will be Hero level soon at the toxic spill, travel there now?') == true) {
                 travelToSpill("skip");
             }
-            $("#toxicSpillCb").click();
+            if (localStorage.getItem('KillSwitch') == 'Y') {
+                $("#toxicSpillCb").click();
+            }
         }
     } else if (partialrotation >= 287 && partialrotation < 302) {
         //Hero Falling
@@ -3435,8 +3628,8 @@ function todayNow() {
 
 function convertToDyHrMn(days, hours, minutes) {
     if (minutes == 60) {
-       hours++;
-       minutes = 0;
+        hours++;
+        minutes = 0;
     }
     if (hours >= 24) {
         var daysExact = hours / 24;
@@ -3469,43 +3662,101 @@ function formatOutput(days, hours, minutes) {
 }
 
 function travelToGrove(skip) {
+    const disarm = localStorage.getItem('DAT');
+    var origin = $('#hudLocationContent').attr('class').replace("hudLocationContent ", "");
     if ($('#hudLocationContent').hasClass('hudLocationContent forbidden_grove') == true) {
         //Do nothing you are already there
     } else if ($(".forbiddenGroveHeaderValue").text() == "CLOSED") {
         alert('The Forbiddengrove is closed now, you cannot travel there right now')
     } else if (skip == "skip") {
+        localStorage.setItem('TravelOrigin', origin);
         app.pages.TravelPage.travel("forbidden_grove");
+        if (disarm == "Y") {
+            hg.utils.TrapControl.disarmBait().go()
+        }
     } else if (confirm('Travel to the Forbidden Grove now?') == true) {
+        localStorage.setItem('TravelOrigin', origin);
         app.pages.TravelPage.travel("forbidden_grove");
+        if (disarm == "Y") {
+            hg.utils.TrapControl.disarmBait().go()
+        }
     }
 }
 
 function travelToCove(skip) {
+    const disarm = localStorage.getItem('DAT');
+    var origin = $('#hudLocationContent').attr('class').replace("hudLocationContent ", "");
     if ($('#hudLocationContent').hasClass('hudLocationContent balacks_cove') == true) {
         //Do nothing, you are already there
     } else if (skip == "skip") {
+        localStorage.setItem('TravelOrigin', origin);
         app.pages.TravelPage.travel("balacks_cove");
+        if (disarm == "Y") {
+            hg.utils.TrapControl.disarmBait().go()
+        }
     } else if (confirm("Travel to Balack's Cove now?") == true) {
+        localStorage.setItem('TravelOrigin', origin);
         app.pages.TravelPage.travel("balacks_cove");
+        if (disarm == "Y") {
+            hg.utils.TrapControl.disarmBait().go()
+        }
     }
 }
 
 function travelToGarden(skip) {
+    const disarm = localStorage.getItem('DAT');
+    var origin = $('#hudLocationContent').attr('class').replace("hudLocationContent ", "");
     if ($('#hudLocationContent').hasClass('hudLocationContent seasonal_garden') == true) {
         //Do nothing, you are already there
     } else if (skip == "skip") {
+        localStorage.setItem('TravelOrigin', origin);
         app.pages.TravelPage.travel("seasonal_garden");
+        if (disarm == "Y") {
+            hg.utils.TrapControl.disarmBait().go()
+        }
     } else if (confirm("Travel to the Seasonal Garden now?") == true) {
+        localStorage.setItem('TravelOrigin', origin);
         app.pages.TravelPage.travel("seasonal_garden");
+        if (disarm == "Y") {
+            hg.utils.TrapControl.disarmBait().go()
+        }
     }
 }
 
 function travelToSpill(skip) {
+    const disarm = localStorage.getItem('DAT');
+    var origin = $('#hudLocationContent').attr('class').replace("hudLocationContent ", "");
     if ($('#hudLocationContent').hasClass('hudLocationContent pollution_outbreak') == true) {
         //Do nothing, you are already there
     } else if (skip == "skip") {
+        localStorage.setItem('TravelOrigin', origin);
         app.pages.TravelPage.travel("pollution_outbreak");
+        if (disarm == "Y") {
+            hg.utils.TrapControl.disarmBait().go()
+        }
     } else if (confirm("Travel to the Toxic Spill now?") == true) {
+        localStorage.setItem('TravelOrigin', origin);
         app.pages.TravelPage.travel("pollution_outbreak");
+        if (disarm == "Y") {
+            hg.utils.TrapControl.disarmBait().go()
+        }
+    }
+}
+
+function travelBack(skip) {
+    const disarm = localStorage.getItem('DAT');
+    var origin = localStorage.getItem('TravelOrigin');
+    if ($('#hudLocationContent').hasClass(origin) == true) {
+        //    //Do nothing, you are already there
+    } else if (skip == "skip") {
+        app.pages.TravelPage.travel(origin);
+        if (disarm == "Y") {
+            hg.utils.TrapControl.disarmBait().go()
+        }
+    } else if (confirm("Travel back to the " + origin + "?") == true) {
+        app.pages.TravelPage.travel(origin);
+        if (disarm == "Y") {
+            hg.utils.TrapControl.disarmBait().go()
+        }
     }
 }
