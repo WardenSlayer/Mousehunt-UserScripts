@@ -2,7 +2,7 @@
 // @name         MH: Labyrinth Door Data Collector
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.0.9
+// @version      1.1
 // @description  Mousehunt data collection tool for avilible labyrinth doors
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -21,7 +21,7 @@ function buildCopyButton() {
     //Copy Button
     var copyButton = document.createElement("button");
     copyButton.id = "copyButton";
-    copyButton.innerText = "Copy to Clipboard";
+    copyButton.innerText = "Copy/Submit Data";
     copyButton.addEventListener("click", copyData);
     copyButtonContainer.appendChild(copyButton);
     hudLocation.after(copyButtonContainer);
@@ -41,6 +41,16 @@ function copyData() {
         var treasureClues = $(".labyrinthHUD-clueDrawer-clue.t").find(".labyrinthHUD-clueDrawer-quantity").text();
         var farmingClues = $(".labyrinthHUD-clueDrawer-clue.f").find(".labyrinthHUD-clueDrawer-quantity").text();
         var deadEndClues = $(".labyrinthHUD-clueDrawer-clue.m").find(".labyrinthHUD-clueDrawer-quantity").text();
+        var A = isNaN(parseInt(fealtyClues, 10));
+        var B = isNaN(parseInt(techClues, 10));
+        var C = isNaN(parseInt(scholarClues, 10));
+        var D = isNaN(parseInt(treasureClues, 10));
+        var E = isNaN(parseInt(farmingClues, 10));
+        var F = isNaN(parseInt(deadEndClues, 10));
+        //if data is missing: stop
+        if (A || B || C || D || E || F) {
+            return
+        }
         var allDoors = $(".labyrinthHUD-doorContainer").children();
         //Add flag to denote shuffling
         var journalText = $(".journaltext");
@@ -51,11 +61,11 @@ function copyData() {
         var doorThree = $(allDoors).last();
         var doorTwo = $(allDoors).not(doorOne).not(doorThree);
         var doorOneData = parseDoor(doorOne)
-        var doorOneObj = new doorOption(doorOneData.doorLength,doorOneData.doorQuality,doorOneData.doorType);
+        var doorOneObj = new doorOption(doorOneData.doorLength, doorOneData.doorQuality, doorOneData.doorType);
         var doorTwoData = parseDoor(doorTwo)
-        var doorTwoObj = new doorOption(doorTwoData.doorLength,doorTwoData.doorQuality,doorTwoData.doorType);
+        var doorTwoObj = new doorOption(doorTwoData.doorLength, doorTwoData.doorQuality, doorTwoData.doorType);
         var doorThreeData = parseDoor(doorThree)
-        var doorThreeObj = new doorOption(doorThreeData .doorLength,doorThreeData.doorQuality,doorThreeData.doorType);
+        var doorThreeObj = new doorOption(doorThreeData.doorLength, doorThreeData.doorQuality, doorThreeData.doorType);
         var resultsArray = [fealtyClues,
             techClues,
             scholarClues,
@@ -76,6 +86,7 @@ function copyData() {
         let results = resultsArray.join()
         console.log(results)
         GM_setClipboard(results)
+        publishResults(results)
     }
 }
 
@@ -115,17 +126,20 @@ function parseDoor(door) {
     } else {
         doorType = "M";
     }
-    return {doorLength,doorQuality,doorType}
+    return {
+        doorLength,
+        doorQuality,
+        doorType
+    }
 }
 
-function parseJournal(array){
+function parseJournal(array) {
     var shuffleFlag = 0;
     array.forEach(function(elements) {
         var text = $(elements).text();
         if (text.includes("grinding whirr")) {
             shuffleFlag = 1;
-        } else {
-        }
+        } else {}
     })
     return shuffleFlag;
 }
@@ -134,4 +148,29 @@ function doorOption(length, quality, type) {
     this.length = length;
     this.quality = quality;
     this.type = type;
+}
+
+function publishResults(results) {
+    var lastSubmit = localStorage.getItem('Last Submission');
+    if (results == lastSubmit) {
+        return
+    }
+    const url = 'https://script.google.com/macros/s/AKfycbwmnDYV_3f5XFj7xzKcPclMcrzTaDkG1SMLwm2e8A8ABN5ms_j6/exec';
+    var form = new submitData(results)
+    var jqxhr = $.ajax({
+        url: url,
+        method: "GET",
+        dataType: "json",
+        data: form,
+    }).success(function() {
+        // do something
+        console.log('Door Data Submitted!')
+        localStorage.setItem('Last Submission', results)
+    });
+
+
+}
+
+function submitData(result_string) {
+    this.The_String_From_The_Script = result_string;
 }
