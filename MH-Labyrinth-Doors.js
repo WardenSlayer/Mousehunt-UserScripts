@@ -2,7 +2,7 @@
 // @name         MH: Labyrinth Door Data Collector
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.1
+// @version      1.2
 // @description  Mousehunt data collection tool for avilible labyrinth doors
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -31,16 +31,41 @@ function buildCopyButton() {
 }
 
 function copyData() {
+    const debug = localStorage.getItem('debug');
     var lastStep = $(".labyrinthHUD-hallway-padding").children().last();
     if ($(lastStep).hasClass("labyrinthHUD-hallway-tile active") || $(lastStep).hasClass("labyrinthHUD-hallway-tile locked")) {
+        if (debug == true) {
+            console.log('Not in an intersection. Submit cancelled')
+        }
         return;
     } else {
-        var fealtyClues = $(".labyrinthHUD-clueDrawer-clue.y").find(".labyrinthHUD-clueDrawer-quantity").text();
-        var techClues = $(".labyrinthHUD-clueDrawer-clue.h").find(".labyrinthHUD-clueDrawer-quantity").text();
-        var scholarClues = $(".labyrinthHUD-clueDrawer-clue.s").find(".labyrinthHUD-clueDrawer-quantity").text();
-        var treasureClues = $(".labyrinthHUD-clueDrawer-clue.t").find(".labyrinthHUD-clueDrawer-quantity").text();
-        var farmingClues = $(".labyrinthHUD-clueDrawer-clue.f").find(".labyrinthHUD-clueDrawer-quantity").text();
-        var deadEndClues = $(".labyrinthHUD-clueDrawer-clue.m").find(".labyrinthHUD-clueDrawer-quantity").text();
+        if (debug == true) {
+            console.log('Collecting Data')
+        }
+        var fealtyClues = $('[class*="labyrinthHUD-clueDrawer-clue y"]').find(".labyrinthHUD-clueDrawer-quantity").text();
+        if (debug == true) {
+            console.log("Fealty Clues: ", fealtyClues)
+        }
+        var techClues = $('[class*="labyrinthHUD-clueDrawer-clue h"]').find(".labyrinthHUD-clueDrawer-quantity").text();
+        if (debug == true) {
+            console.log("Tech Clues: ", techClues)
+        }
+        var scholarClues = $('[class*="labyrinthHUD-clueDrawer-clue s"]').find(".labyrinthHUD-clueDrawer-quantity").text();
+        if (debug == true) {
+            console.log("Scholar Clues: ", scholarClues)
+        }
+        var treasureClues = $('[class*="labyrinthHUD-clueDrawer-clue t"]').find(".labyrinthHUD-clueDrawer-quantity").text();
+        if (debug == true) {
+            console.log("Treasury Clues: ", treasureClues)
+        }
+        var farmingClues = $('[class*="labyrinthHUD-clueDrawer-clue f"]').find(".labyrinthHUD-clueDrawer-quantity").text();
+        if (debug == true) {
+            console.log("Farming Clues: ", farmingClues)
+        }
+        var deadEndClues = $('[class*="labyrinthHUD-clueDrawer-clue m"]').find(".labyrinthHUD-clueDrawer-quantity").text();
+        if (debug == true) {
+            console.log("Dead End Clues: ", deadEndClues)
+        }
         var A = isNaN(parseInt(fealtyClues, 10));
         var B = isNaN(parseInt(techClues, 10));
         var C = isNaN(parseInt(scholarClues, 10));
@@ -49,6 +74,9 @@ function copyData() {
         var F = isNaN(parseInt(deadEndClues, 10));
         //if data is missing: stop
         if (A || B || C || D || E || F) {
+            if (debug == true) {
+                console.log('Bad Data Parse, Submit cancelled', A, B, C, D, E, F)
+            }
             return
         }
         var allDoors = $(".labyrinthHUD-doorContainer").children();
@@ -84,18 +112,22 @@ function copyData() {
             shuffleFlag
         ];
         let results = resultsArray.join()
-        console.log(results)
+        console.log('Result String: ', results)
         GM_setClipboard(results)
         publishResults(results)
     }
 }
 
 function parseDoor(door) {
+    const debug = localStorage.getItem('debug');
     var doorString = door.find(".labyrinthHUD-door-name-padding").text();
     var doorArray = doorString.split(/\s+/);
     var doorLength = doorArray[0];
     var doorQuality = doorArray[1];
     var doorType = doorArray[2];
+    if (debug == true) {
+        console.log("Door before shortening: ", doorLength, doorQuality, doorType)
+    }
     //shorten door length
     if (doorLength == "Long") {
         doorLength = "L";
@@ -126,6 +158,9 @@ function parseDoor(door) {
     } else {
         doorType = "M";
     }
+    if (debug == true) {
+        console.log("Door after shortening: ", doorLength, doorQuality, doorType)
+    }
     return {
         doorLength,
         doorQuality,
@@ -151,8 +186,15 @@ function doorOption(length, quality, type) {
 }
 
 function publishResults(results) {
+    const debug = localStorage.getItem('debug');
     var lastSubmit = localStorage.getItem('Last Submission');
+    if (debug == true) {
+        console.log('Atempting to submit data')
+    }
     if (results == lastSubmit) {
+        if (debug == true) {
+            console.log("Data has not changed, submit cancelled", lastSubmit)
+        }
         return
     }
     const url = 'https://script.google.com/macros/s/AKfycbwmnDYV_3f5XFj7xzKcPclMcrzTaDkG1SMLwm2e8A8ABN5ms_j6/exec';
