@@ -2,14 +2,21 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.4
+// @version      1.5
 // @description  Handy script to keep track of the various MH location timers
-// @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
+// @resource     https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
+// @resource     YOUR_CSS https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css
+// @require      https://kit.fontawesome.com/62729b39a0.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js
 // @include      http://www.mousehuntgame.com/*
 // @include      https://www.mousehuntgame.com/*
-// @grant GM_setClipboard
+// @grant        GM_setClipboard
+// @grant        GM_addStyle
+// @grant        GM_getResourceText
 // ==/UserScript==
 $(document).ready(function() {
+    var cssTxt = GM_getResourceText ("YOUR_CSS");
+    GM_addStyle (cssTxt);
     buildTimerBox();
     buildControlPanels();
     buildTinkerPanel();
@@ -129,7 +136,6 @@ function buildControlPanels() {
     var forbiddenGroveButton = document.createElement("button");
     forbiddenGroveButton.id = "forbiddenGroveButton";
     forbiddenGroveButton.innerText = "Travel";
-    forbiddenGroveButton.addEventListener("click", travelToGrove);
     forbiddenGroveControlPanel.appendChild(forbiddenGroveButton);
     $(forbiddenGroveControlPanel).css({
         'float': 'left',
@@ -173,7 +179,6 @@ function buildControlPanels() {
     var balacksCoveButton = document.createElement("button");
     balacksCoveButton.id = "balacksCoveButton";
     balacksCoveButton.innerText = "Travel";
-    balacksCoveButton.addEventListener("click", travelToCove);
     balacksCoveControlPanel.appendChild(balacksCoveButton);
     $(balacksCoveControlPanel).css({
         'float': 'left',
@@ -218,7 +223,6 @@ function buildControlPanels() {
     var seasonalGardenButton = document.createElement("button");
     seasonalGardenButton.id = "seasonalGardenButton";
     seasonalGardenButton.innerText = "Travel";
-    seasonalGardenButton.addEventListener("click", travelToGarden);
     seasonalGardenControlPanel.appendChild(seasonalGardenButton);
     $(seasonalGardenControlPanel).css({
         'float': 'left',
@@ -263,7 +267,6 @@ function buildControlPanels() {
     var toxicSpillButton = document.createElement("button");
     toxicSpillButton.id = "toxicSpillButton";
     toxicSpillButton.innerText = "Travel";
-    toxicSpillButton.addEventListener("click", travelToSpill);
     toxicSpillControlPanel.appendChild(toxicSpillButton);
     $(toxicSpillControlPanel).css({
         'float': 'left',
@@ -1128,7 +1131,6 @@ function buildTinkerPanel() {
     var panicButton = document.createElement("button");
     panicButton.id = "panicButton";
     panicButton.innerText = "Travel Back";
-    panicButton.addEventListener("click", travelBack);
     timerOptions.appendChild(panicButton);
     $(panicButton).css({
         'width': '100px',
@@ -1330,9 +1332,7 @@ function updateForbiddenGroveTimer() {
             }),
             forbiddenGrove.append($(".forbiddenGroveOpens"))
         if ((closesHours == 0) && (closesMinutes <= remindInterval) && (remind.search('C') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('The forbidden grove is closing soon, travel there now?') == true) {
-                travelToGrove("skip");
-            }
+            myConfirm('grove','closing')
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#forbiddenGroveCb").click();
             }
@@ -1357,7 +1357,7 @@ function updateForbiddenGroveTimer() {
             }),
             forbiddenGrove.append($(".forbiddenGroveCloses"))
         if ((opensHours == 0) && (opensMinutes <= remindInterval) && (remind.search('O') >= 0) && (remind.search('N') < 0)) {
-            alert('The forbidden grove is opening soon')
+            myAlert('The forbidden grove is opening soon')
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#forbiddenGroveCb").click();
             }
@@ -1635,9 +1635,7 @@ function updateBalacksCoveTimer() {
         $(".balacksCoveLowValue").text(formatOutput(0, lowHours, lowMinutes));
         balacksCove.append($(".balacksCoveLow"))
         if ((midHours == 0) && (midMinutes <= remindInterval) && (remind.search('M') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be mid tide soon, travel there now?') == true) {
-                travelToCove("skip");
-            }
+            myConfirm('cove','mid')
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#balacksCoveCb").click();
             }
@@ -1674,9 +1672,7 @@ function updateBalacksCoveTimer() {
         balacksCove.append($(".balacksCoveMid"))
         balacksCove.append($(".balacksCoveLow"))
         if ((highHours == 0) && (highMinutes <= remindInterval) && (remind.search('H') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be high tide soon, travel there now?') == true) {
-                travelToCove("skip");
-            }
+            myConfirm('cove','high')
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#balacksCoveCb").click();
             }
@@ -1703,9 +1699,7 @@ function updateBalacksCoveTimer() {
         $(".balacksCoveHigh").hide();
         balacksCove.append($(".balacksCoveLow"))
         if ((midHours == 0) && (midMinutes <= remindInterval) && (remind.search('M') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be mid tide soon, travel there now?') == true) {
-                travelToCove("skip");
-            }
+            myConfirm('cove','mid')
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#balacksCoveCb").click();
             }
@@ -1736,9 +1730,7 @@ function updateBalacksCoveTimer() {
         })
         balacksCove.append($(".balacksCoveHigh").show())
         if ((lowHours == 0) && (lowMinutes <= remindInterval) && (remind.search('L') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be low tide soon, travel there now?') == true) {
-                travelToCove("skip");
-            }
+            myConfirm('cove','low')
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#balacksCoveCb").click();
             }
@@ -2098,9 +2090,7 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenSpring"));
         seasonalGarden.append($(".seasonalGardenSummer"));
         if ((fallObj.hours == 0) && (fallObj.minutes <= remindInterval) && (remind.search('F') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be fall in the garden soon, travel there now?') == true) {
-                travelToGarden("skip");
-            }
+            myConfirm('garden','fall')
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#seasonalGardenCb").click();
             }
@@ -2127,9 +2117,7 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenSummer"));
         seasonalGarden.append($(".seasonalGardenFall"));
         if ((winterObj.hours == 0) && (winterObj.minutes <= remindInterval) && (remind.search('W') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be winter in the garden soon, travel there now?') == true) {
-                travelToGarden("skip");
-            }
+            myConfirm('garden','winter')
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#seasonalGardenCb").click();
             }
@@ -2156,9 +2144,7 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenFall"));
         seasonalGarden.append($(".seasonalGardenWinter"));
         if ((springObj.hours == 0) && (springObj.minutes <= remindInterval) && (remind.search('S') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be spring in the garden soon, travel there now?') == true) {
-                travelToGarden("skip");
-            }
+            myConfirm('garden','spring')
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#seasonalGardenCb").click();
             }
@@ -2185,9 +2171,7 @@ function updateSeasonalGardenTimer() {
         seasonalGarden.append($(".seasonalGardenWinter"));
         seasonalGarden.append($(".seasonalGardenSpring"));
         if ((summerObj.hours == 0) && (summerObj.minutes <= remindInterval) && (remind.search('R') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be summer in the garden soon, travel there now?') == true) {
-                travelToGarden("skip");
-            }
+            myConfirm('garden','summer')
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#seasonalGardenCb").click();
             }
@@ -2675,9 +2659,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
         if ((knightObj.hours == 0) && (knightObj.minutes <= remindInterval) && (remind.search('K') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be Knight level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill("skip");
-            }
+            myConfirm('spill','knight');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2710,9 +2692,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillKnight").hide();
         $(".toxicSpillArchduke").hide();
         if ((lordObj.hours == 0) && (lordObj.minutes <= remindInterval) && (remind.search('L') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be Lord level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill("skip");
-            }
+            myConfirm('spill','lord');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2745,9 +2725,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
         if ((baronObj.hours == 0) && (baronObj.minutes <= remindInterval) && (remind.search('B') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be Baron level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill("skip");
-            }
+            myConfirm('spill','baron');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2780,9 +2758,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
         if ((countObj.hours == 0) && (countObj.minutes <= remindInterval) && (remind.search('C') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be Count level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill("skip");
-            }
+            myConfirm('spill','count');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2815,9 +2791,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
         if ((dukeObj.hours == 0) && (dukeObj.minutes <= remindInterval) && (remind.search('D') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be Duke level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill("skip");
-            }
+            myConfirm('spill','duke');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2850,9 +2824,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
         if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= remindInterval) && (remind.search('G') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be Grand Duke level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill("skip");
-            }
+            myConfirm('spill','grand duke');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2885,9 +2857,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
         if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= remindInterval) && (remind.search('A') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be Archduke level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill("skip");
-            }
+            myConfirm('spill','archduke');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2947,9 +2917,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillKnight").hide();
         $(".toxicSpillArchduke").hide();
         if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= remindInterval) && (remind.search('G') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be Grand Duke level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill("skip");
-            }
+            myConfirm('spill','grand duke');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2982,9 +2950,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
         if ((dukeObj.hours == 0) && (dukeObj.minutes <= remindInterval) && (remind.search('D') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be Duke level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill("skip");
-            }
+            myConfirm('spill','duke');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -3017,9 +2983,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
         if ((countObj.hours == 0) && (countObj.minutes <= remindInterval) && (remind.search('C') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be Count level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill("skip");
-            }
+            myConfirm('spill','count');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -3052,9 +3016,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
         if ((baronObj.hours == 0) && (baronObj.minutes <= remindInterval) && (remind.search('B') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be Baron level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill("skip");
-            }
+            myConfirm('spill','baron');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -3087,9 +3049,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
         if ((lordObj.hours == 0) && (lordObj.minutes <= remindInterval) && (remind.search('L') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be Lord level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill("skip");
-            }
+            myConfirm('spill','lord');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -3122,9 +3082,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
         if ((knightObj.hours == 0) && (knightObj.minutes <= remindInterval) && (remind.search('K') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be Knight level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill("skip");
-            }
+            myConfirm('spill','knight');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -3157,9 +3115,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
         if ((heroObj.hours == 0) && (heroObj.minutes <= remindInterval) && (remind.search('H') >= 0) && (remind.search('N') < 0)) {
-            if (confirm('It will be Hero level soon at the toxic spill, travel there now?') == true) {
-                travelToSpill("skip");
-            }
+            myConfirm('spill','hero');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -3660,61 +3616,54 @@ function formatOutput(days, hours, minutes) {
     }
     return dayStr + " " + hourStr + " " + minuteStr;
 }
+//============================== Travel Functions ==============================================
+//Forbidden Grove
+$(document).on('click', '#forbiddenGroveButton', function() {
+    myConfirm('grove','button');
+})
 
-function travelToGrove(skip) {
+function travelToGrove() {
     const disarm = localStorage.getItem('DAT');
     var origin = $('#hudLocationContent').attr('class').replace("hudLocationContent ", "");
     if ($('#hudLocationContent').hasClass('hudLocationContent forbidden_grove') == true) {
         //Do nothing you are already there
     } else if ($(".forbiddenGroveHeaderValue").text() == "CLOSED") {
-        alert('The Forbiddengrove is closed now, you cannot travel there right now')
-    } else if (skip == "skip") {
+        myAlert('The Forbiddengrove is closed now, you cannot travel there')
+    } else {
         localStorage.setItem('TravelOrigin', origin);
         app.pages.TravelPage.travel("forbidden_grove");
         if (disarm == "Y") {
             hg.utils.TrapControl.disarmBait().go()
         }
-    } else if (confirm('Travel to the Forbidden Grove now?') == true) {
-        localStorage.setItem('TravelOrigin', origin);
-        app.pages.TravelPage.travel("forbidden_grove");
-        if (disarm == "Y") {
-            hg.utils.TrapControl.disarmBait().go()
-        }
-    }
+    } 
 }
-
-function travelToCove(skip) {
+//Balack's Cove
+$(document).on('click', '#balacksCoveButton', function() {
+    myConfirm('cove','button');
+})
+function travelToCove() {
     const disarm = localStorage.getItem('DAT');
     var origin = $('#hudLocationContent').attr('class').replace("hudLocationContent ", "");
     if ($('#hudLocationContent').hasClass('hudLocationContent balacks_cove') == true) {
         //Do nothing, you are already there
-    } else if (skip == "skip") {
+    } else {
         localStorage.setItem('TravelOrigin', origin);
         app.pages.TravelPage.travel("balacks_cove");
         if (disarm == "Y") {
             hg.utils.TrapControl.disarmBait().go()
         }
-    } else if (confirm("Travel to Balack's Cove now?") == true) {
-        localStorage.setItem('TravelOrigin', origin);
-        app.pages.TravelPage.travel("balacks_cove");
-        if (disarm == "Y") {
-            hg.utils.TrapControl.disarmBait().go()
-        }
-    }
+    } 
 }
-
-function travelToGarden(skip) {
+//Seasonal Garden
+$(document).on('click', '#seasonalGardenButton', function() {
+    myConfirm('garden','button');
+})
+function travelToGarden() {
     const disarm = localStorage.getItem('DAT');
     var origin = $('#hudLocationContent').attr('class').replace("hudLocationContent ", "");
     if ($('#hudLocationContent').hasClass('hudLocationContent seasonal_garden') == true) {
         //Do nothing, you are already there
-    } else if (skip == "skip") {
-        localStorage.setItem('TravelOrigin', origin);
-        app.pages.TravelPage.travel("seasonal_garden");
-        if (disarm == "Y") {
-            hg.utils.TrapControl.disarmBait().go()
-        }
-    } else if (confirm("Travel to the Seasonal Garden now?") == true) {
+    } else {
         localStorage.setItem('TravelOrigin', origin);
         app.pages.TravelPage.travel("seasonal_garden");
         if (disarm == "Y") {
@@ -3722,41 +3671,219 @@ function travelToGarden(skip) {
         }
     }
 }
-
+//Toxic Spill
+$(document).on('click', '#toxicSpillButton', function() {
+    myConfirm('spill','button');
+})
 function travelToSpill(skip) {
     const disarm = localStorage.getItem('DAT');
     var origin = $('#hudLocationContent').attr('class').replace("hudLocationContent ", "");
     if ($('#hudLocationContent').hasClass('hudLocationContent pollution_outbreak') == true) {
         //Do nothing, you are already there
-    } else if (skip == "skip") {
+    } else {
         localStorage.setItem('TravelOrigin', origin);
         app.pages.TravelPage.travel("pollution_outbreak");
         if (disarm == "Y") {
             hg.utils.TrapControl.disarmBait().go()
         }
-    } else if (confirm("Travel to the Toxic Spill now?") == true) {
-        localStorage.setItem('TravelOrigin', origin);
-        app.pages.TravelPage.travel("pollution_outbreak");
-        if (disarm == "Y") {
-            hg.utils.TrapControl.disarmBait().go()
-        }
-    }
+    } 
 }
-
-function travelBack(skip) {
+//Travel Back
+$(document).on('click', '#panicButton', function() {
+    var origin = localStorage.getItem('TravelOrigin');
+    myConfirm('back',origin);
+})
+function travelBack() {
     const disarm = localStorage.getItem('DAT');
     var origin = localStorage.getItem('TravelOrigin');
     if ($('#hudLocationContent').hasClass(origin) == true) {
-        //    //Do nothing, you are already there
-    } else if (skip == "skip") {
+        //Do nothing, you are already there
+    } else {
         app.pages.TravelPage.travel(origin);
         if (disarm == "Y") {
             hg.utils.TrapControl.disarmBait().go()
         }
-    } else if (confirm("Travel back to the " + origin + "?") == true) {
-        app.pages.TravelPage.travel(origin);
-        if (disarm == "Y") {
-            hg.utils.TrapControl.disarmBait().go()
+    } 
+}
+
+//========== Modals ======================//
+function myConfirm(location,sub) {
+    var messageText = "";
+    var icon = "";
+    var travelFunction = "";
+    var title = "";
+    if ((location == 'grove') && (sub == 'closing')) {
+        icon = 'fas fa-dungeon';
+        messageText = 'The Forbidden Grove is closing soon, travel there now?';
+        travelFunction = travelToGrove;
+        title = 'Timer Reminder';
+        } else if ((location == 'grove') && (sub == 'opening')) {
+            icon = 'fas fa-dungeon';
+            messageText = 'The Forbidden Grove is opening soon, travel there now?';
+            travelFunction = travelToGrove;
+            title = 'Timer Reminder';
+        } else if ((location == 'grove') && (sub == 'button')) {
+            icon = 'fas fa-dungeon';
+            messageText = 'Travel to the Forbidden Grove now?';
+            travelFunction = travelToGrove;
+            title = 'Quick Travel';
+        } else if ((location == 'cove') && (sub == 'low')) {
+            icon = 'fas fa-water';
+            messageText = 'Balacks Cove will be low tide soon, travel there now?';
+            travelFunction = travelToCove;
+            title = 'Timer Reminder';
+        } else if ((location == 'cove') && (sub == 'mid')) {
+            icon = 'fas fa-water';
+            messageText = 'Balacks Cove will be mid tide soon, travel there now?';
+            travelFunction = travelToCove;
+            title = 'Timer Reminder';
+        } else if ((location == 'cove') && (sub == 'high')) {
+            icon = 'fas fa-water';
+            messageText = 'Balacks Cove will be high tide soon, travel there now?';
+            travelFunction = travelToCove;
+            title = 'Timer Reminder';
+        } else if ((location == 'cove') && (sub == 'button')) {
+            icon = 'fas fa-water';
+            messageText = 'Travel to Balacks Cove now?';
+            travelFunction = travelToCove;
+            title = 'Quick Travel';
+        } else if ((location == 'garden') && (sub == 'fall')) {
+            icon = 'fab fa-canadian-maple-leaf';
+            messageText = 'The Seasonal Garden will be fall soon, travel there now?';
+            travelFunction = travelToGarden;
+            title = 'Timer Reminder';
+        } else if ((location == 'garden') && (sub == 'winter')) {
+            icon = 'fas fa-icicles';
+            messageText = 'The Seasonal Garden will be winter soon, travel there now?';
+            travelFunction = travelToGarden;
+            title = 'Timer Reminder';
+        } else if ((location == 'garden') && (sub == 'spring')) {
+            icon = 'fas fa-seedling';
+            messageText = 'The Seasonal Garden will be spring soon, travel there now?';
+            travelFunction = travelToGarden;
+            title = 'Timer Reminder';
+        } else if ((location == 'garden') && (sub == 'summer')) {
+            icon = 'fas fa-sun';
+            messageText = 'The Seasonal Garden will be summer soon, travel there now?';
+            travelFunction = travelToGarden;
+            title = 'Timer Reminder';
+        } else if ((location == 'garden') && (sub == 'button')) {
+            var season = $('.seasonalGardenHeaderValue').text();
+            if (season == 'FALL') {
+                icon = 'fab fa-canadian-maple-leaf';
+            } else if (season == 'WINTER') {
+                icon = 'fas fa-icicles';
+            } else if (season == 'SPRING') {
+                icon = 'fas fa-icicles';
+            } else {
+                icon = 'fas fa-sun';
+            }
+            messageText = 'Travel to the Seasonal Garden now?';
+            travelFunction = travelToGarden;
+            title = 'Quick Travel';
+        } else if ((location == 'spill') && (sub == 'hero')) {
+            icon = 'fas fa-biohazard';
+            messageText = 'The Toxic Spill will be '+sub+' rank soon, travel there now?';
+            travelFunction = travelToSpill;
+            title = 'Timer Reminder';
+        } else if ((location == 'spill') && (sub == 'knight')) {
+            icon = 'fas fa-biohazard';
+            messageText = 'The Toxic Spill will be '+sub+' rank soon, travel there now?';
+            travelFunction = travelToSpill;
+            title = 'Timer Reminder';
+        } else if ((location == 'spill') && (sub == 'lord')) {
+            icon = 'fas fa-biohazard';
+            messageText = 'The Toxic Spill will be '+sub+' rank soon, travel there now?';
+            travelFunction = travelToSpill;
+            title = 'Timer Reminder';
+        } else if ((location == 'spill') && (sub == 'baron')) {
+            icon = 'fas fa-biohazard';
+            messageText = 'The Toxic Spill will be '+sub+' rank soon, travel there now?';
+            travelFunction = travelToSpill;
+            title = 'Timer Reminder';
+        } else if ((location == 'spill') && (sub == 'count')) {
+            icon = 'fas fa-biohazard';
+            messageText = 'The Toxic Spill will be '+sub+' rank soon, travel there now?';
+            travelFunction = travelToSpill;
+            title = 'Timer Reminder';
+        } else if ((location == 'spill') && (sub == 'duke')) {
+            icon = 'fas fa-biohazard';
+            messageText = 'The Toxic Spill will be '+sub+' rank soon, travel there now?';
+            travelFunction = travelToSpill;
+            title = 'Timer Reminder';
+        } else if ((location == 'spill') && (sub == 'grand duke')) {
+            icon = 'fas fa-biohazard';
+            messageText = 'The Toxic Spill will be '+sub+' rank soon, travel there now?';
+            travelFunction = travelToSpill;
+            title = 'Timer Reminder';
+        } else if ((location == 'spill') && (sub == 'archduke')) {
+            icon = 'fas fa-biohazard';
+            messageText = 'The Toxic Spill will be '+sub+' rank soon, travel there now?';
+            travelFunction = travelToSpill;
+            title = 'Timer Reminder';
+        } else if ((location == 'spill') && (sub == 'button')) {
+            icon = 'fas fa-biohazard';
+            messageText = 'Travel to the Toxic Spill now?';
+            travelFunction = travelToSpill;
+            title = 'Quick Travel';
+        } else if (location == 'back') {
+            icon = 'fas fa-history';
+            messageText = 'Travel to the back to the '+sub+' now?';
+            travelFunction = travelBack;
+            title = 'Quick Travel';
+        }
+   //
+   $.confirm({
+    autoClose: 'cancel|120000',
+    title: title,
+    content: messageText,
+    icon: icon,
+    type: 'dark',
+    typeAnimated: true,
+    boxWidth: '30%',
+    useBootstrap: false,
+    draggable: true,
+    escapeKey: 'cancel',
+    buttons: {
+        confirm: {
+            text: 'Yes',
+            keys: ['enter', 'space'],
+            btnClass: 'btn-green',
+            action: function() {
+                travelFunction("skip")
+            }
+        },
+        cancel: {
+            text: 'No',
+            btnClass: 'btn-red',
+            action: function(){
+            }
         }
     }
+})
+}
+function myAlert(messageText) {
+    var icon = 'fas fa-exclamation-circle'
+    var title = "Oops!"
+   $.alert({
+    autoClose: 'acknowledge|60000',
+    title: title,
+    content: messageText,
+    icon: icon,
+    type: 'dark',
+    typeAnimated: true,
+    boxWidth: '30%',
+    useBootstrap: false,
+    draggable: true,
+    escapeKey: 'aknowledge',
+    buttons: {
+        acknowledge: {
+            text: 'Ok',
+            keys: ['enter', 'space'],
+            btnClass: 'btn-blue',
+            action: function() {
+            }
+        },
+    }
+})
 }
