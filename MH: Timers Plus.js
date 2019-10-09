@@ -6,7 +6,7 @@
 // @description  Handy script to keep track of the various MH location timers
 // @resource     https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @resource     YOUR_CSS https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css
-// @require      https://kit.fontawesome.com/62729b39a0.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js
 // @include      http://www.mousehuntgame.com/*
 // @include      https://www.mousehuntgame.com/*
