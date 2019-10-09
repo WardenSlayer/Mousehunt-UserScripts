@@ -2,7 +2,7 @@
 // @name         MH King's Crowns+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.7.5
+// @version      1.7.6
 // @description  Locked Favorites, Community Ranks, and Copy Crowns Button
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -224,7 +224,7 @@ $(document).on("change", "#communityRanks", function() {
 });
 
 function showCommunityRanks() {
-    var totalMice = 979;
+    var totalMice = 1005;
     if ($(".crownheader.crownheadercommunity").length > 0) {
         return;
     }
@@ -283,13 +283,13 @@ function showCommunityRanks() {
     var aBronze = document.createElement('a');
     aBronze.appendChild(bronzeText);
     var bronzeRank = getRankBronze(allBronze.length)
-    aBronze.title = "90% Crowned Scoreboard: "+bronzeRank;
+    aBronze.title = "90% Crowned Scoreboard: " + bronzeRank;
     aBronze.href = bronzeLink;
     $(aBronze).attr("target", "_blank");
     var aSilver = document.createElement('a');
     aSilver.appendChild(silverText);
     var silverRank = getRankSilver(allSilver.length)
-    aSilver.title = "MHCC Scoreboard: "+silverRank;
+    aSilver.title = "MHCC Scoreboard: " + silverRank;
     aSilver.href = silverLink;
     $(aSilver).attr("target", "_blank");
     var aGold = document.createElement('a');
@@ -301,28 +301,28 @@ function showCommunityRanks() {
 }
 
 function getRankBronze(crowns) {
-    var totalMice = 979;
+    var totalMice = 1005;
     var crownPrecent = ((crowns / totalMice) * 100).toFixed(2) + "%";
     var rank = "";
     if (crowns >= totalMice) {
         rank = "Hepatizon";
-    } else if (crowns >= 970) {
+    } else if (crowns >= 995) {
         rank = "Electrum";
-    } else if (crowns >= 960) {
+    } else if (crowns >= 985) {
         rank = "Palladium";
-    } else if (crowns >= 931) {
+    } else if (crowns >= 955) {
         rank = "Cobalt";
-    } else if (crowns >= 882) {
+    } else if (crowns >= 905) {
         rank = "Bronze (full)";
-    } else if (crowns >= 833) {
+    } else if (crowns >= 855) {
         rank = "Titanium";
-    } else if (crowns >= 784) {
+    } else if (crowns >= 804) {
         rank = "Pewter";
-    } else if (crowns >= 735) {
+    } else if (crowns >= 754) {
         rank = "Brass";
-    } else if (crowns >= 686) {
+    } else if (crowns >= 704) {
         rank = "Copper";
-    } else if (crowns >= 637) {
+    } else if (crowns >= 654) {
         rank = "Tin";
     } else {
         rank = "Rust";
@@ -332,34 +332,34 @@ function getRankBronze(crowns) {
 }
 
 function getRankSilver(crowns) {
-    var totalMice = 979;
+    var totalMice = 1005;
     var crownPrecent = ((crowns / totalMice) * 100).toFixed(2) + "%";
     var rank = "";
-    if (crowns >= 881) {
+    if (crowns >= 904) {
         rank = "Super Secret Squirrel";
-    } else if (crowns >= 832) {
+    } else if (crowns >= 854) {
         rank = "Grizzled Squirrel";
-    } else if (crowns >= 783) {
+    } else if (crowns >= 804) {
         rank = "Flying Squirrel";
-    } else if (crowns >= 734) {
+    } else if (crowns >= 753) {
         rank = "Chinchilla";
-    } else if (crowns >= 685) {
+    } else if (crowns >= 703) {
         rank = "Meerkat";
-    } else if (crowns >= 636) {
+    } else if (crowns >= 653) {
         rank = "Ferret";
-    } else if (crowns >= 587) {
+    } else if (crowns >= 603) {
         rank = "Prairie Dog";
-    } else if (crowns >= 538) {
+    } else if (crowns >= 552) {
         rank = "Marmot";
-    } else if (crowns >= 489) {
+    } else if (crowns >= 502) {
         rank = "Woodchuck";
-    } else if (crowns >= 440) {
+    } else if (crowns >= 452) {
         rank = "Wombat";
-    } else if (crowns >= 391) {
+    } else if (crowns >= 402) {
         rank = "Pine Marten";
-    } else if (crowns >= 342) {
+    } else if (crowns >= 351) {
         rank = "Chipmunk";
-    } else if (crowns >= 293) {
+    } else if (crowns >= 302) {
         rank = "Bandicoot";
     } else {
         rank = "Weasel";
@@ -395,39 +395,54 @@ function copyCrowns() {
     while (miceArray[++i]) {
         combinedArray.push([miceArray[i], catchArray[i]]);
     }
-    var remainingMiceArray = $(".remainingMouse").children().toArray();
-    remainingMiceArray.forEach(function(elements, i) {
-        var txt = $(elements).text();
-        if (txt == " - Select a mouse -"){}
-        else {
-        txt = txt.replace("(",",(").replace("(","").replace(")","").replace(/\s*,\s*/g, ",");
-        txt = txt.split(",");
-        let mouseName = txt[0];
-        mouseName = correctMouseName(mouseName);
-        let catches = txt[1];
-        combinedArray.push([mouseName,catches])
-        }
-    })
+    if ($(".remainingMouse").length > 0) {
+        var remainingMiceArray = $(".remainingMouse").children().toArray();
+        remainingMiceArray.forEach(function(elements, i) {
+            var txt = $(elements).text();
+            if (txt == " - Select a mouse -") {} else {
+                txt = txt.replace(")", "").split("(");
+                let mouseName = txt[0].trim();
+                mouseName = correctMouseName(mouseName);
+                let catches = txt[1];
+                combinedArray.push([mouseName, catches])
+            }
+        })
+    } else {
+        //Cannot parse uncrowned mice from a profile other than your own.
+    }
     let finalTable = combinedArray.sort().map(e => e.join(",")).join("\n");
     GM_setClipboard(finalTable);
     var copyCrownsButton = $("#copyCrownsButton")
     copyCrownsButton.text("---------Copied!---------")
     setTimeout(function() {
-    copyCrownsButton.text("Copy Crowns to Clipboard")
-     }, 1500);
+        copyCrownsButton.text("Copy Crowns to Clipboard")
+    }, 1500);
 }
-function correctMouseName(mouseName){
-let newMouseName = "";
- if (mouseName == "Ful"){newMouseName = "Ful'mina the Mountain Queen"}
-    else if (mouseName == "Kalor"){newMouseName = "Kalor'Ignis of the Geyser"}
-    else if (mouseName == "Inferna, The Engulfed"){newMouseName = "Inferna the Engulfed"}
-    else if (mouseName == "Nachous, The Molten"){newMouseName = "Nachous the Molten"}
-    else if (mouseName == "Stormsurge, the Vile Tempest"){newMouseName = "Stormsurge the Vile Tempest"}
-    else if (mouseName == "Bruticus, the Blazing"){newMouseName = "Bruticus the Blazing"}
-    else if (mouseName == "Vincent, The Magnificent"){newMouseName = "Vincent The Magnificent"}
-    else if (mouseName == "Corky, the Collector Mouse"){newMouseName = "Corky the Collector Mouse"}
-    else if (mouseName == "Record Keeper"){newMouseName = "Record Keeper's Assistant"}
-    else if (mouseName == "Keeper"){newMouseName = "Keeper's Assistant"}
-    else {newMouseName = mouseName}
-return newMouseName;
+
+function correctMouseName(mouseName) {
+    let newMouseName = "";
+    if (mouseName == "Ful") {
+        newMouseName = "Ful'mina the Mountain Queen"
+    } else if (mouseName == "Kalor") {
+        newMouseName = "Kalor'Ignis of the Geyser"
+    } else if (mouseName == "Inferna, The Engulfed") {
+        newMouseName = "Inferna the Engulfed"
+    } else if (mouseName == "Nachous, The Molten") {
+        newMouseName = "Nachous the Molten"
+    } else if (mouseName == "Stormsurge, the Vile Tempest") {
+        newMouseName = "Stormsurge the Vile Tempest"
+    } else if (mouseName == "Bruticus, the Blazing") {
+        newMouseName = "Bruticus the Blazing"
+    } else if (mouseName == "Vincent, The Magnificent") {
+        newMouseName = "Vincent The Magnificent"
+    } else if (mouseName == "Corky, the Collector Mouse") {
+        newMouseName = "Corky the Collector Mouse"
+    } else if (mouseName == "Record Keeper") {
+        newMouseName = "Record Keeper's Assistant"
+    } else if (mouseName == "Keeper") {
+        newMouseName = "Keeper's Assistant"
+    } else {
+        newMouseName = mouseName
+    }
+    return newMouseName;
 }
