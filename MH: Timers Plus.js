@@ -2,7 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.5
+// @version      1.5.1
 // @description  Handy script to keep track of the various MH location timers
 // @resource     https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @resource     YOUR_CSS https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css
@@ -20,7 +20,7 @@ $(document).ready(function() {
     buildTimerBox();
     buildControlPanels();
     buildTinkerPanel();
-    startTimers();
+    runTimers();
 });
 
 function buildTimerBox() {
@@ -1201,11 +1201,6 @@ $(document).on('change', '#disarmCB', function() {
 //
 //
 //===================================================================================
-function startTimers() {
-    localStorage.setItem("mainTimer", 0);
-    runTimers();
-}
-
 function runTimers() {
     updateText();
     var myTimer = "";
@@ -3619,6 +3614,7 @@ function formatOutput(days, hours, minutes) {
 //============================== Travel Functions ==============================================
 //Forbidden Grove
 $(document).on('click', '#forbiddenGroveButton', function() {
+    updateForbiddenGroveTimer();
     myConfirm('grove','button');
 })
 
@@ -3864,7 +3860,7 @@ function myConfirm(location,sub) {
 }
 function myAlert(messageText) {
     var icon = 'fas fa-exclamation-circle'
-    var title = "Oops!"
+    var title = "Attention!"
    $.alert({
     autoClose: 'acknowledge|60000',
     title: title,
