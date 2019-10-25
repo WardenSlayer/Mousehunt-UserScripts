@@ -2,7 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.5.1
+// @version      1.5.2
 // @description  Handy script to keep track of the various MH location timers
 // @resource     https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @resource     YOUR_CSS https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css
@@ -3615,7 +3615,11 @@ function formatOutput(days, hours, minutes) {
 //Forbidden Grove
 $(document).on('click', '#forbiddenGroveButton', function() {
     updateForbiddenGroveTimer();
-    myConfirm('grove','button');
+    if ($(".forbiddenGroveHeaderValue").text() == "CLOSED") {
+        myAlert('The Forbiddengrove is closed now, you cannot travel there')
+    } else {
+        myConfirm('grove','button');
+    }
 })
 
 function travelToGrove() {
