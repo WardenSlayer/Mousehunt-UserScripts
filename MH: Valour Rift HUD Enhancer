@@ -126,8 +126,8 @@ function updateHUD() {
 }
 function calculateSteps(hinge) {
     let towerState = $('.valourRiftHUD-state.tower');
-    let huntsRem = parseInt(towerState.find('.valourRiftHUD-huntsRemaining-value').text(),10);
-    let stepsTaken = parseInt(towerState.find('.valourRiftHUD-stepsTaken-value').text(),10);
+    //let huntsRem = parseInt(towerState.find('.valourRiftHUD-huntsRemaining-value').text(),10);
+    let stepsTaken = parseInt(towerState.find('.valourRiftHUD-stepsTaken-value').text().replace(',', ''),10);
     let stepsRem = 0;
     let nextFrags = 0;
     if (stepsTaken < 140) {
