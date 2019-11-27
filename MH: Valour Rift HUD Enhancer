@@ -58,6 +58,7 @@ function updateHUD(resultString) {
     let huntsRem = $('.valourRiftHUD-huntsRemaining.mousehuntTooltipParent');
     let towerStateB = huntsRem.find('.valourRiftHUD-state.tower');
     let numHuntsRem = parseInt(towerStateB.find('.valourRiftHUD-huntsRemaining-value').text(), 10);
+    if (isNaN(numHuntsRem)) {return false}
     let SPH = ((stepsTillBoss) / numHuntsRem).toFixed(2);
     let huntToolTip = huntsRem.find('.mousehuntTooltip.tight.right.noEvents');
     let ToolTipText = "";
