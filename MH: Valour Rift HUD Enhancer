@@ -2,7 +2,7 @@
 // @name         MH: Valour Rift HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.3
+// @version      1.3.1
 // @description  Changes the text that appears in the Valour Rift hud tooltips to give you the info you actually want to see
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -57,7 +57,7 @@ function updateHUD(resultString) {
     //Can I make it to the next eclipse floor?
     let huntsRem = $('.valourRiftHUD-huntsRemaining.mousehuntTooltipParent');
     let towerStateB = huntsRem.find('.valourRiftHUD-state.tower');
-    let numHuntsRem = parseInt(towerStateB.find('.valourRiftHUD-huntsRemaining-value').text(), 10);
+    let numHuntsRem = parseInt(towerStateB.find('.valourRiftHUD-huntsRemaining-value').text().replace(',', ''), 10);
     if (numHuntsRem == 0) {
         return false
     }
@@ -76,17 +76,17 @@ function updateHUD(resultString) {
     let lootCont = $('.valourRiftHUD-towerLootContainer');
     let sigils = $("[data-item-type|='rift_gaunt_upgrade_a_stat_item']");
     let secrets = $("[data-item-type|='rift_gaunt_upgrade_b_stat_item']");
-    let numSigils = parseInt(sigils.first().text(), 10);
-    let numSecrets = parseInt(secrets.first().text(), 10);
+    let numSigils = parseInt(sigils.first().text().replace(',', ''), 10);
+    let numSecrets = parseInt(secrets.first().text().replace(',', ''), 10);
     let cacheSigils = 0;
     let cacheSecrets = 0;
     let retreat = $('.valourRiftHUD-dialog-state.retreat');
     let rewardCache = retreat.find('.valourRiftHUD-dialog-item-name');
     rewardCache.each(function() {
         if ($(this).text() == 'Tower Sigil') {
-            cacheSigils = cacheSigils + parseInt($(this).siblings().text(), 10);
+            cacheSigils = cacheSigils + parseInt($(this).siblings().text().replace(',', ''), 10);
         } else if ($(this).text() == 'Tower Secrets') {
-            cacheSecrets = cacheSecrets + parseInt($(this).siblings().text(), 10);
+            cacheSecrets = cacheSecrets + parseInt($(this).siblings().text().replace(',', ''), 10);
         }
     });
     let sigilString = (cacheSigils + numSigils) + ' total sigils including cache';
@@ -150,7 +150,7 @@ function updateHUD(resultString) {
 $("[title|='Tower Sigil']").mouseover(function() {
     let huntsRem = $('.valourRiftHUD-huntsRemaining.mousehuntTooltipParent');
     let towerStateB = huntsRem.find('.valourRiftHUD-state.tower');
-    let numHuntsRem = parseInt(towerStateB.find('.valourRiftHUD-huntsRemaining-value').text(), 10);
+    let numHuntsRem = parseInt(towerStateB.find('.valourRiftHUD-huntsRemaining-value').text().replace(',', ''), 10);
     if (numHuntsRem > 0) {
         $("[title|='Tower Sigil']").attr('title', updateHUD('Sigil'));
     }
@@ -158,7 +158,7 @@ $("[title|='Tower Sigil']").mouseover(function() {
 $("[title|='Tower Secrets']").mouseover(function() {
     let huntsRem = $('.valourRiftHUD-huntsRemaining.mousehuntTooltipParent');
     let towerStateB = huntsRem.find('.valourRiftHUD-state.tower');
-    let numHuntsRem = parseInt(towerStateB.find('.valourRiftHUD-huntsRemaining-value').text(), 10);
+    let numHuntsRem = parseInt(towerStateB.find('.valourRiftHUD-huntsRemaining-value').text().replace(',', ''), 10);
     if (numHuntsRem > 0) {
         $("[title|='Tower Secrets']").attr('title', updateHUD('Secrets'));
     }
@@ -166,7 +166,7 @@ $("[title|='Tower Secrets']").mouseover(function() {
 $("[title|='Fragment of the Eclipse']").mouseover(function() {
     let huntsRem = $('.valourRiftHUD-huntsRemaining.mousehuntTooltipParent');
     let towerStateB = huntsRem.find('.valourRiftHUD-state.tower');
-    let numHuntsRem = parseInt(towerStateB.find('.valourRiftHUD-huntsRemaining-value').text(), 10);
+    let numHuntsRem = parseInt(towerStateB.find('.valourRiftHUD-huntsRemaining-value').text().replace(',', ''), 10);
     if (numHuntsRem > 0) {
         $("[title|='Fragment of the Eclipse']").attr('title', updateHUD('Frags'));
     }
@@ -174,7 +174,7 @@ $("[title|='Fragment of the Eclipse']").mouseover(function() {
 $("[title|='Core of the Eclipse']").mouseover(function() {
     let huntsRem = $('.valourRiftHUD-huntsRemaining.mousehuntTooltipParent');
     let towerStateB = huntsRem.find('.valourRiftHUD-state.tower');
-    let numHuntsRem = parseInt(towerStateB.find('.valourRiftHUD-huntsRemaining-value').text(), 10);
+    let numHuntsRem = parseInt(towerStateB.find('.valourRiftHUD-huntsRemaining-value').text().replace(',', ''), 10);
     if (numHuntsRem > 0) {
         $("[title|='Core of the Eclipse']").attr('title', updateHUD('Cores'));
     }
