@@ -2,7 +2,7 @@
 // @name         MH King's Crowns+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.7.6
+// @version      1.7.7
 // @description  Locked Favorites, Community Ranks, and Copy Crowns Button
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -224,7 +224,7 @@ $(document).on("change", "#communityRanks", function() {
 });
 
 function showCommunityRanks() {
-    var totalMice = 1005;
+    var totalMice = 1006;
     if ($(".crownheader.crownheadercommunity").length > 0) {
         return;
     }
@@ -301,28 +301,28 @@ function showCommunityRanks() {
 }
 
 function getRankBronze(crowns) {
-    var totalMice = 1005;
+    var totalMice = 1006;
     var crownPrecent = ((crowns / totalMice) * 100).toFixed(2) + "%";
     var rank = "";
     if (crowns >= totalMice) {
         rank = "Hepatizon";
-    } else if (crowns >= 995) {
+    } else if (crowns >= 996) {
         rank = "Electrum";
-    } else if (crowns >= 985) {
+    } else if (crowns >= 986) {
         rank = "Palladium";
-    } else if (crowns >= 955) {
+    } else if (crowns >= 956) {
         rank = "Cobalt";
-    } else if (crowns >= 905) {
+    } else if (crowns >= 906) {
         rank = "Bronze (full)";
-    } else if (crowns >= 855) {
+    } else if (crowns >= 856) {
         rank = "Titanium";
-    } else if (crowns >= 804) {
+    } else if (crowns >= 806) {
         rank = "Pewter";
-    } else if (crowns >= 754) {
+    } else if (crowns >= 756) {
         rank = "Brass";
-    } else if (crowns >= 704) {
+    } else if (crowns >= 706) {
         rank = "Copper";
-    } else if (crowns >= 654) {
+    } else if (crowns >= 656) {
         rank = "Tin";
     } else {
         rank = "Rust";
@@ -332,7 +332,7 @@ function getRankBronze(crowns) {
 }
 
 function getRankSilver(crowns) {
-    var totalMice = 1005;
+    var totalMice = 1006;
     var crownPrecent = ((crowns / totalMice) * 100).toFixed(2) + "%";
     var rank = "";
     if (crowns >= 904) {
