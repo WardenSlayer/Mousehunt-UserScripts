@@ -2,7 +2,7 @@
 // @name         MH King's Crowns+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.8
+// @version      1.8.1
 // @description  Locked Favorites, Community Ranks, and Copy Crowns Button
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -24,6 +24,7 @@ $(document).ready(function() {
     };
     if ($('.mousehuntHud-page-tabHeader.kings_crowns').hasClass('active')) {
         generate()
+        observerA.observe($("#tabbarContent_page").get(0), observerOptionsA);
     } else if ($('#tabbarContent_page').find('.tabbarContent-tab.active').children().filter('.active').attr('data-template') == 'tab_profile') {
         observerB.observe($(".mousehuntHud-page-tabHeader-container").get(0), observerOptionsB);
         //is 2 of these active at once a bad idea?
@@ -65,6 +66,7 @@ function generate() {
         showCommunityRanks();
     }
 }
+
 function buildToolbar() {
     if ($(".toolBar").length > 0) return;
     var toolBar = document.createElement("div");
@@ -198,6 +200,7 @@ $(document).on("change", "#communityRanks", function() {
         }
     }
 });
+
 function showCommunityRanks() {
     var totalMice = 1007;
     if ($(".crownheader.crownheadercommunity").length > 0) {
@@ -223,22 +226,20 @@ function showCommunityRanks() {
     var goldCrowns = allGold.length;
     var platCrowns = allPlat.length;
     var diamondCrowns = allDiamond.length;
-    var uncrowned = totalMice-bronzeCrowns;
+    var uncrowned = totalMice - bronzeCrowns;
     var bronzeLink = "https://docs.google.com/spreadsheets/d/19_wHCkwiT5M6LS7XNLt4NYny98fjpg4UlHbgOD05ijw/pub?fbclid=IwAR3a1Ku2xTl1mIDksUr8Lk5ORMEnuv7jnvIy9K6OBeziG6AyvYYlZaIQkHY"
     var silverLink = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQG5g3vp-q7LRYug-yZR3tSwQzAdN7qaYFzhlZYeA32vLtq1mJcq7qhH80planwei99JtLRFAhJuTZn/pubhtml?fbclid=IwAR3sPXNLloGnFk324a0HShroP1E-sNcnQBlRTjJ7gScWTWosqmXv5InB_Ns'
     var goldLink = 'https://docs.google.com/spreadsheets/d/10OGD5OYkGIEAbiez7v92qU5Fdul0ZtCRgEjlECkwZJE/pubhtml?gid=478731024&single=true&fbclid=IwAR28w7IQyMp91I62CR3GOILpbeLwgKaydIoQimMNm7j3S0DL8Mj_IsRpGD4'
     var rankSummary = $("<div class='rank summary'</div>");
-    $(rankSummary).append("<div class='lineOne'</div>");
-    $(rankSummary).append("<div class='lineTwo'</div>");
     rankSummary.css({
-        'font-size': '16px',
-        'padding': '5px',
+        'font-size': '12px',
+        'margin-bottom': '10px',
     });
     rankSummary.insertAfter(communityCrownHeader);
     var uncrownedText = document.createTextNode("Uncrowned: " + uncrowned + " (" + ((uncrowned / totalMice) * 100).toFixed(2) + "%) | ");
     $(rankSummary).attr('title', 'Mobster and Leprechaun excluded from counts');
     var bronzeText = document.createTextNode("Bronze: " + bronzeCrowns + " (" + ((bronzeCrowns / totalMice) * 100).toFixed(2) + "%) | ");
-    var silverText = document.createTextNode("Silver: " + silverCrowns + " (" + ((silverCrowns / totalMice) * 100).toFixed(2) + "%)");
+    var silverText = document.createTextNode("Silver: " + silverCrowns + " (" + ((silverCrowns / totalMice) * 100).toFixed(2) + "%) | ");
     var goldText = document.createTextNode("Gold: " + goldCrowns + " (" + ((goldCrowns / totalMice) * 100).toFixed(2) + "%) | ");
     var platText = document.createTextNode("Platinum: " + platCrowns + " (" + ((platCrowns / totalMice) * 100).toFixed(2) + "%) | ");
     var diamondText = document.createTextNode("Diamond: " + diamondCrowns + " (" + ((diamondCrowns / totalMice) * 100).toFixed(2) + "%)");
@@ -254,17 +255,12 @@ function showCommunityRanks() {
     aSilver.title = "MHCC Scoreboard: " + silverRank;
     aSilver.href = silverLink;
     $(aSilver).attr("target", "_blank");
-    $('.lineOne').append(uncrownedText).append(aBronze).append(aSilver);
     var aGold = document.createElement('a');
     aGold.appendChild(goldText);
     aGold.title = "MHCC Elite Scoreboard";
     aGold.href = goldLink;
     $(aGold).attr("target", "_blank");
-    $('.lineTwo').append(aGold).append(platText).append(diamondText);
-    $('.lineOne,.lineTwo').css({
-        'width': '100%',
-        'margin-bottom': '2px',
-    });
+    $(rankSummary).append(uncrownedText).append(aBronze).append(aSilver).append(aGold).append(platText).append(diamondText);
 }
 
 function getRankBronze(crowns) {
@@ -346,8 +342,8 @@ function copyCrowns() {
     var miceArray = [];
     allMice.each(function(i) {
         let $mouse = correctMouseName($(this).find('.mouseCrownsView-group-mouse-name').text());
-        let $count = parseInt($(this).find('.mouseCrownsView-group-mouse-catches').text().replace(',',""),10);
-        miceArray[i] = [$mouse,$count];
+        let $count = parseInt($(this).find('.mouseCrownsView-group-mouse-catches').text().replace(',', ""), 10);
+        miceArray[i] = [$mouse, $count];
     })
     let finalTable = miceArray.map(e => e.join(",")).join("\n");
     GM_setClipboard(finalTable);
