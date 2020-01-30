@@ -2,7 +2,7 @@
 // @name         MH: Labyrinth Door Data Collector
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.2
+// @version      1.2.1
 // @description  Mousehunt data collection tool for avilible labyrinth doors
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -24,9 +24,14 @@ function buildCopyButton() {
     copyButton.innerText = "Copy/Submit Data";
     copyButton.addEventListener("click", copyData);
     copyButtonContainer.appendChild(copyButton);
+    $(copyButton).css({
+          'margin-right': '5px',
+    })
     hudLocation.after(copyButtonContainer);
     $(".copyButtonContainer").css({
-        float: "right"
+        'width': '100%',
+        'margin-bottom': '10px',
+        'text-align': 'right',
     });
 }
 
