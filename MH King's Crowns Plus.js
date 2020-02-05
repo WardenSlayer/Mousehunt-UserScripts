@@ -2,7 +2,7 @@
 // @name         MH King's Crowns+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.8.1
+// @version      1.8.2
 // @description  Locked Favorites, Community Ranks, and Copy Crowns Button
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -59,6 +59,7 @@ function callback(mutationList, observer) {
 
 function generate() {
     buildToolbar();
+    decorate();
     if (localStorage.getItem("Lock Favorites") == "Y" && $(".mouseCrownsView-group-mouse-favouriteButton").length > 0) {
         lockFavorites();
     }
@@ -66,7 +67,6 @@ function generate() {
         showCommunityRanks();
     }
 }
-
 function buildToolbar() {
     if ($(".toolBar").length > 0) return;
     var toolBar = document.createElement("div");
@@ -115,10 +115,16 @@ function buildToolbar() {
     //Copy Crown Button
     var copyCrownsButton = document.createElement("button");
     copyCrownsButton.id = "copyCrownsButton";
-    copyCrownsButton.innerText = "Copy Crowns to Clipboard";
     copyCrownsButton.addEventListener("click", copyCrowns)
+    $(copyCrownsButton).attr('title', 'Copy Crowns to Clipboard');
     toolBar.appendChild(copyCrownsButton);
-
+    $(copyCrownsButton).css({
+        'background-image': "url('https://image.flaticon.com/icons/svg/1250/1250214.svg')",
+        'background-repeat': 'no-repeat',
+        'background-size': 'contain',
+        'width': '25px',
+        'height': '25px',
+    });
     // Last
     let crownBreak = $('.mouseCrownsView-group.favourite');
     crownBreak.append(toolBar);
@@ -200,7 +206,6 @@ $(document).on("change", "#communityRanks", function() {
         }
     }
 });
-
 function showCommunityRanks() {
     var totalMice = 1007;
     if ($(".crownheader.crownheadercommunity").length > 0) {
@@ -226,7 +231,7 @@ function showCommunityRanks() {
     var goldCrowns = allGold.length;
     var platCrowns = allPlat.length;
     var diamondCrowns = allDiamond.length;
-    var uncrowned = totalMice - bronzeCrowns;
+    var uncrowned = totalMice-bronzeCrowns;
     var bronzeLink = "https://docs.google.com/spreadsheets/d/19_wHCkwiT5M6LS7XNLt4NYny98fjpg4UlHbgOD05ijw/pub?fbclid=IwAR3a1Ku2xTl1mIDksUr8Lk5ORMEnuv7jnvIy9K6OBeziG6AyvYYlZaIQkHY"
     var silverLink = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQG5g3vp-q7LRYug-yZR3tSwQzAdN7qaYFzhlZYeA32vLtq1mJcq7qhH80planwei99JtLRFAhJuTZn/pubhtml?fbclid=IwAR3sPXNLloGnFk324a0HShroP1E-sNcnQBlRTjJ7gScWTWosqmXv5InB_Ns'
     var goldLink = 'https://docs.google.com/spreadsheets/d/10OGD5OYkGIEAbiez7v92qU5Fdul0ZtCRgEjlECkwZJE/pubhtml?gid=478731024&single=true&fbclid=IwAR28w7IQyMp91I62CR3GOILpbeLwgKaydIoQimMNm7j3S0DL8Mj_IsRpGD4'
@@ -342,16 +347,22 @@ function copyCrowns() {
     var miceArray = [];
     allMice.each(function(i) {
         let $mouse = correctMouseName($(this).find('.mouseCrownsView-group-mouse-name').text());
-        let $count = parseInt($(this).find('.mouseCrownsView-group-mouse-catches').text().replace(',', ""), 10);
-        miceArray[i] = [$mouse, $count];
+        let $count = parseInt($(this).find('.mouseCrownsView-group-mouse-catches').text().replace(',',""),10);
+        miceArray[i] = [$mouse,$count];
     })
     let finalTable = miceArray.map(e => e.join(",")).join("\n");
     GM_setClipboard(finalTable);
     var copyCrownsButton = $("#copyCrownsButton")
-    copyCrownsButton.text("---------Copied!---------")
+    copyCrownsButton.css({
+        'border-style': 'solid',
+        'border-color': 'grey',
+        'border-width': '1px',
+    });
     setTimeout(function() {
-        copyCrownsButton.text("Copy Crowns to Clipboard")
-    }, 1500);
+        copyCrownsButton.css({
+            'border-style': 'none',
+        });
+    }, 1000);
 }
 
 function correctMouseName(mouseName) {
@@ -375,3 +386,128 @@ function correctMouseName(mouseName) {
     }
     return newMouseName;
 }
+
+function decorate() {
+    let uncrowned = $('.mouseCrownsView-group.none').find('.mouseCrownsView-crown.none');
+    $(uncrowned).css({
+        'background-image': "url('https://image.flaticon.com/icons/png/512/1604/1604467.png')",
+        'background-repeat': 'no-repeat',
+        'background-size': 'contain'
+    });
+    let favorites = $('.mouseCrownsView-group-mouse.highlight.favourite')
+    $(favorites).each(function(i) {
+        let image = $(this).find('.mouseCrownsView-group-mouse-image');
+        let crown = $(this).find('.mouseCrownsView-crown');
+        let top = "";
+        let bottom = "";
+        if ($(crown).hasClass('bronze')) {
+            //bronze
+            top = '#f0c693';
+            bottom = '#8d4823';
+        } else if ($(crown).hasClass('silver')) {
+            //silver
+            top = '#d1d7e9';
+            bottom = '#66718b';
+        } else if ($(crown).hasClass('gold')) {
+            //gold
+            top = '#ffe589';
+            bottom = '#b67800';
+        } else if ($(crown).hasClass('platinum')) {
+            //plat
+            top = '#9191ff';
+            bottom = '#1d1781';
+        } else if ($(crown).hasClass('diamond')) {
+            //diamond
+            top = '#c4eae6';
+            bottom = '#63b9cf';
+        } else {
+            //no crown
+            top = '#ab9f92';
+            bottom = '#251B0A';
+        }
+        //Style all the favs
+        $(image).css({
+            'border-style': 'solid',
+            'border-width': '3px',
+            'border-radius': '4px',
+            'border-top-color': top,
+            'border-left-color': top,
+            'border-bottom-color': bottom,
+            'border-right-color': bottom,
+        })
+        //Stlye all the rest
+        let diamond = $('.mouseCrownsView-group.diamond').find(".mouseCrownsView-group-mouse-image");
+        if (diamond.get(0)) {
+            $(diamond).css({
+                'border-style': 'solid',
+                'border-width': '3px',
+                'border-radius': '4px',
+                'border-top-color': '#c4eae6',
+                'border-left-color': '#c4eae6',
+                'border-bottom-color': '#63b9cf',
+                'border-right-color': '#63b9cf',
+            })
+        }
+        let platinum = $('.mouseCrownsView-group.platinum').find(".mouseCrownsView-group-mouse-image");
+        if (platinum.get(0)) {
+            $(platinum).css({
+                'border-style': 'solid',
+                'border-width': '3px',
+                'border-radius': '4px',
+                'border-top-color': '#9191ff',
+                'border-left-color': '#9191ff',
+                'border-bottom-color': '#1d1781',
+                'border-right-color': '#1d1781',
+            })
+        }
+        let gold = $('.mouseCrownsView-group.gold').find(".mouseCrownsView-group-mouse-image");
+        if (gold.get(0)) {
+            $(gold).css({
+                'border-style': 'solid',
+                'border-width': '3px',
+                'border-radius': '4px',
+                'border-top-color': '#ffe589',
+                'border-left-color': '#ffe589',
+                'border-bottom-color': '#b67800',
+                'border-right-color': '#b67800',
+            })
+        }
+        let silver = $('.mouseCrownsView-group.silver').find(".mouseCrownsView-group-mouse-image");
+        if (silver.get(0)) {
+            $(silver).css({
+                'border-style': 'solid',
+                'border-width': '3px',
+                'border-radius': '4px',
+                'border-top-color': '#d1d7e9',
+                'border-left-color': '#d1d7e9',
+                'border-bottom-color': '#66718b',
+                'border-right-color': '#66718b',
+            })
+        }
+        let bronze = $('.mouseCrownsView-group.bronze').find(".mouseCrownsView-group-mouse-image");
+        if (bronze.get(0)) {
+            $(bronze).css({
+                'border-style': 'solid',
+                'border-width': '3px',
+                'border-radius': '4px',
+                'border-top-color': '#f0c693',
+                'border-left-color': '#f0c693',
+                'border-bottom-color': '#8d4823',
+                'border-right-color': '#8d4823',
+            })
+        }
+        let none = $('.mouseCrownsView-group.none').find(".mouseCrownsView-group-mouse-image");
+        if (none.get(0)) {
+            $(none).css({
+                'border-style': 'solid',
+                'border-width': '3px',
+                'border-radius': '4px',
+                'border-top-color': '#ab9f92',
+                'border-left-color': '#ab9f92',
+                'border-bottom-color': '#251B0A',
+                'border-right-color': '#251B0A',
+            })
+        }
+    })
+}
+
