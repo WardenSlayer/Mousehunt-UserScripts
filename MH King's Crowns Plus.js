@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.9
+// @version      1.9.1
 // @description  Community requested features for the tabs on your MH profile.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -10,32 +10,29 @@
 // @grant GM_setClipboard
 // ==/UserScript==
 $(document).ready(function() {
-    var observerA = new MutationObserver(callback);
     var observerB = new MutationObserver(callback);
-    var observerOptionsA = {
-        childList: true,
-        attributes: false,
-        subtree: false
-    };
     var observerOptionsB = {
         childList: true,
         attributes: true,
         subtree: true
     };
     if ($('.mousehuntHud-page-tabHeader.kings_crowns').hasClass('active')) {
+        //On king's crowns tab
         generate()
-        observerA.observe($("#tabbarContent_page").get(0), observerOptionsA);
+        observerB.observe($(".mousehuntHud-page-tabHeader-container").get(0), observerOptionsB);
     } else if ($('.mousehuntHud-page-tabHeader.items').hasClass('active')) {
+        //On item tab
         generateItems()
-        observerA.observe($("#tabbarContent_page").get(0), observerOptionsA);
+        observerB.observe($(".mousehuntHud-page-tabHeader-container").get(0), observerOptionsB);
     } else if ($('#tabbarContent_page').find('.tabbarContent-tab.active').children().filter('.active').attr('data-template') == 'tab_profile') {
+        //On profile tab
         observerB.observe($(".mousehuntHud-page-tabHeader-container").get(0), observerOptionsB);
-        observerA.observe($("#tabbarContent_page").get(0), observerOptionsA);
-    } else if ($('#tabbarContent_page').find('.tabbarContent-tab.active').children().filter('.active').attr('data-template') == 'tab_items') {
+    } else if ($('#tabbarContent_page').find('.tabbarContent-tab.active').children().filter('.active').attr('data-template') == 'tab_mice') {
+        //On mouse Tab
         observerB.observe($(".mousehuntHud-page-tabHeader-container").get(0), observerOptionsB);
-        observerA.observe($("#tabbarContent_page").get(0), observerOptionsA);
     } else if ($("#tabbarContent_page").get(0)) {
-        observerA.observe($("#tabbarContent_page").get(0), observerOptionsA);
+        //not on profile at all. probably at camp.
+        observerB.observe($("#tabbarContent_page").get(0), observerOptionsB);
     } else {
         return false
     }
@@ -53,14 +50,19 @@ function callback(mutationList, observer) {
         } else if (mutation.type == 'attributes') {
             let $nodes = $(mutation.target);
             if ($nodes.hasClass('mousehuntHud-page-tabHeader kings_crowns active')) {
-                if (localStorage.getItem("haltCode") == "Y") {
-                    localStorage.setItem("haltCode", "N");
+                if (localStorage.getItem("crownsAlreadyRan") == "Y") {
+                    localStorage.setItem("crownsAlreadyRan", "N");
                 } else {
                     setTimeout(generate, 2000);
-                    localStorage.setItem("haltCode", "Y");
+                    localStorage.setItem("crownsAlreadyRan", "Y");
                 }
             } else if ($nodes.hasClass('mousehuntHud-page-tabHeader items active')) {
-                setTimeout(generateItems, 1000);
+                if (localStorage.getItem("itemsAlreadyRan") == "Y") {
+                    localStorage.setItem("itemsAlreadyRan", "N");
+                } else {
+                    setTimeout(generateItems, 1000);
+                    localStorage.setItem("itemsAlreadyRan", "Y");
+                }
             }
         }
     })
@@ -359,6 +361,7 @@ function copyCrowns() {
         let $count = parseInt($(this).find('.mouseCrownsView-group-mouse-catches').text().replace(',',""),10);
         miceArray[i] = [$mouse,$count];
     })
+    // need to sort uncrowned by # instead of Alpha
     let finalTable = miceArray.map(e => e.join(",")).join("\n");
     GM_setClipboard(finalTable);
     var copyCrownsButton = $("#copyCrownsButton")
@@ -532,271 +535,306 @@ function generateItems() {
 }
 
 function manageCollected() {
-    //Build group headers
-    if ($(".unownedWeaponHeader").length == 0)  {
-        let collectedContainer = $('.hunterProfileItemsView-categoryContent.active').filter("[data-category='weapon']");
-        let firstItem = collectedContainer[0];
-        let ownedWeaponHeader = document.createElement("div");
-        ownedWeaponHeader.classList.add("ownedWeaponHeader");
-        $(ownedWeaponHeader).text('Collected and Owned');
-        $(ownedWeaponHeader).css({
-            'font-size': '14px',
-            'font-weight': 'bold',
+    let itemContainer = $('.hunterProfileItemsView-content-padding');
+    //Custom item layout
+    if ($('.layoutContainer').length == 0) {
+        let layoutContainer = document.createElement("div");
+        layoutContainer.classList.add("layoutContainer");
+        let itemLayoutCb = document.createElement("input");
+        itemLayoutCb.type = "checkbox";
+        itemLayoutCb.name = "itemLayoutCb";
+        itemLayoutCb.value = "";
+        itemLayoutCb.id = "itemLayoutCb";
+        itemLayoutCb.checked = "";
+        if (localStorage.getItem("ShowItemLayout") == "Y") {
+            itemLayoutCb.checked = "Yes";
+        } else {
+            itemLayoutCb.checked = "";
+        }
+        let itemLayoutLabel = document.createElement("label");
+        itemLayoutLabel.htmlFor = "itemLayoutLabel";
+        itemLayoutLabel.appendChild(document.createTextNode("Use New Layout"));
+        layoutContainer.append(itemLayoutCb);
+        layoutContainer.append(itemLayoutLabel);
+        $(itemContainer).prepend(layoutContainer);
+        $(layoutContainer).css({
             'width': '100%',
-            'height': '15px',
-            'padding': '3px',
-        })
-        //
-        let ownedWeapons = document.createElement("div");
-        ownedWeapons.classList.add("ownedWeapons");
-        $(ownedWeapons).css({
-            'width': '100%',
-            'padding': '3px',
-        })
-        //last
-        $(ownedWeaponHeader).insertAfter(firstItem);
-        $(ownedWeapons).insertAfter(ownedWeaponHeader);
-        //
-        let unownedWeaponHeader = document.createElement("div");
-        unownedWeaponHeader.classList.add("unownedWeaponHeader");
-        $(unownedWeaponHeader).text('Collected but Unowned');
-        unownedWeaponHeader.title = 'Limited Edition Hidden';
-        $(unownedWeaponHeader).css({
-            'font-size': '14px',
-            'font-weight': 'bold',
-            'width': '100%',
-            'height': '15px',
-            'padding': '3px',
-        })
-        let unownedWeapons = document.createElement("div");
-        unownedWeapons.classList.add("unownedWeapons");
-        $(unownedWeapons).css({
-            'width': '100%',
-            'padding': '3px',
-        })
-        //last
-        $(unownedWeaponHeader).insertAfter(firstItem);
-        $(unownedWeapons).insertAfter(unownedWeaponHeader);
-        //
-        let uncollectedWeaponHeader = document.createElement("div");
-        uncollectedWeaponHeader.classList.add("uncollectedWeaponHeader");
-        $(uncollectedWeaponHeader).text('Uncollected');
-        uncollectedWeaponHeader.title = 'Limited Edition Hidden';
-        $(uncollectedWeaponHeader).css({
-            'font-size': '14px',
-            'font-weight': 'bold',
-            'width': '100%',
-            'height': '15px',
-            'padding': '3px',
-        })
-        let uncollectedWeapons = document.createElement("div");
-        uncollectedWeapons.classList.add("uncollectedWeapons");
-        $(uncollectedWeapons).css({
-            'width': '100%',
-            'padding': '3px',
-        })
-        //last
-        $(uncollectedWeaponHeader).insertAfter(firstItem);
-        $(uncollectedWeapons).insertAfter(uncollectedWeaponHeader);
-        sortItems('weapons')
+        });
+        $(itemLayoutLabel).css({
+            'fontSize': "14px",
+            'width': '80%',
+        });
+        $(itemLayoutCb).css({
+            'width': '5%'
+        });
     }
-    //
-    if ($(".unownedBaseHeader").length == 0)  {
-        let collectedContainer = $('.hunterProfileItemsView-categoryContent.active').filter("[data-category='base']");
-        let firstItem = collectedContainer[0];
-        let ownedBaseHeader = document.createElement("div");
-        ownedBaseHeader.classList.add("ownedBaseHeader");
-        $(ownedBaseHeader).text('Collected and Owned');
-        $(ownedBaseHeader).css({
-            'font-size': '14px',
-            'font-weight': 'bold',
-            'width': '100%',
-            'height': '15px',
-            'padding': '3px',
-        })
-        let ownedBases = document.createElement("div");
-        ownedBases.classList.add("ownedBases");
-        $(ownedBases).css({
-            'width': '100%',
-            'padding': '3px',
-        })
-        //last
-        $(ownedBaseHeader).insertAfter(firstItem);
-        $(ownedBases).insertAfter(ownedBaseHeader);
+    if (localStorage.getItem("ShowItemLayout") == "Y") {
+        //Build group headers
+        if ($(".unownedWeaponHeader").length == 0)  {
+            let collectedContainer = $('.hunterProfileItemsView-categoryContent.active').filter("[data-category='weapon']");
+            let firstItem = collectedContainer[0];
+            let ownedWeaponHeader = document.createElement("div");
+            ownedWeaponHeader.classList.add("ownedWeaponHeader");
+            $(ownedWeaponHeader).text('Collected and Owned');
+            $(ownedWeaponHeader).css({
+                'font-size': '14px',
+                'font-weight': 'bold',
+                'width': '100%',
+                'height': '15px',
+                'padding': '3px',
+            })
+            //
+            let ownedWeapons = document.createElement("div");
+            ownedWeapons.classList.add("ownedWeapons");
+            $(ownedWeapons).css({
+                'width': '100%',
+                'padding': '3px',
+            })
+            //last
+            $(ownedWeaponHeader).insertAfter(firstItem);
+            $(ownedWeapons).insertAfter(ownedWeaponHeader);
+            //
+            let unownedWeaponHeader = document.createElement("div");
+            unownedWeaponHeader.classList.add("unownedWeaponHeader");
+            $(unownedWeaponHeader).text('Collected but Unowned');
+            unownedWeaponHeader.title = 'Limited Edition Hidden';
+            $(unownedWeaponHeader).css({
+                'font-size': '14px',
+                'font-weight': 'bold',
+                'width': '100%',
+                'height': '15px',
+                'padding': '3px',
+            })
+            let unownedWeapons = document.createElement("div");
+            unownedWeapons.classList.add("unownedWeapons");
+            $(unownedWeapons).css({
+                'width': '100%',
+                'padding': '3px',
+            })
+            //last
+            $(unownedWeaponHeader).insertAfter(firstItem);
+            $(unownedWeapons).insertAfter(unownedWeaponHeader);
+            //
+            let uncollectedWeaponHeader = document.createElement("div");
+            uncollectedWeaponHeader.classList.add("uncollectedWeaponHeader");
+            $(uncollectedWeaponHeader).text('Uncollected');
+            uncollectedWeaponHeader.title = 'Limited Edition Hidden';
+            $(uncollectedWeaponHeader).css({
+                'font-size': '14px',
+                'font-weight': 'bold',
+                'width': '100%',
+                'height': '15px',
+                'padding': '3px',
+            })
+            let uncollectedWeapons = document.createElement("div");
+            uncollectedWeapons.classList.add("uncollectedWeapons");
+            $(uncollectedWeapons).css({
+                'width': '100%',
+                'padding': '3px',
+            })
+            //last
+            $(uncollectedWeaponHeader).insertAfter(firstItem);
+            $(uncollectedWeapons).insertAfter(uncollectedWeaponHeader);
+            sortItems('weapons')
+        }
         //
-        let unownedBaseHeader = document.createElement("div");
-        unownedBaseHeader.classList.add("unownedBaseHeader");
-        $(unownedBaseHeader).text('Collected but Unowned');
-        unownedBaseHeader.title = 'Limited Edition Hidden';
-        $(unownedBaseHeader).css({
-            'font-size': '14px',
-            'font-weight': 'bold',
-            'width': '100%',
-            'height': '15px',
-            'padding': '3px',
-        })
-        let unownedBases = document.createElement("div");
-        unownedBases.classList.add("unownedBases");
-        $(unownedBases).css({
-            'width': '100%',
-            'padding': '3px',
-        })
-        //last
-        $(unownedBaseHeader).insertAfter(firstItem);
-        $(unownedBases).insertAfter(unownedBaseHeader);
+        if ($(".unownedBaseHeader").length == 0)  {
+            let collectedContainer = $('.hunterProfileItemsView-categoryContent.active').filter("[data-category='base']");
+            let firstItem = collectedContainer[0];
+            let ownedBaseHeader = document.createElement("div");
+            ownedBaseHeader.classList.add("ownedBaseHeader");
+            $(ownedBaseHeader).text('Collected and Owned');
+            $(ownedBaseHeader).css({
+                'font-size': '14px',
+                'font-weight': 'bold',
+                'width': '100%',
+                'height': '15px',
+                'padding': '3px',
+            })
+            let ownedBases = document.createElement("div");
+            ownedBases.classList.add("ownedBases");
+            $(ownedBases).css({
+                'width': '100%',
+                'padding': '3px',
+            })
+            //last
+            $(ownedBaseHeader).insertAfter(firstItem);
+            $(ownedBases).insertAfter(ownedBaseHeader);
+            //
+            let unownedBaseHeader = document.createElement("div");
+            unownedBaseHeader.classList.add("unownedBaseHeader");
+            $(unownedBaseHeader).text('Collected but Unowned');
+            unownedBaseHeader.title = 'Limited Edition Hidden';
+            $(unownedBaseHeader).css({
+                'font-size': '14px',
+                'font-weight': 'bold',
+                'width': '100%',
+                'height': '15px',
+                'padding': '3px',
+            })
+            let unownedBases = document.createElement("div");
+            unownedBases.classList.add("unownedBases");
+            $(unownedBases).css({
+                'width': '100%',
+                'padding': '3px',
+            })
+            //last
+            $(unownedBaseHeader).insertAfter(firstItem);
+            $(unownedBases).insertAfter(unownedBaseHeader);
+            //
+            let uncollectedBaseHeader = document.createElement("div");
+            uncollectedBaseHeader.classList.add("uncollectedBaseHeader");
+            $(uncollectedBaseHeader).text('Uncollected');
+            uncollectedBaseHeader.title = 'Limited Edition Hidden';
+            $(uncollectedBaseHeader).css({
+                'font-size': '14px',
+                'font-weight': 'bold',
+                'width': '100%',
+                'height': '15px',
+                'padding': '3px',
+            })
+            let uncollectedBases = document.createElement("div");
+            uncollectedBases.classList.add("uncollectedBases");
+            $(uncollectedBases).css({
+                'width': '100%',
+                'padding': '3px',
+            })
+            //last
+            $(uncollectedBaseHeader).insertAfter(firstItem);
+            $(uncollectedBases).insertAfter(uncollectedBaseHeader);
+        }
         //
-        let uncollectedBaseHeader = document.createElement("div");
-        uncollectedBaseHeader.classList.add("uncollectedBaseHeader");
-        $(uncollectedBaseHeader).text('Uncollected');
-        uncollectedBaseHeader.title = 'Limited Edition Hidden';
-        $(uncollectedBaseHeader).css({
-            'font-size': '14px',
-            'font-weight': 'bold',
-            'width': '100%',
-            'height': '15px',
-            'padding': '3px',
-        })
-        let uncollectedBases = document.createElement("div");
-        uncollectedBases.classList.add("uncollectedBases");
-        $(uncollectedBases).css({
-            'width': '100%',
-            'padding': '3px',
-        })
-        //last
-        $(uncollectedBaseHeader).insertAfter(firstItem);
-        $(uncollectedBases).insertAfter(uncollectedBaseHeader);
-    }
-    //
-    if ($(".unownedCollectHeader").length == 0)  {
-        let collectedContainer = $('.hunterProfileItemsView-categoryContent.active').filter("[data-category='collectible']");
-        let firstItem = collectedContainer[0];
-        let ownedCollectHeader = document.createElement("div");
-        ownedCollectHeader.classList.add("ownedCollectHeader");
-        $(ownedCollectHeader).text('Collected and Owned');
-        $(ownedCollectHeader).css({
-            'font-size': '14px',
-            'font-weight': 'bold',
-            'width': '100%',
-            'height': '15px',
-            'padding': '3px',
-        })
-        let ownedCollects = document.createElement("div");
-        ownedCollects.classList.add("ownedCollects");
-        $(ownedCollects).css({
-            'width': '100%',
-            'padding': '3px',
-        })
-        //last
-        $(ownedCollectHeader).insertAfter(firstItem);
-        $(ownedCollects).insertAfter(ownedCollectHeader);
+        if ($(".unownedCollectHeader").length == 0)  {
+            let collectedContainer = $('.hunterProfileItemsView-categoryContent.active').filter("[data-category='collectible']");
+            let firstItem = collectedContainer[0];
+            let ownedCollectHeader = document.createElement("div");
+            ownedCollectHeader.classList.add("ownedCollectHeader");
+            $(ownedCollectHeader).text('Collected and Owned');
+            $(ownedCollectHeader).css({
+                'font-size': '14px',
+                'font-weight': 'bold',
+                'width': '100%',
+                'height': '15px',
+                'padding': '3px',
+            })
+            let ownedCollects = document.createElement("div");
+            ownedCollects.classList.add("ownedCollects");
+            $(ownedCollects).css({
+                'width': '100%',
+                'padding': '3px',
+            })
+            //last
+            $(ownedCollectHeader).insertAfter(firstItem);
+            $(ownedCollects).insertAfter(ownedCollectHeader);
+            //
+            let unownedCollectHeader = document.createElement("div");
+            unownedCollectHeader.classList.add("unownedCollectHeader");
+            $(unownedCollectHeader).text('Collected but Unowned');
+            unownedCollectHeader.title = 'Limited Edition Hidden';
+            $(unownedCollectHeader).css({
+                'font-size': '14px',
+                'font-weight': 'bold',
+                'width': '100%',
+                'height': '15px',
+                'padding': '3px',
+            })
+            let unownedCollects = document.createElement("div");
+            unownedCollects.classList.add("unownedCollects");
+            $(unownedCollects).css({
+                'width': '100%',
+                'padding': '3px',
+            })
+            //last
+            $(unownedCollectHeader).insertAfter(firstItem);
+            $(unownedCollects).insertAfter(unownedCollectHeader);
+            //
+            let uncollectedCollectHeader = document.createElement("div");
+            uncollectedCollectHeader.classList.add("uncollectedCollectHeader");
+            $(uncollectedCollectHeader).text('Uncollected');
+            uncollectedCollectHeader.title = 'Limited Edition Hidden';
+            $(uncollectedCollectHeader).css({
+                'font-size': '14px',
+                'font-weight': 'bold',
+                'width': '100%',
+                'height': '15px',
+                'padding': '3px',
+            })
+            let uncollectedCollects = document.createElement("div");
+            uncollectedCollects.classList.add("uncollectedCollects");
+            $(uncollectedCollects).css({
+                'width': '100%',
+                'padding': '3px',
+            })
+            //last
+            $(uncollectedCollectHeader).insertAfter(firstItem);
+            $(uncollectedCollects).insertAfter(uncollectedCollectHeader);
+        }
         //
-        let unownedCollectHeader = document.createElement("div");
-        unownedCollectHeader.classList.add("unownedCollectHeader");
-        $(unownedCollectHeader).text('Collected but Unowned');
-        unownedCollectHeader.title = 'Limited Edition Hidden';
-        $(unownedCollectHeader).css({
-            'font-size': '14px',
-            'font-weight': 'bold',
-            'width': '100%',
-            'height': '15px',
-            'padding': '3px',
-        })
-        let unownedCollects = document.createElement("div");
-        unownedCollects.classList.add("unownedCollects");
-        $(unownedCollects).css({
-            'width': '100%',
-            'padding': '3px',
-        })
-        //last
-        $(unownedCollectHeader).insertAfter(firstItem);
-        $(unownedCollects).insertAfter(unownedCollectHeader);
-        //
-        let uncollectedCollectHeader = document.createElement("div");
-        uncollectedCollectHeader.classList.add("uncollectedCollectHeader");
-        $(uncollectedCollectHeader).text('Uncollected');
-        uncollectedCollectHeader.title = 'Limited Edition Hidden';
-        $(uncollectedCollectHeader).css({
-            'font-size': '14px',
-            'font-weight': 'bold',
-            'width': '100%',
-            'height': '15px',
-            'padding': '3px',
-        })
-        let uncollectedCollects = document.createElement("div");
-        uncollectedCollects.classList.add("uncollectedCollects");
-        $(uncollectedCollects).css({
-            'width': '100%',
-            'padding': '3px',
-        })
-        //last
-        $(uncollectedCollectHeader).insertAfter(firstItem);
-        $(uncollectedCollects).insertAfter(uncollectedCollectHeader);
-    }
-    //
-    if ($(".unownedSkinHeader").length == 0)  {
-        let collectedContainer = $('.hunterProfileItemsView-categoryContent.active').filter("[data-category='skin']");
-        let firstItem = collectedContainer[0];
-        let ownedSkinHeader = document.createElement("div");
-        ownedSkinHeader.classList.add("ownedSkinHeader");
-        $(ownedSkinHeader).text('Collected and Owned');
-        $(ownedSkinHeader).css({
-            'font-size': '14px',
-            'font-weight': 'bold',
-            'width': '100%',
-            'height': '15px',
-            'padding': '3px',
-        })
-        let ownedSkins = document.createElement("div");
-        ownedSkins.classList.add("ownedSkins");
-        $(ownedSkins).css({
-            'width': '100%',
-            'padding': '3px',
-        })
-        //last
-        $(ownedSkinHeader).insertAfter(firstItem);
-        $(ownedSkins).insertAfter(ownedSkinHeader);
-        //
-        let unownedSkinHeader = document.createElement("div");
-        unownedSkinHeader.classList.add("unownedSkinHeader");
-        $(unownedSkinHeader).text('Collected but Unowned');
-        unownedSkinHeader.title = 'Limited Edition Hidden';
-        $(unownedSkinHeader).css({
-            'font-size': '14px',
-            'font-weight': 'bold',
-            'width': '100%',
-            'height': '15px',
-            'padding': '3px',
-        })
-        let unownedSkins = document.createElement("div");
-        unownedSkins.classList.add("unownedSkins");
-        $(unownedSkins).css({
-            'width': '100%',
-            'padding': '3px',
-        })
-        //last
-        $(unownedSkinHeader).insertAfter(firstItem);
-        $(unownedSkins).insertAfter(unownedSkinHeader);
-        //
-        let uncollectedSkinHeader = document.createElement("div");
-        uncollectedSkinHeader.classList.add("uncollectedSkinHeader");
-        $(uncollectedSkinHeader).text('Uncollected');
-        uncollectedSkinHeader.title = 'Limited Edition Hidden';
-        $(uncollectedSkinHeader).css({
-            'font-size': '14px',
-            'font-weight': 'bold',
-            'width': '100%',
-            'height': '15px',
-            'padding': '3px',
-        })
-        let uncollectedSkins = document.createElement("div");
-        uncollectedSkins.classList.add("uncollectedSkins");
-        $(uncollectedSkins).css({
-            'width': '100%',
-            'padding': '3px',
-        })
-        //last
-        $(uncollectedSkinHeader).insertAfter(firstItem);
-        $(uncollectedSkins).insertAfter(uncollectedSkinHeader);
+        if ($(".unownedSkinHeader").length == 0)  {
+            let collectedContainer = $('.hunterProfileItemsView-categoryContent.active').filter("[data-category='skin']");
+            let firstItem = collectedContainer[0];
+            let ownedSkinHeader = document.createElement("div");
+            ownedSkinHeader.classList.add("ownedSkinHeader");
+            $(ownedSkinHeader).text('Collected and Owned');
+            $(ownedSkinHeader).css({
+                'font-size': '14px',
+                'font-weight': 'bold',
+                'width': '100%',
+                'height': '15px',
+                'padding': '3px',
+            })
+            let ownedSkins = document.createElement("div");
+            ownedSkins.classList.add("ownedSkins");
+            $(ownedSkins).css({
+                'width': '100%',
+                'padding': '3px',
+            })
+            //last
+            $(ownedSkinHeader).insertAfter(firstItem);
+            $(ownedSkins).insertAfter(ownedSkinHeader);
+            //
+            let unownedSkinHeader = document.createElement("div");
+            unownedSkinHeader.classList.add("unownedSkinHeader");
+            $(unownedSkinHeader).text('Collected but Unowned');
+            unownedSkinHeader.title = 'Limited Edition Hidden';
+            $(unownedSkinHeader).css({
+                'font-size': '14px',
+                'font-weight': 'bold',
+                'width': '100%',
+                'height': '15px',
+                'padding': '3px',
+            })
+            let unownedSkins = document.createElement("div");
+            unownedSkins.classList.add("unownedSkins");
+            $(unownedSkins).css({
+                'width': '100%',
+                'padding': '3px',
+            })
+            //last
+            $(unownedSkinHeader).insertAfter(firstItem);
+            $(unownedSkins).insertAfter(unownedSkinHeader);
+            //
+            let uncollectedSkinHeader = document.createElement("div");
+            uncollectedSkinHeader.classList.add("uncollectedSkinHeader");
+            $(uncollectedSkinHeader).text('Uncollected');
+            uncollectedSkinHeader.title = 'Limited Edition Hidden';
+            $(uncollectedSkinHeader).css({
+                'font-size': '14px',
+                'font-weight': 'bold',
+                'width': '100%',
+                'height': '15px',
+                'padding': '3px',
+            })
+            let uncollectedSkins = document.createElement("div");
+            uncollectedSkins.classList.add("uncollectedSkins");
+            $(uncollectedSkins).css({
+                'width': '100%',
+                'padding': '3px',
+            })
+            //last
+            $(uncollectedSkinHeader).insertAfter(firstItem);
+            $(uncollectedSkins).insertAfter(uncollectedSkinHeader);
+        }
     }
 }
 
@@ -1046,156 +1084,190 @@ function sortItems(itemType) {
 }
 //Weapons Tab
 $(document).on('click', "[data-category='weapon']", function() {
-    manageCollected()
-    $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').show();
-    $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').hide();
-    $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').hide();
-    $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').hide();
-    sortItems('weapons')
+    if (localStorage.getItem("ShowItemLayout") == "Y") {
+        manageCollected()
+        $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').show();
+        $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').hide();
+        $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').hide();
+        $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').hide();
+        sortItems('weapons')
+    }
 });
 //Bases Tab
 $(document).on('click', "[data-category='base']", function() {
-    manageCollected()
-    $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').hide();
-    $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').show();
-    $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').hide();
-    $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').hide();
-    sortItems('bases')
+    if (localStorage.getItem("ShowItemLayout") == "Y") {
+        manageCollected()
+        $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').hide();
+        $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').show();
+        $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').hide();
+        $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').hide();
+        sortItems('bases')
+    }
 });
 //Maps Tab
 $(document).on('click', "[data-category='map_piece']", function() {
-    $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').hide();
-    $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').hide();
-    $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').hide();
-    $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').hide();
+    if (localStorage.getItem("ShowItemLayout") == "Y") {
+        $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').hide();
+        $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').hide();
+        $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').hide();
+        $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').hide();
+    }
 });
 //Collectible Tab
 $(document).on('click', "[data-category='collectible']", function() {
-    manageCollected()
-    $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').hide();
-    $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').hide();
-    $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').show();
-    $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').hide();
-    sortItems('collectibles')
+    if (localStorage.getItem("ShowItemLayout") == "Y") {
+        manageCollected()
+        $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').hide();
+        $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').hide();
+        $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').show();
+        $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').hide();
+        sortItems('collectibles')
+    }
 });
 //Skin Tab
 $(document).on('click', "[data-category='skin']", function() {
-    manageCollected()
-    $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').hide();
-    $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').hide();
-    $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').hide();
-    $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').show();
-    sortItems('skins')
+    if (localStorage.getItem("ShowItemLayout") == "Y") {
+        manageCollected()
+        $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').hide();
+        $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').hide();
+        $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').hide();
+        $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').show();
+        sortItems('skins')
+    }
 });
 //Collected tab
 $(document).on('click', ".hunterProfileItemsView-filter.collected", function() {
-    $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').hide();
-    $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').hide();
-    $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').hide();
-    $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').hide();
-    let activeContainer = $('.hunterProfileItemsView-categoryContent.active').attr('data-category');
-    if (activeContainer == 'weapon') {
-        $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons').show();
-        $('.uncollectedWeaponHeader,.uncollectedWeapons').hide();
-        $('.unownedWeapons').find('.limited_edition').hide();
-        sortItems('weapons')
-    } else if (activeContainer == 'base') {
-        $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases').show();
-        $('.uncollectedBaseHeader,.uncollectedBases').hide();
-        $('.unownedBases').find('.limited_edition').hide();
-        sortItems('bases')
-    } else if (activeContainer == 'map_piece') {
-    } else if (activeContainer == 'collectible') {
-        $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects').show();
-        $('.uncollectedCollectHeader,.uncollectedCollects').hide();
-        $('.unownedCollects').find('.limited_edition').hide();
-        sortItems('collectibles')
-    } else {
-        $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins').show();
-        $('.uncollectedCollectHeader,.uncollectedCollects').hide();
-        $('.unownedSkins').find('.limited_edition').hide();
-        sortItems('skins')
+    if (localStorage.getItem("ShowItemLayout") == "Y") {
+        $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').hide();
+        $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').hide();
+        $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').hide();
+        $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').hide();
+        let activeContainer = $('.hunterProfileItemsView-categoryContent.active').attr('data-category');
+        if (activeContainer == 'weapon') {
+            $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons').show();
+            $('.uncollectedWeaponHeader,.uncollectedWeapons').hide();
+            $('.unownedWeapons').find('.limited_edition').hide();
+            sortItems('weapons')
+        } else if (activeContainer == 'base') {
+            $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases').show();
+            $('.uncollectedBaseHeader,.uncollectedBases').hide();
+            $('.unownedBases').find('.limited_edition').hide();
+            sortItems('bases')
+        } else if (activeContainer == 'map_piece') {
+        } else if (activeContainer == 'collectible') {
+            $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects').show();
+            $('.uncollectedCollectHeader,.uncollectedCollects').hide();
+            $('.unownedCollects').find('.limited_edition').hide();
+            sortItems('collectibles')
+        } else {
+            $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins').show();
+            $('.uncollectedCollectHeader,.uncollectedCollects').hide();
+            $('.unownedSkins').find('.limited_edition').hide();
+            sortItems('skins')
+        }
     }
 });
 //Uncollected tab
 $(document).on('click', ".hunterProfileItemsView-filter.uncollected", function() {
-    $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').hide();
-    $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').hide();
-    $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').hide();
-    $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').hide();
-    let activeContainer = $('.hunterProfileItemsView-categoryContent.active').attr('data-category');
-    if (activeContainer == 'weapon') {
-        $('.uncollectedWeaponHeader,.uncollectedWeapons').show();
-        sortItems('weapons')
-    } else if (activeContainer == 'base') {
-        $('.uncollectedBaseHeader,.uncollectedBases').show();
-        sortItems('bases')
-    } else if (activeContainer == 'map_piece') {
-    } else if (activeContainer == 'collectible') {
-        $('.uncollectedCollectHeader,.uncollectedCollects').show();
-        sortItems('collectibles')
-    } else {
-        $('.uncollectedSkinHeader,.uncollectedSkins').show();
-        sortItems('skins')
+    if (localStorage.getItem("ShowItemLayout") == "Y") {
+        $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').hide();
+        $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').hide();
+        $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').hide();
+        $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').hide();
+        let activeContainer = $('.hunterProfileItemsView-categoryContent.active').attr('data-category');
+        if (activeContainer == 'weapon') {
+            $('.uncollectedWeaponHeader,.uncollectedWeapons').show();
+            sortItems('weapons')
+        } else if (activeContainer == 'base') {
+            $('.uncollectedBaseHeader,.uncollectedBases').show();
+            sortItems('bases')
+        } else if (activeContainer == 'map_piece') {
+        } else if (activeContainer == 'collectible') {
+            $('.uncollectedCollectHeader,.uncollectedCollects').show();
+            sortItems('collectibles')
+        } else {
+            $('.uncollectedSkinHeader,.uncollectedSkins').show();
+            sortItems('skins')
+        }
     }
 });
 //Limited Edition Tab
 $(document).on('click', ".hunterProfileItemsView-filter.limited_edition", function() {
-    $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').hide();
-    $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').hide();
-    $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').hide();
-    $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').hide();
-    let activeContainer = $('.hunterProfileItemsView-categoryContent.active').attr('data-category');
-    if (activeContainer == 'weapon') {
-        $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons').show();
-        $('.unownedWeapons').find('.limited_edition').show();
-        $('.uncollectedWeaponHeader,.uncollectedWeapons').hide();
-        sortItems('weapons')
-    } else if (activeContainer == 'base') {
-        $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases').show();
-        $('.unownedBases').find('.limited_edition').show();
-        $('.uncollectedBaseHeader,.uncollectedBases').hide();
-        sortItems('bases')
-    } else if (activeContainer == 'map_piece') {
-    } else if (activeContainer == 'collectible') {
-        $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects').show();
-        $('.unownedCollects').find('.limited_edition').show();
-        $('.uncollectedCollectHeader,.uncollectedCollects').hide();
-        sortItems('collectibles')
-    } else {
-        $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins').show();
-        $('.unownedSkins').find('.limited_edition').show();
-        $('.uncollectedSkinHeader,.uncollectedSkins').hide();
-        sortItems('skins')
+    if (localStorage.getItem("ShowItemLayout") == "Y") {
+        $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').hide();
+        $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').hide();
+        $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').hide();
+        $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').hide();
+        let activeContainer = $('.hunterProfileItemsView-categoryContent.active').attr('data-category');
+        if (activeContainer == 'weapon') {
+            $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons').show();
+            $('.unownedWeapons').find('.limited_edition').show();
+            $('.uncollectedWeaponHeader,.uncollectedWeapons').hide();
+            sortItems('weapons')
+        } else if (activeContainer == 'base') {
+            $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases').show();
+            $('.unownedBases').find('.limited_edition').show();
+            $('.uncollectedBaseHeader,.uncollectedBases').hide();
+            sortItems('bases')
+        } else if (activeContainer == 'map_piece') {
+        } else if (activeContainer == 'collectible') {
+            $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects').show();
+            $('.unownedCollects').find('.limited_edition').show();
+            $('.uncollectedCollectHeader,.uncollectedCollects').hide();
+            sortItems('collectibles')
+        } else {
+            $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins').show();
+            $('.unownedSkins').find('.limited_edition').show();
+            $('.uncollectedSkinHeader,.uncollectedSkins').hide();
+            sortItems('skins')
+        }
     }
 });
 //All Tab
 $(document).on('click', ".hunterProfileItemsView-filter.all", function() {
-    $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').hide();
-    $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').hide();
-    $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').hide();
-    $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').hide();
-    let activeContainer = $('.hunterProfileItemsView-categoryContent.active').attr('data-category');
-    if (activeContainer == 'weapon') {
-        $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons').show();
-        $('.unownedWeapons').find('.limited_edition').show();
-        $('.uncollectedWeaponHeader,.uncollectedWeapons').show();
-        sortItems('weapons')
-    } else if (activeContainer == 'base') {
-        $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases').show();
-        $('.unownedBases').find('.limited_edition').show();
-        $('.uncollectedBaseHeader,.uncollectedBases').show();
-        sortItems('bases')
-    } else if (activeContainer == 'map_piece') {
-    } else if (activeContainer == 'collectible') {
-        $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects').show();
-        $('.unownedCollects').find('.limited_edition').show();
-        $('.uncollectedCollectHeader,.uncollectedCollects').show();
-        sortItems('collectibles')
+    if (localStorage.getItem("ShowItemLayout") == "Y") {
+        $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons,.uncollectedWeaponHeader,.uncollectedWeapons').hide();
+        $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases,.uncollectedBaseHeader,.uncollectedBases').hide();
+        $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects,.uncollectedCollectHeader,.uncollectedCollects').hide();
+        $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins,.uncollectedSkinHeader,.uncollectedSkins').hide();
+        let activeContainer = $('.hunterProfileItemsView-categoryContent.active').attr('data-category');
+        if (activeContainer == 'weapon') {
+            $('.unownedWeaponHeader,.unownedWeapons,.ownedWeaponHeader,.ownedWeapons').show();
+            $('.unownedWeapons').find('.limited_edition').show();
+            $('.uncollectedWeaponHeader,.uncollectedWeapons').show();
+            sortItems('weapons')
+        } else if (activeContainer == 'base') {
+            $('.unownedBaseHeader,.unownedBases,.ownedBaseHeader,.ownedBases').show();
+            $('.unownedBases').find('.limited_edition').show();
+            $('.uncollectedBaseHeader,.uncollectedBases').show();
+            sortItems('bases')
+        } else if (activeContainer == 'map_piece') {
+        } else if (activeContainer == 'collectible') {
+            $('.unownedCollectHeader,.unownedCollects,.ownedCollectHeader,.ownedCollects').show();
+            $('.unownedCollects').find('.limited_edition').show();
+            $('.uncollectedCollectHeader,.uncollectedCollects').show();
+            sortItems('collectibles')
+        } else {
+            $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins').show();
+            $('.unownedSkins').find('.limited_edition').show();
+            $('.uncollectedSkinHeader,.uncollectedSkins').show();
+            sortItems('skins')
+        }
+    }
+});
+/********** Layout Opt-In **********/
+$(document).on("change", "#itemLayoutCb", function() {
+    // Check to see if the cb was JUST checked
+    if (this.checked) {
+        // Put the checked value into storage
+        localStorage.setItem("ShowItemLayout", "Y");
+        this.checked = "Yes";
+        manageCollected();
     } else {
-        $('.unownedSkinHeader,.unownedSkins,.ownedSkinHeader,.ownedSkins').show();
-        $('.unownedSkins').find('.limited_edition').show();
-        $('.uncollectedSkinHeader,.uncollectedSkins').show();
-        sortItems('skins')
+        // Put the checked value into storage
+        localStorage.setItem("ShowItemLayout", "N");
+        this.checked = "";
+        //cheat for now
+        window.location.reload(true);
     }
 });
