@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.9.1
+// @version      1.9.2
 // @description  Community requested features for the tabs on your MH profile.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -218,7 +218,7 @@ $(document).on("change", "#communityRanks", function() {
     }
 });
 function showCommunityRanks() {
-    var totalMice = 1007;
+    var totalMice = 1008;
     if ($(".crownheader.crownheadercommunity").length > 0) {
         return;
     }
@@ -280,28 +280,28 @@ function showCommunityRanks() {
 }
 
 function getRankBronze(crowns) {
-    var totalMice = 1007;
+    var totalMice = 1008;
     var crownPrecent = ((crowns / totalMice) * 100).toFixed(2) + "%";
     var rank = "";
     if (crowns >= totalMice) {
         rank = "Hepatizon";
-    } else if (crowns >= 997) {
+    } else if (crowns >= 998) {
         rank = "Electrum";
-    } else if (crowns >= 987) {
+    } else if (crowns >= 988) {
         rank = "Palladium";
-    } else if (crowns >= 957) {
+    } else if (crowns >= 958) {
         rank = "Cobalt";
-    } else if (crowns >= 907) {
+    } else if (crowns >= 908) {
         rank = "Bronze (full)";
-    } else if (crowns >= 856) {
+    } else if (crowns >= 857) {
         rank = "Titanium";
-    } else if (crowns >= 806) {
+    } else if (crowns >= 807) {
         rank = "Pewter";
     } else if (crowns >= 756) {
         rank = "Brass";
     } else if (crowns >= 705) {
         rank = "Copper";
-    } else if (crowns >= 655) {
+    } else if (crowns >= 656) {
         rank = "Tin";
     } else {
         rank = "Rust";
@@ -311,30 +311,30 @@ function getRankBronze(crowns) {
 }
 
 function getRankSilver(crowns) {
-    var totalMice = 1007;
+    var totalMice = 1008;
     var crownPrecent = ((crowns / totalMice) * 100).toFixed(2) + "%";
     var rank = "";
     if (crowns >= 906) {
         rank = "Super Secret Squirrel";
-    } else if (crowns >= 856) {
+    } else if (crowns >= 855) {
         rank = "Grizzled Squirrel";
-    } else if (crowns >= 806) {
+    } else if (crowns >= 805) {
         rank = "Flying Squirrel";
     } else if (crowns >= 755) {
         rank = "Chinchilla";
-    } else if (crowns >= 705) {
+    } else if (crowns >= 704) {
         rank = "Meerkat";
-    } else if (crowns >= 655) {
+    } else if (crowns >= 654) {
         rank = "Ferret";
     } else if (crowns >= 604) {
         rank = "Prairie Dog";
-    } else if (crowns >= 554) {
+    } else if (crowns >= 553) {
         rank = "Marmot";
-    } else if (crowns >= 504) {
+    } else if (crowns >= 503) {
         rank = "Woodchuck";
     } else if (crowns >= 453) {
         rank = "Wombat";
-    } else if (crowns >= 403) {
+    } else if (crowns >= 402) {
         rank = "Pine Marten";
     } else if (crowns >= 352) {
         rank = "Chipmunk";
