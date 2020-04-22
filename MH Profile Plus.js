@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.9.3
+// @version      1.9.4
 // @description  Community requested features for the tabs on your MH profile.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -224,7 +224,7 @@ function showCommunityRanks() {
     }
     var crownBreak = $(".mouseCrownsView-group.favourite");
     var communityCrownHeader = $(
-        "<div class='crownheader crownheadercommunity'>Community Ranks <div class='crownnote'>Crown Summary</div></div>"
+        "<div class='crownheader crownheadercommunity'>Community Ranks</div>"
     );
     communityCrownHeader.css({
         'background-image': "url('https://image.flaticon.com/icons/svg/478/478941.svg')",
@@ -571,6 +571,11 @@ function manageCollected() {
     if (localStorage.getItem("hideLeItems") == "Y") {
         hideLeItems()
     }
+    let allTypes = $('.hunterProfileItemsView-categoryContent');
+    let allItems = $(allTypes).children();
+    allItems.click(function() {
+        hg.views.ItemView.show($(this).attr('data-type'))
+    });
 }
 
 function hideLeItems() {
@@ -627,7 +632,7 @@ function showLeItems() {
 //Weapons Tab
 $(document).on('click', "[data-category='weapon']", function() {
     if (localStorage.getItem("hideLeItems") == "Y") {
-            hideLeItems()
+        hideLeItems()
     } else {
         showLeItems();
     }
@@ -635,7 +640,7 @@ $(document).on('click', "[data-category='weapon']", function() {
 //Bases Tab
 $(document).on('click', "[data-category='base']", function() {
     if (localStorage.getItem("hideLeItems") == "Y") {
-            hideLeItems()
+        hideLeItems()
     } else {
         showLeItems();
     }
@@ -643,7 +648,7 @@ $(document).on('click', "[data-category='base']", function() {
 //Maps Tab
 $(document).on('click', "[data-category='map_piece']", function() {
     if (localStorage.getItem("hideLeItems") == "Y") {
-            hideLeItems()
+        hideLeItems()
     } else {
         showLeItems();
     }
@@ -651,7 +656,7 @@ $(document).on('click', "[data-category='map_piece']", function() {
 //Collectible Tab
 $(document).on('click', "[data-category='collectible']", function() {
     if (localStorage.getItem("hideLeItems") == "Y") {
-            hideLeItems()
+        hideLeItems()
     } else {
         showLeItems();
     }
@@ -659,7 +664,7 @@ $(document).on('click', "[data-category='collectible']", function() {
 //Skin Tab
 $(document).on('click', "[data-category='skin']", function() {
     if (localStorage.getItem("hideLeItems") == "Y") {
-            hideLeItems()
+        hideLeItems()
     } else {
         showLeItems();
     }
@@ -667,7 +672,7 @@ $(document).on('click', "[data-category='skin']", function() {
 //Collected tab
 $(document).on('click', ".hunterProfileItemsView-filter.collected", function() {
     if (localStorage.getItem("hideLeItems") == "Y") {
-            hideLeItems()
+        hideLeItems()
     } else {
         showLeItems();
     }
@@ -675,7 +680,7 @@ $(document).on('click', ".hunterProfileItemsView-filter.collected", function() {
 //Uncollected tab
 $(document).on('click', ".hunterProfileItemsView-filter.uncollected", function() {
     if (localStorage.getItem("hideLeItems") == "Y") {
-            hideLeItems()
+        hideLeItems()
     } else {
         showLeItems();
     }
@@ -683,7 +688,7 @@ $(document).on('click', ".hunterProfileItemsView-filter.uncollected", function()
 //Limited Edition Tab
 $(document).on('click', ".hunterProfileItemsView-filter.limited_edition", function() {
     if (localStorage.getItem("hideLeItems") == "Y") {
-            hideLeItems()
+        hideLeItems()
     } else {
         showLeItems();
     }
@@ -691,11 +696,12 @@ $(document).on('click', ".hunterProfileItemsView-filter.limited_edition", functi
 //All Tab
 $(document).on('click', ".hunterProfileItemsView-filter.all", function() {
     if (localStorage.getItem("hideLeItems") == "Y") {
-            hideLeItems()
+        hideLeItems()
     } else {
         showLeItems();
     }
 });
+
 /********** Layout Opt-In **********/
 $(document).on("change", "#hideLeCb", function() {
     // Check to see if the cb was JUST checked
