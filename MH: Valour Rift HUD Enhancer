@@ -2,7 +2,7 @@
 // @name         MH: Valour Rift HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.3.3
+// @version      1.3.4
 // @description  Changes the text that appears in the Valour Rift hud tooltips to give you the info you actually want to see
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -49,9 +49,9 @@ function updateHUD(resultString) {
         } else {
             bossProgress.text('   ' + stepsTillBoss + ' steps until the next eclipse floor');
         }
-        towerStateA.children().remove();
-        towerStateA.text('');
-        towerStateA.append(bossProgress);
+        //towerStateA.children().remove();
+        //towerStateA.text('');
+        //towerStateA.append(bossProgress);
     }
     //
     //Can I make it to the next eclipse floor?
