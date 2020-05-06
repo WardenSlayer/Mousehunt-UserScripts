@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.9.4
+// @version      1.9.5
 // @description  Community requested features for the tabs on your MH profile.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -24,15 +24,15 @@ $(document).ready(function() {
         //On item tab
         generateItems()
         observerB.observe($(".mousehuntHud-page-tabHeader-container").get(0), observerOptionsB);
-    } else if ($('#tabbarContent_page').find('.tabbarContent-tab.active').children().filter('.active').attr('data-template') == 'tab_profile') {
+    } else if ($('.mousehuntHud-page-tabContentContainer').children().filter('.active').attr('data-template') == 'tab_profile') {
         //On profile tab
         observerB.observe($(".mousehuntHud-page-tabHeader-container").get(0), observerOptionsB);
-    } else if ($('#tabbarContent_page').find('.tabbarContent-tab.active').children().filter('.active').attr('data-template') == 'tab_mice') {
+    } else if ($('.mousehuntHud-page-tabContentContainer').children().filter('.active').attr('data-template') == 'tab_mice') {
         //On mouse Tab
         observerB.observe($(".mousehuntHud-page-tabHeader-container").get(0), observerOptionsB);
-    } else if ($("#tabbarContent_page").get(0)) {
+    } else if ($('.mousehuntHud-page-tabContentContainer').get(0)) {
         //not on profile at all. probably at camp.
-        observerB.observe($("#tabbarContent_page").get(0), observerOptionsB);
+        observerB.observe($('.mousehuntHud-page-tabContentContainer').get(0), observerOptionsB);
     } else {
         return false
     }
@@ -53,7 +53,7 @@ function callback(mutationList, observer) {
                 if (localStorage.getItem("crownsAlreadyRan") == "Y") {
                     localStorage.setItem("crownsAlreadyRan", "N");
                 } else {
-                    setTimeout(generate, 2000);
+                    setTimeout(generate, 1000);
                     localStorage.setItem("crownsAlreadyRan", "Y");
                 }
             } else if ($nodes.hasClass('mousehuntHud-page-tabHeader items active')) {
