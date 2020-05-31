@@ -2,7 +2,7 @@
 // @name         MH: Warpath Wave Calculator
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.1.3
+// @version      1.1.4
 // @description  Keeps track of remaining wave mice to help you manage the wave.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -10,27 +10,33 @@
 // ==/UserScript==
 $(document).ready(function() {
     const debug = localStorage.getItem('ws.debug');
-    if (debug == true) {
-        console.log('FW Script Started');
-    }
-    const observer = new MutationObserver(callback);
-    const observerOptions = {
-        childList: true,
-        attributes: false,
-        subtree: false,
-        characterData: false
-    };
-    if ($('.warpathHUD-streak-quantity').get(0)) {
+    if (user.environment_name == 'Fiery Warpath') {
         if (debug == true) {
-            console.log('Observing Streak');
+            console.log('FW Script Started');
         }
-        observer.observe($('.warpathHUD-streak-quantity').get(0), observerOptions);
+        const observer = new MutationObserver(callback);
+        const observerOptions = {
+            childList: true,
+            attributes: false,
+            subtree: false,
+            characterData: false
+        };
+        if ($('.warpathHUD-streak-quantity').get(0)) {
+            if (debug == true) {
+                console.log('Observing Streak');
+            }
+            observer.observe($('.warpathHUD-streak-quantity').get(0), observerOptions);
+        } else {
+            if (debug == true) {
+                console.log('Streak not found');
+            }
+        }
+        updateWave();
     } else {
         if (debug == true) {
-            console.log('Streak not found');
+            console.log('Not at the FW');
         }
     }
-    updateWave();
 });
 
 function callback(mutationList, observer) {
