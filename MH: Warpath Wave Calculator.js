@@ -2,7 +2,7 @@
 // @name         MH: Warpath Wave Calculator
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.1.4
+// @version      1.1.5
 // @description  Keeps track of remaining wave mice to help you manage the wave.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -76,19 +76,22 @@ function updateWave() {
     if (debug == true) {
         console.log('Updating Wave...Current Streak:',streak);
     }
-    if ($('.warpathHUD.showPortal.wave_1').get(0)) {
+    if ($('.warpathHUD.wave_1').get(0)) {
         wave = 1;
         waveRetreat = 10;
         waveMice = $('.warpathHUD-wave.wave_1').children();
-    } else if ($('.warpathHUD.showPortal.wave_2').get(0)) {
+    } else if ($('.warpathHUD.wave_2').get(0)) {
         wave = 2;
         waveRetreat = 18;
         waveMice = $('.warpathHUD-wave.wave_2').children();
-    } else if ($('.warpathHUD.showPortal.wave_3').get(0)) {
+    } else if ($('.warpathHUD.wave_3').get(0)) {
         wave = 3;
         waveRetreat = 26;
         waveMice = $('.warpathHUD-wave.wave_3').children();
     } else {
+        if (debug == true) {
+            console.log('Wave 4: Script Stopped');
+        }
         return
     }
     if (debug == true) {
