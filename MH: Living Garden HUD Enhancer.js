@@ -2,8 +2,8 @@
 // @name         MH: Living Garden HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.0
-// @description  Quick travel buttons for the Living Garden area location. More features comning soon.
+// @version      1.0.1
+// @description  Quick travel buttons for the Living Garden area locations. More features comning soon.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
 // @include      https://www.mousehuntgame.com/*
@@ -11,42 +11,85 @@
 $(document).ready(function() {
     const debug = localStorage.getItem('ws.debug');
     const location = user.environment_name;
-    if (location == 'Twisted Garden') {
+    const hudWatcher = new MutationObserver(callback);
+    const hudWatcherOptions = {
+        childList: false,
+        attributes: true,
+        subtree: false
+    };
+    if ($('#hudLocationContent').hasClass('hudLocationContent desert_oasis')) {
         if (debug == true) {
             console.log('LG Script Started');
         }
-        buildTravelHUD();
-    } else if (location == 'Cursed City') {
+        buildAreaHUD(location)
+        hudWatcher.observe($('#hudLocationContent').get(0), hudWatcherOptions);
+    } else if ($('#hudLocationContent').hasClass('hudLocationContent lost_city')) {
         if (debug == true) {
             console.log('LG Script Started');
         }
-        buildTravelHUD();
-    } else if (location == 'Sand Crypts') {
+        buildAreaHUD(location)
+        hudWatcher.observe($('#hudLocationContent').get(0), hudWatcherOptions);
+    } else if ($('#hudLocationContent').hasClass('hudLocationContent sand_dunes')) {
         if (debug == true) {
             console.log('LG Script Started');
         }
-        buildTravelHUD();
-    } else if (location == 'Living Garden') {
+        buildAreaHUD(location)
+    } else {
         if (debug == true) {
-            console.log('LG Script Started');
+            console.log('Not in the LG region');
         }
-        buildTravelHUD();
-    } else if (location == 'Lost City') {
-        if (debug == true) {
-            console.log('LG Script Started');
-        }
-        buildTravelHUD();
-    } else if (location == 'Sand Dunes') {
-        if (debug == true) {
-            console.log('LG Script Started');
-        }
-        buildTravelHUD();
-    } else {if (debug == true) {
-        console.log('Not in the LG region');
     }
-           }
 })
 
+function callback(mutationList, observer) {
+    mutationList.forEach(mutation => {
+        if (mutation.type == 'attributes') {
+            let $nodes = $(mutation.target);
+            const location = user.environment_name;
+            buildAreaHUD(location)
+        }
+    })
+}
+
+
+//**=========================================**//
+//HUD Code
+function buildAreaHUD(location) {
+    buildTravelHUD();
+    wipeCheeseBoard();
+}
+
+function wipeCheeseBoard() {
+    const allPetals = $('.itemContainer').children().not('.travelHudLg');
+    allPetals.removeAttr("href").removeAttr("onclick");
+    allPetals.on('click',function(e){
+        petalsOnClick(e.currentTarget.title);
+    });
+}
+
+function petalsOnClick(name) {
+    const val = name.split(" ");
+    const first=val[0];
+    const second=val[1];
+    const petal = first.concat(" ",second);
+    if (petal == 'Dewthief Petal') {
+        hg.utils.TrapControl.setBait(1007).go();
+    } else if (petal == 'Dreamfluff Herbs') {
+        hg.utils.TrapControl.setBait(1008).go();
+    } else if (petal == 'Duskshade Petal') {
+        hg.utils.TrapControl.setBait(1008).go();
+    } else if (petal == 'Graveblossom Petal') {
+        hg.utils.TrapControl.setBait(1009).go();
+    } else if (petal == 'Plumepearl Herbs') {
+        hg.utils.TrapControl.setBait(1010).go();
+    } else if (petal == 'Lunaria Petal') {
+        hg.utils.TrapControl.setBait(1010).go();
+    } else {
+    }
+}
+
+//**=========================================**//
+//Travel Code
 function buildTravelHUD() {
     const itemContainer = $('.itemContainer');
     if ($('.travelHudLg').length == 0) {
@@ -105,17 +148,13 @@ function buildTravelHUD() {
         //Last
         itemContainer.append(travelHudLg);
     }
-
 }
 $(document).on('click', '.gardenButton', function() {
     app.pages.TravelPage.travel('desert_oasis');
-    setTimeout(buildTravelHUD, 500);
 })
 $(document).on('click', '.cityButton', function() {
     app.pages.TravelPage.travel('lost_city');
-    setTimeout(buildTravelHUD, 500);
 })
 $(document).on('click', '.sandButton', function() {
     app.pages.TravelPage.travel('sand_dunes');
-    setTimeout(buildTravelHUD, 500);
 })
