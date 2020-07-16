@@ -2,7 +2,7 @@
 // @name         MH: Living Garden HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.0.1
+// @version      1.1
 // @description  Quick travel buttons for the Living Garden area locations. More features comning soon.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -46,7 +46,13 @@ function callback(mutationList, observer) {
         if (mutation.type == 'attributes') {
             let $nodes = $(mutation.target);
             const location = user.environment_name;
-            buildAreaHUD(location)
+            if ($nodes.hasClass('desert_oasis')) {
+                buildAreaHUD(location)
+            } else if ($nodes.hasClass('lost_city')) {
+                buildAreaHUD(location)
+            } else if ($nodes.hasClass('sand_dunes')) {
+                buildAreaHUD(location)
+            }
         }
     })
 }
@@ -57,7 +63,370 @@ function callback(mutationList, observer) {
 function buildAreaHUD(location) {
     buildTravelHUD();
     wipeCheeseBoard();
+    const miniGameContainer = $('.minigameContainer');
+    if ($('.charmHUD').length == 0) {
+        const charmHUD = document.createElement('div');
+        charmHUD.classList.add('charmHUD');
+        $(charmHUD).css({
+            'width': '100%',
+            'left':'0',
+            'bottom': '-10px',
+            'position': 'absolute',
+        });
+        if (location == 'Living Garden') {
+            //LG Buttons
+            const spongeBlue = document.createElement('div');
+            spongeBlue.classList.add('spongeBlue');
+            $(spongeBlue).text('Blue');
+            $(spongeBlue).css({
+                'width': '40px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-right': '3px',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(97, 226, 247)',
+                'cursor': 'pointer',
+            });
+            charmHUD.append(spongeBlue);
+            //
+            const spongeDoubleBlue = document.createElement('div');
+            spongeDoubleBlue.classList.add('spongeDoubleBlue');
+            $(spongeDoubleBlue).text('x2 Blue');
+            $(spongeDoubleBlue).css({
+                'width': '40px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-right': '3px',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(97, 226, 247)',
+                'cursor': 'pointer',
+            });
+            charmHUD.append(spongeDoubleBlue);
+        } else if (location == 'Lost City') {
+            //Lost Buttons
+            const searcher = document.createElement('div');
+            searcher.classList.add('searcher');
+            $(searcher).text('Searcher');
+            $(searcher).css({
+                'width': '45px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-right': '3px',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(161, 85, 170)',
+                'cursor': 'pointer',
+            });
+            charmHUD.append(searcher);
+            //
+            const safeguard = document.createElement('div');
+            safeguard.classList.add('safeguard');
+            $(safeguard).text('Safeguard');
+            $(safeguard).css({
+                'width': '50px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(76, 36, 105)',
+                'cursor': 'pointer',
+            });
+            charmHUD.append(safeguard);
+        } else if (location == 'Sand Dunes') {
+            //Dunes Buttons
+            const grublingChow = document.createElement('div');
+            grublingChow.classList.add('grublingChow');
+            $(grublingChow).text('Chow');
+            $(grublingChow).css({
+                'width': '45px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-right': '3px',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(235, 124, 127)',
+                'cursor': 'pointer',
+            });
+            charmHUD.append(grublingChow);
+            //
+            const grublingBonanza = document.createElement('div');
+            grublingBonanza.classList.add('grublingBonanza');
+            $(grublingBonanza).text('Bonanza');
+            $(grublingBonanza).css({
+                'width': '45px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-right': '3px',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(241, 186, 106)',
+                'cursor': 'pointer',
+            });
+            charmHUD.append(grublingBonanza);
+        } else if (location == 'Twisted Garden') {
+            //TG Buttons
+            const spongeRed = document.createElement('div');
+            spongeRed.classList.add('spongeRed');
+            $(spongeRed).text('Red');
+            $(spongeRed).css({
+                'width': '40px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-right': '3px',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(202, 73, 67)',
+                'cursor': 'pointer',
+            });
+            charmHUD.append(spongeRed);
+            //
+            const spongeDoubleRed = document.createElement('div');
+            spongeDoubleRed.classList.add('spongeDoubleRed');
+            $(spongeDoubleRed).text('x2 Red');
+            $(spongeDoubleRed).css({
+                'width': '40px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-right': '3px',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(202, 73, 67)',
+                'cursor': 'pointer',
+            });
+            charmHUD.append(spongeDoubleRed);
+            //
+            const spongeYellow = document.createElement('div');
+            spongeYellow.classList.add('spongeYellow');
+            $(spongeYellow).text('Yellow');
+            $(spongeYellow).css({
+                'width': '40px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-right': '3px',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(184, 183, 45)',
+                'cursor': 'pointer',
+            });
+            charmHUD.append(spongeYellow);
+            //
+            const spongeDoubleYellow = document.createElement('div');
+            spongeDoubleYellow.classList.add('spongeDoubleYellow');
+            $(spongeDoubleYellow).text('x2 Yellow');
+            $(spongeDoubleYellow).css({
+                'width': '50px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-right': '3px',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(184, 183, 45)',
+                'cursor': 'pointer',
+            });
+            charmHUD.append(spongeDoubleYellow);
+        } else if (location == 'Cursed City') {
+            //Cursed Buttons
+            const bravery = document.createElement('div');
+            bravery.classList.add('bravery');
+            $(bravery).text('Bravery');
+            $(bravery).css({
+                'width': '40px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-right': '3px',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(238, 132, 54)',
+                'cursor': 'pointer',
+            });
+            charmHUD.append(bravery);
+            //
+            const shine = document.createElement('div');
+            shine.classList.add('shine');
+            $(shine).text('Shine');
+            $(shine).css({
+                'width': '40px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-right': '3px',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(67, 114, 54)',
+                'cursor': 'pointer',
+            });
+            charmHUD.append(shine);
+            //
+            const clarity = document.createElement('div');
+            clarity.classList.add('clarity');
+            $(clarity).text('Clarity');
+            $(clarity).css({
+                'width': '40px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-right': '3px',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(117, 207, 206)',
+                'cursor': 'pointer',
+            });
+            charmHUD.append(clarity);
+            //
+            const safeguard = document.createElement('div');
+            safeguard.classList.add('safeguard');
+            $(safeguard).text('Safeguard');
+            $(safeguard).css({
+                'width': '50px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(76, 36, 105)',
+                'cursor': 'pointer',
+            });
+            charmHUD.append(safeguard);
+        } else if (location == 'Sand Crypts') {
+            //Crypt Buttons
+            const saltCharm = document.createElement('div');
+            saltCharm.classList.add('saltCharm');
+            $(saltCharm).text('Salt');
+            $(saltCharm).css({
+                'width': '40px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-right': '3px',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(236, 200, 187)',
+                'cursor': 'pointer',
+            });
+            charmHUD.append(saltCharm);
+            //
+            const doubleSaltCharm = document.createElement('div');
+            doubleSaltCharm.classList.add('doubleSaltCharm');
+            $(doubleSaltCharm).text('x2 Salt');
+            $(doubleSaltCharm).css({
+                'width': '40px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-right': '3px',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(225, 164, 132)',
+                'cursor': 'pointer',
+            });
+            charmHUD.append(doubleSaltCharm);
+            //
+            const scentCharm = document.createElement('div');
+            scentCharm.classList.add('scentCharm');
+            $(scentCharm).text('Scent');
+            $(scentCharm).css({
+                'width': '40px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-right': '3px',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(180, 173, 100)',
+                'cursor': 'pointer',
+            });
+            charmHUD.append(scentCharm);
+        }
+        //Last
+        miniGameContainer.append(charmHUD);
+    }
 }
+//Charm Arm Code
+//LG
+$(document).on('click', '.spongeBlue', function() {
+    hg.utils.TrapControl.setTrinket(1020).go();
+})
+$(document).on('click', '.spongeDoubleBlue', function() {
+    hg.utils.TrapControl.setTrinket(1130).go();
+})
+//LC
+$(document).on('click', '.searcher', function() {
+    hg.utils.TrapControl.setTrinket(1018).go();
+})
+$(document).on('click', '.safeguard', function() {
+    hg.utils.TrapControl.setTrinket(1133).go();
+})
+//SD
+$(document).on('click', '.grublingChow', function() {
+    hg.utils.TrapControl.setTrinket(1016).go();
+})
+$(document).on('click', '.grublingBonanza', function() {
+    hg.utils.TrapControl.setTrinket(1131).go();
+})
+//TG
+$(document).on('click', '.spongeRed', function() {
+    hg.utils.TrapControl.setTrinket(1017).go();
+})
+$(document).on('click', '.spongeDoubleRed', function() {
+    hg.utils.TrapControl.setTrinket(1132).go();
+})
+$(document).on('click', '.spongeYellow', function() {
+    hg.utils.TrapControl.setTrinket(1022).go();
+})
+$(document).on('click', '.spongeDoubleYellow', function() {
+    hg.utils.TrapControl.setTrinket(1135).go();
+})
+//CC
+$(document).on('click', '.bravery', function() {
+    hg.utils.TrapControl.setTrinket(1011).go();
+})
+$(document).on('click', '.shine', function() {
+    hg.utils.TrapControl.setTrinket(1019).go();
+})
+$(document).on('click', '.clarity', function() {
+    hg.utils.TrapControl.setTrinket(1012).go();
+})
+//SC
+$(document).on('click', '.saltCharm', function() {
+    hg.utils.TrapControl.setTrinket(1014).go();
+})
+$(document).on('click', '.doubleSaltCharm', function() {
+    hg.utils.TrapControl.setTrinket(1134).go();
+})
+$(document).on('click', '.scentCharm', function() {
+    hg.utils.TrapControl.setTrinket(1015).go();
+})
+
 
 function wipeCheeseBoard() {
     const allPetals = $('.itemContainer').children().not('.travelHudLg');
