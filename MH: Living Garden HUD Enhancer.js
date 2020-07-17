@@ -2,7 +2,7 @@
 // @name         MH: Living Garden HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.1
+// @version      1.1.1
 // @description  Quick travel buttons for the Living Garden area locations. More features comning soon.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -22,37 +22,40 @@ $(document).ready(function() {
             console.log('LG Script Started');
         }
         buildAreaHUD(location)
-        hudWatcher.observe($('#hudLocationContent').get(0), hudWatcherOptions);
     } else if ($('#hudLocationContent').hasClass('hudLocationContent lost_city')) {
         if (debug == true) {
             console.log('LG Script Started');
         }
-        buildAreaHUD(location)
-        hudWatcher.observe($('#hudLocationContent').get(0), hudWatcherOptions);
+        buildAreaHUD(location);
     } else if ($('#hudLocationContent').hasClass('hudLocationContent sand_dunes')) {
         if (debug == true) {
             console.log('LG Script Started');
         }
-        buildAreaHUD(location)
+        buildAreaHUD(location);
     } else {
         if (debug == true) {
             console.log('Not in the LG region');
         }
     }
+    hudWatcher.observe($('#hudLocationContent').get(0), hudWatcherOptions);
 })
 
 function callback(mutationList, observer) {
     mutationList.forEach(mutation => {
         if (mutation.type == 'attributes') {
-            let $nodes = $(mutation.target);
+            const lastObserved = localStorage.getItem('ws.lg.lastObserved');
+            const $nodes = $(mutation.target);
             const location = user.environment_name;
-            if ($nodes.hasClass('desert_oasis')) {
+            if (lastObserved == location) {
+                return false
+            } else if ($nodes.hasClass('desert_oasis')) {
                 buildAreaHUD(location)
             } else if ($nodes.hasClass('lost_city')) {
                 buildAreaHUD(location)
             } else if ($nodes.hasClass('sand_dunes')) {
                 buildAreaHUD(location)
             }
+            localStorage.setItem('ws.lg.lastObserved',location);
         }
     })
 }
@@ -516,6 +519,8 @@ function buildTravelHUD() {
         travelHudLg.append(sandButton);
         //Last
         itemContainer.append(travelHudLg);
+    } else {
+        return false
     }
 }
 $(document).on('click', '.gardenButton', function() {
