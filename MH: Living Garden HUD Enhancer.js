@@ -2,7 +2,7 @@
 // @name         MH: Living Garden HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.1.1
+// @version      1.1.2
 // @description  Quick travel buttons for the Living Garden area locations. More features comning soon.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -66,6 +66,7 @@ function callback(mutationList, observer) {
 function buildAreaHUD(location) {
     buildTravelHUD();
     wipeCheeseBoard();
+    populateEssences();
     const miniGameContainer = $('.minigameContainer');
     if ($('.charmHUD').length == 0) {
         const charmHUD = document.createElement('div');
@@ -458,6 +459,104 @@ function petalsOnClick(name) {
         hg.utils.TrapControl.setBait(1010).go();
     } else {
     }
+}
+
+function populateEssences() {
+    const allEssences = $('.essenceContainer').children();
+    allEssences.each(function(i) {
+        const essenceTitle = calculateYourPotential(this.title);
+        this.title = essenceTitle;
+    })
+}
+
+function calculateYourPotential(name) {
+    const A = $('.item.essence_a_crafting_item');
+    const B = $('.item.essence_b_crafting_item');
+    const C = $('.item.essence_c_crafting_item');
+    const D = $('.item.essence_d_crafting_item');
+    const E = $('.item.essence_e_crafting_item');
+    const F = $('.item.essence_f_crafting_item');
+    const G = $('.item.essence_g_crafting_item');
+    const H = $('.item.essence_h_crafting_item');
+    const I = $('.item.essence_i_crafting_item');
+    const a = parseInt(A.text(),10);
+    const b = parseInt(B.text(),10);
+    const c = parseInt(C.text(),10);
+    const d = parseInt(D.text(),10);
+    const e = parseInt(E.text(),10);
+    const f = parseInt(F.text(),10);
+    const g = parseInt(G.text(),10);
+    const h = parseInt(H.text(),10);
+    const i = parseInt(I.text(),10);
+    let newTitle = "";
+    let haveNow = "";
+    let totalCanCraft = 0;
+    if (name == 'Aleth Essence') {
+        haveNow = a;
+        totalCanCraft = 'NA';
+    } else if (name == 'Ber Essence') {
+        totalCanCraft = tallyEssences (0,a);
+        haveNow = b;
+    } else if (name == 'Cynd Essence') {
+        totalCanCraft = tallyEssences (1,a,b);
+        haveNow = c;
+    } else if (name == 'Dol Essence') {
+        totalCanCraft = tallyEssences (2,a,b,c);
+        haveNow = d;
+    } else if (name == 'Est Essence') {
+        totalCanCraft = tallyEssences (3,a,b,c,d);
+        haveNow = d;
+    } else if (name == 'Fel Essence') {
+        totalCanCraft = tallyEssences (4,a,b,c,d,e);
+        haveNow = f;
+    } else if (name == 'Gur Essence') {
+        totalCanCraft = tallyEssences (5,a,b,c,d,e,f);
+        haveNow = g;
+    } else if (name == 'Hix Essence') {
+        totalCanCraft = tallyEssences (6,a,b,c,d,e,f,g);
+        haveNow = h;
+    } else if (name == 'Icuri Essence') {
+        totalCanCraft = tallyEssences (7,a,b,c,d,e,f,g,h);
+        haveNow = i;
+    }
+    if (totalCanCraft == 'NA') {
+        newTitle = name.concat('\nHave: ',haveNow);
+    } else {
+        newTitle = name.concat('\nHave: ',haveNow,'\nCan Craft: ',totalCanCraft);
+    }
+    return newTitle
+}
+
+function tallyEssences (n,a,b,c,d,e,f,g,h,i) {
+    let craftable = 0;
+    for (i=0;i<=n;i++) {
+        if (i == 0) {
+            craftable = Math.floor(a/3);
+            b = b+craftable;
+        } else if (i == 1) {
+            craftable = Math.floor(b/3);
+            c = c+craftable;
+        } else if (i == 2) {
+            craftable = Math.floor(c/3);
+            d = d+craftable;
+        } else if (i == 3) {
+            craftable = Math.floor(d/3);
+            e = e+craftable;
+        } else if (i == 4) {
+            craftable = Math.floor(e/3);
+            f = f+craftable;
+        } else if (i == 5) {
+            craftable = Math.floor(f/3);
+            g = g+craftable;
+        } else if (i == 6) {
+            craftable = Math.floor(g/3);
+            h = h+craftable;
+        } else if (i == 7) {
+            craftable = Math.floor(h/3);
+            i = i+craftable;
+        }
+    }
+    return craftable
 }
 
 //**=========================================**//
