@@ -2,7 +2,7 @@
 // @name         MH: Living Garden HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.1.2
+// @version      1.1.3
 // @description  Quick travel buttons for the Living Garden area locations. More features comning soon.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -505,7 +505,7 @@ function calculateYourPotential(name) {
         haveNow = d;
     } else if (name == 'Est Essence') {
         totalCanCraft = tallyEssences (3,a,b,c,d);
-        haveNow = d;
+        haveNow = e;
     } else if (name == 'Fel Essence') {
         totalCanCraft = tallyEssences (4,a,b,c,d,e);
         haveNow = f;
