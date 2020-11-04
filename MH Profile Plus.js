@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.9.7
+// @version      1.9.8
 // @description  Community requested features for the tabs on your MH profile.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -78,6 +78,7 @@ function generate() {
         showCommunityRanks();
     }
 }
+
 function buildToolbar() {
     if ($(".toolBar").length > 0) return;
     var toolBar = document.createElement("div");
@@ -126,7 +127,11 @@ function buildToolbar() {
     //Copy Crown Button
     var copyCrownsButton = document.createElement("button");
     copyCrownsButton.id = "copyCrownsButton";
-    copyCrownsButton.addEventListener("click", copyCrowns)
+    if ($(".mouseCrownsView-group-mouse-favouriteButton").length > 0) {
+        copyCrownsButton.addEventListener("click", copyMyCrowns)
+    } else {
+        copyCrownsButton.addEventListener("click", copyCrowns)
+    }
     $(copyCrownsButton).attr('title', 'Copy Crowns to Clipboard');
     toolBar.appendChild(copyCrownsButton);
     $(copyCrownsButton).css({
@@ -217,6 +222,7 @@ $(document).on("change", "#communityRanks", function() {
         }
     }
 });
+
 function showCommunityRanks() {
     var totalMice = 1065;
     if ($(".crownheader.crownheadercommunity").length > 0) {
@@ -242,7 +248,7 @@ function showCommunityRanks() {
     var goldCrowns = allGold.length;
     var platCrowns = allPlat.length;
     var diamondCrowns = allDiamond.length;
-    var uncrowned = totalMice-bronzeCrowns;
+    var uncrowned = totalMice - bronzeCrowns;
     var bronzeLink = "https://docs.google.com/spreadsheets/d/19_wHCkwiT5M6LS7XNLt4NYny98fjpg4UlHbgOD05ijw/pub?fbclid=IwAR3a1Ku2xTl1mIDksUr8Lk5ORMEnuv7jnvIy9K6OBeziG6AyvYYlZaIQkHY"
     var silverLink = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQG5g3vp-q7LRYug-yZR3tSwQzAdN7qaYFzhlZYeA32vLtq1mJcq7qhH80planwei99JtLRFAhJuTZn/pubhtml?fbclid=IwAR3sPXNLloGnFk324a0HShroP1E-sNcnQBlRTjJ7gScWTWosqmXv5InB_Ns'
     var goldLink = 'https://docs.google.com/spreadsheets/d/10OGD5OYkGIEAbiez7v92qU5Fdul0ZtCRgEjlECkwZJE/pubhtml?gid=478731024&single=true&fbclid=IwAR28w7IQyMp91I62CR3GOILpbeLwgKaydIoQimMNm7j3S0DL8Mj_IsRpGD4'
@@ -353,13 +359,39 @@ function hideCommunityRanks() {
     }
 }
 
+function copyMyCrowns() {
+    hg.utils.MouseUtil.getHuntingStats(function(data) {
+        let statArray = [];
+        data.forEach(function(arrayItem, index) {
+            const mouseName = correctMouseName(arrayItem.name);
+            const catches = arrayItem.num_catches;
+            const misses = arrayItem.num_misses;
+            statArray[index] = [mouseName, catches, misses];
+        })
+        let finalTable = statArray.map(e => e.join(",")).join("\n");
+        GM_setClipboard(finalTable);
+        var copyCrownsButton = $("#copyCrownsButton")
+        copyCrownsButton.css({
+            'border-style': 'solid',
+            'border-color': 'grey',
+            'border-width': '1px',
+        });
+        setTimeout(function() {
+            copyCrownsButton.css({
+                'border-style': 'none',
+            });
+        }, 1000);
+    })
+}
+
+
 function copyCrowns() {
     var allMice = $(".mouseCrownsView-group.none,.mouseCrownsView-group.bronze,.mouseCrownsView-group.silver,.mouseCrownsView-group.gold,.mouseCrownsView-group.platinum,.mouseCrownsView-group.diamond").find(".mouseCrownsView-group-mouse");
     var miceArray = [];
     allMice.each(function(i) {
         let $mouse = correctMouseName($(this).find('.mouseCrownsView-group-mouse-name').text());
-        let $count = parseInt($(this).find('.mouseCrownsView-group-mouse-catches').text().replace(',',""),10);
-        miceArray[i] = [$mouse,$count];
+        let $count = parseInt($(this).find('.mouseCrownsView-group-mouse-catches').text().replace(',', ""), 10);
+        miceArray[i] = [$mouse, $count];
     })
     // need to sort uncrowned by # instead of Alpha
     let finalTable = miceArray.map(e => e.join(",")).join("\n");
@@ -378,23 +410,24 @@ function copyCrowns() {
 }
 
 function correctMouseName(mouseName) {
+    mouseName = mouseName.replace(" Mouse", "");
     let newMouseName = "";
     if (mouseName == "Ful'Mina, The Mountain Queen") {
-        newMouseName = "Ful'mina the Mountain Queen"
+        newMouseName = "Ful'mina the Mountain Queen";
     } else if (mouseName == "Inferna, The Engulfed") {
-        newMouseName = "Inferna the Engulfed"
+        newMouseName = "Inferna the Engulfed";
     } else if (mouseName == "Nachous, The Molten") {
-        newMouseName = "Nachous the Molten"
+        newMouseName = "Nachous the Molten";
     } else if (mouseName == "Stormsurge, the Vile Tempest") {
-        newMouseName = "Stormsurge the Vile Tempest"
+        newMouseName = "Stormsurge the Vile Tempest";
     } else if (mouseName == "Bruticus, the Blazing") {
-        newMouseName = "Bruticus the Blazing"
+        newMouseName = "Bruticus the Blazing";
     } else if (mouseName == "Vincent, The Magnificent") {
-        newMouseName = "Vincent The Magnificent"
+        newMouseName = "Vincent The Magnificent";
     } else if (mouseName == "Corky, the Collector") {
-        newMouseName = "Corky the Collector"
+        newMouseName = "Corky the Collector";
     } else {
-        newMouseName = mouseName
+        newMouseName = mouseName;
     }
     return newMouseName;
 }
