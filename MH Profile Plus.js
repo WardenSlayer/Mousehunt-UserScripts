@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.9.8
+// @version      1.9.9
 // @description  Community requested features for the tabs on your MH profile.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -224,7 +224,7 @@ $(document).on("change", "#communityRanks", function() {
 });
 
 function showCommunityRanks() {
-    var totalMice = 1065;
+    var totalMice = 1066;
     if ($(".crownheader.crownheadercommunity").length > 0) {
         return;
     }
@@ -286,7 +286,7 @@ function showCommunityRanks() {
 }
 
 function getRankBronze(crowns) {
-    var totalMice = 1065;
+    var totalMice = 1066;
     var crownPrecent = ((crowns / totalMice) * 100).toFixed(2) + "%";
     var rank = "";
     if (crowns >= totalMice) {
@@ -317,7 +317,7 @@ function getRankBronze(crowns) {
 }
 
 function getRankSilver(crowns) {
-    var totalMice = 1065;
+    var totalMice = 1066;
     var crownPrecent = ((crowns / totalMice) * 100).toFixed(2) + "%";
     var rank = "";
     if (crowns >= 958) {
