@@ -1,0 +1,240 @@
+// ==UserScript==
+// @name         MH: Floating Islands HUD Enhancer
+// @author       Warden Slayer - Warden Slayer#2302
+// @namespace    https://greasyfork.org/en/users/227259-wardenslayer
+// @version      0.1
+// @description  See more thing on your floating islands HUD!
+// @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
+// @include      http://www.mousehuntgame.com/*
+// @include      https://www.mousehuntgame.com/*
+// ==/UserScript==
+$(document).ready(function() {
+    const debug = localStorage.getItem('ws.debug');
+    if (user.environment_name == 'Floating Islands') {
+        if (debug == true) {
+            console.log('FI Script Started');
+        }
+        updateAndRender();
+        watchTheHUD()
+        watchThePopup();
+    } else {
+        if (debug == true) {
+            console.log('Not in the FI');
+        }
+    }
+});
+
+function watchTheHUD() {
+    const hudWatcher = new MutationObserver(callbackHUD);
+    const hudWatcherOptions = {
+        childList: false,
+        attributes: true,
+        subtree: false,
+    };
+    hudWatcher.observe($('.floatingIslandsHUD').get(0), hudWatcherOptions);
+}
+
+function callbackHUD(mutationList, observer) {
+    const mutation = $(mutationList).get(0);
+    if (mutation.type == 'attributes') {
+        updateAndRender()
+    }
+}
+
+
+//HUD Code
+function updateAndRender() {
+    updateData();
+    setTimeout(buildHUD(), 1000);
+}
+
+function updateData() {
+    hg.utils.UserInventory.getItem('sky_pirate_seal_stat_item', function(data) {
+        localStorage.setItem('ws.fi.numSeals', data.quantity);
+    });
+    hg.utils.UserInventory.getItem('floating_trap_upgrade_stat_item', function(data) {
+        localStorage.setItem('ws.fi.numJewels', data.quantity);
+    });
+    localStorage.setItem('ws.fi.ocLevel', user.quests.QuestFloatingIslands.airship.oculus_level);
+}
+
+function buildHUD() {
+    let body = $('.floatingIslandsHUD-statItemContainer');
+    $(body).css({
+        'width': '350px',
+    });
+    if ($('.floatingIslandsHUD-statItem-separator').get(0)) {
+        $('.floatingIslandsHUD-statItem-separator').hide();
+    }
+    let bangles = $('.floatingIslandsHUD-statItem.mousehuntTooltipParent[data-item-type="cloudstone_bangle_stat_item"]');
+    //Seals
+    let pirateSeals = "";
+    if ($("[data-item-type=pirate_seals]").get(0)) {
+        pirateSeals = $("[data-item-type=pirate_seals]");
+    } else {
+        pirateSeals = $(bangles).clone().appendTo(body);
+    }
+    pirateSeals.attr('data-item-type', 'pirate_seals');
+    $(pirateSeals).find('.floatingIslandsHUD-item-image.cloudstone_bangle_stat_item').removeClass('cloudstone_bangle_stat_item').addClass('pirate_seals');
+    $('.floatingIslandsHUD-item-image.pirate_seals').css({
+        'background-image': 'url(https://www.mousehuntgame.com/images/items/stats/db3bb7de0241624283b99481f7c7a6b8.gif?cv=247)',
+    });
+    $(pirateSeals).find('.floatingIslandsHUD-statItem-quantity.quantity').attr('data-item-type', 'pirate_seals').text(parseInt(localStorage.getItem('ws.fi.numSeals'), 10));
+    $(pirateSeals).find('.mousehuntTooltip.tight.top.noEvents').text('Pirate Seals').css({
+        'font-weight': 'bold',
+    });
+    //Jewels
+    let jewels = "";
+    if ($("[data-item-type=jewels]").get(0)) {
+        jewels = $("[data-item-type=jewels]");
+    } else {
+        jewels = $(bangles).clone().appendTo(body);
+    }
+    jewels.attr('data-item-type', 'jewels');
+    $(jewels).find('.floatingIslandsHUD-item-image.cloudstone_bangle_stat_item').removeClass('cloudstone_bangle_stat_item').addClass('jewels');
+    $('.floatingIslandsHUD-item-image.jewels').css({
+        'background-image': 'url(https://www.mousehuntgame.com/images/items/stats/964b5aeaac26714cac2ffa7194e55176.gif?cv=247)',
+    });
+    $(jewels).find('.floatingIslandsHUD-statItem-quantity.quantity').attr('data-item-type', 'jewels').text(parseInt(localStorage.getItem('ws.fi.numJewels'), 10));
+    $(jewels).find('.mousehuntTooltip.tight.top.noEvents').text('Adorned Empyrean Jewel').css({
+        'font-weight': 'bold',
+    });
+    //Ore/Glass
+    const oculusLevel = localStorage.getItem('ws.fi.ocLevel');
+    const skyGlass = $("[data-item-type=floating_islands_cloud_gem_stat_item]");
+    const skyGlassQty = parseInt($(skyGlass).text().replace(',', ''), 10);
+    const skyOre = $("[data-item-type=floating_islands_sky_ore_stat_item]");
+    const skyOreQty = parseInt($(skyOre).text().replace(',', ''), 10);
+    let upgradeCost = 0;
+    if (oculusLevel == 1) {
+        upgradeCost = 35;
+    } else if (oculusLevel == 2) {
+        upgradeCost = 150;
+    } else if (oculusLevel == 3) {
+        upgradeCost = 500;
+    } else if (oculusLevel == 4) {
+        upgradeCost = '1.2k';
+    } else if (oculusLevel == 5) {
+        upgradeCost = '2k';
+    } else if (oculusLevel == 6) {
+        upgradeCost = '3.5k';
+    } else if (oculusLevel == 7) {
+        upgradeCost = '8k';
+    } else if (oculusLevel == 8) {
+        upgradeCost = '10k';
+    } else if (oculusLevel == 9) {
+        upgradeCost = '2.5k';
+    }
+    $(skyGlass).text(skyGlassQty + '/' + upgradeCost);
+    $(skyOre).text(skyOreQty + '/' + upgradeCost);
+    //Warden/Paragon Progress
+    const windStatus = user.quests.QuestFloatingIslands.hunting_site_atts.is_fuel_enabled;
+    const allRemainingHunts = user.quests.QuestFloatingIslands.hunting_site_atts.enemy_encounter_hunts_remaining;
+    let warGons = 'Paragon: ';
+    if (user.quests.QuestFloatingIslands.hunting_site_atts.is_high_altitude == null) {
+        warGons = 'Warden: ';
+    }
+    $('.floatingIslandsHUD-enemy-state.enemyApproaching:not(.enemyActive)').text(warGons + allRemainingHunts);
+}
+//clicks to update
+$(document).on('click', '.floatingIslandsHUD-statItem.mousehuntTooltipParent', function() {
+    updateAndRender();
+})
+$(document).on('click', '.floatingIslandsHUD-craftingItem.floating_islands_cloud_gem_stat_item', function() {
+    updateAndRender();
+})
+$(document).on('click', '.floatingIslandsHUD-craftingItem.floating_islands_sky_ore_stat_item', function() {
+    updateAndRender();
+})
+
+
+function watchTheHunts() {
+    const huntWatcher = new MutationObserver(callbackHunt);
+    const huntWatcherOptions = {
+        childList: false,
+        attributes: true,
+        subtree: false,
+    };
+    huntWatcher.observe($('.floatingIslandsHUD-modPanel-progress-pip').get(0), huntWatcherOptions);
+}
+
+function callbackHunt(mutationList, observer) {
+    mutationList.forEach(mutation => {
+        if (mutation.type == 'attributes') {
+            updateAndRender();
+        }
+    })
+}
+
+
+//Paragon Overlay
+function watchThePopup() {
+    const popupWatcher = new MutationObserver(callbackPopup);
+    const popupWatcherOptons = {
+        childList: false,
+        attributes: true,
+        subtree: false,
+    };
+    popupWatcher.observe($('#overlayPopup').get(0), popupWatcherOptons);
+}
+
+function callbackPopup(mutationList, observer) {
+    const mutation = $(mutationList).get(0);
+    if (mutation.type == 'attributes') {
+        if ($('.floatingIslandsAdventureBoard-container.paragon').get(0)) {
+            drawParagons();
+            observer.disconnect();
+        }
+    }
+}
+
+
+function drawParagons() {
+    const overlayCont = $('.floatingIslandsAdventureBoard-container.paragon');
+    const physicalParagon = $('.floatingIslandsHUD-powerType.physical');
+    const physicalCatch = hg.utils.MouseUtil.getMouse('physical_paragon', function(resp) {
+        return resp.num_catches;
+    });
+    const tacticalParagon = $('.floatingIslandsHUD-powerType.tactical');
+    const tacticalCatch = hg.utils.MouseUtil.getMouse('tactical_paragon', function(resp) {
+        return resp.num_catches;
+    });
+    const lawParagon = $('.floatingIslandsHUD-powerType.law');
+    const lawCatch = hg.utils.MouseUtil.getMouse('law_paragon', function(resp) {
+        return resp.num_catches;
+    });
+    const draconicParagon = $('.floatingIslandsHUD-powerType.draconic');
+    const draconicCatch = hg.utils.MouseUtil.getMouse('draconic_paragon', function(resp) {
+        return resp.num_catches;
+    });
+    const arcaneParagon = $('.floatingIslandsHUD-powerType.arcane');
+    const arcaneCatch = hg.utils.MouseUtil.getMouse('arcane_paragon', function(resp) {
+        return resp.num_catches;
+    });
+    const forgottenParagon = $('.floatingIslandsHUD-powerType.forgotten');
+    const forgottenCatch = hg.utils.MouseUtil.getMouse('forgotten_paragon', function(resp) {
+        return resp.num_catches;
+    });
+    const hydroParagon = $('.floatingIslandsHUD-powerType.hydro');
+    const hydroCatch = hg.utils.MouseUtil.getMouse('hydro_paragon', function(resp) {
+        return resp.num_catches;
+    });
+    const shadowParagon = $('.floatingIslandsHUD-powerType.shadow');
+    const shadowCatch = hg.utils.MouseUtil.getMouse('shadow_paragon', function(resp) {
+        return resp.num_catches;
+    });
+    $(physicalParagon).text(physicalCatch);
+    $(tacticalParagon).text(tacticalCatch);
+    $(lawParagon).text(lawCatch);
+    $(draconicParagon).text(draconicCatch);
+    $(arcaneParagon).text(arcaneCatch);
+    $(forgottenParagon).text(forgottenCatch);
+    $(hydroParagon).text(hydroCatch);
+    $(shadowParagon).text(shadowCatch);
+    $('.floatingIslandsHUD-powerType').css({
+        'font-size': '14x',
+        'font-weight': 'bold',
+        'color': 'red',
+    });
+    watchThePopup();
+}
