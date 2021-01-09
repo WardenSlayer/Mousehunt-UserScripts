@@ -2,7 +2,7 @@
 // @name         MH: Floating Islands HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      0.1
+// @version      0.11
 // @description  See more thing on your floating islands HUD!
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -55,6 +55,12 @@ function updateData() {
     hg.utils.UserInventory.getItem('floating_trap_upgrade_stat_item', function(data) {
         localStorage.setItem('ws.fi.numJewels', data.quantity);
     });
+    hg.utils.UserInventory.getItem('floating_islands_cloud_gem_stat_item', function(data) {
+        localStorage.setItem('ws.fi.numGlass', data.quantity);
+    });
+    hg.utils.UserInventory.getItem('floating_islands_sky_ore_stat_item', function(data) {
+        localStorage.setItem('ws.fi.numOre', data.quantity);
+    });
     localStorage.setItem('ws.fi.ocLevel', user.quests.QuestFloatingIslands.airship.oculus_level);
 }
 
@@ -80,7 +86,7 @@ function buildHUD() {
         'background-image': 'url(https://www.mousehuntgame.com/images/items/stats/db3bb7de0241624283b99481f7c7a6b8.gif?cv=247)',
     });
     $(pirateSeals).find('.floatingIslandsHUD-statItem-quantity.quantity').attr('data-item-type', 'pirate_seals').text(parseInt(localStorage.getItem('ws.fi.numSeals'), 10));
-    $(pirateSeals).find('.mousehuntTooltip.tight.top.noEvents').text('Pirate Seals').css({
+    $(pirateSeals).find('.mousehuntTooltip.tight.top.noEvents').text('Sky Pirate Seals').css({
         'font-weight': 'bold',
     });
     //Jewels
@@ -101,10 +107,10 @@ function buildHUD() {
     });
     //Ore/Glass
     const oculusLevel = localStorage.getItem('ws.fi.ocLevel');
-    const skyGlass = $("[data-item-type=floating_islands_cloud_gem_stat_item]");
-    const skyGlassQty = parseInt($(skyGlass).text().replace(',', ''), 10);
-    const skyOre = $("[data-item-type=floating_islands_sky_ore_stat_item]");
-    const skyOreQty = parseInt($(skyOre).text().replace(',', ''), 10);
+    const skyGlass = $("[data-item-type=floating_islands_cloud_gem_stat_item]:not(.itemPurchaseView-action-itemCost-owned)");
+    const skyGlassQty = parseInt(localStorage.getItem('ws.fi.numGlass'), 10)
+    const skyOre = $("[data-item-type=floating_islands_sky_ore_stat_item]:not(.itemPurchaseView-action-itemCost-owned)");
+    const skyOreQty = parseInt(localStorage.getItem('ws.fi.numOre'), 10)
     let upgradeCost = 0;
     if (oculusLevel == 1) {
         upgradeCost = 35;
