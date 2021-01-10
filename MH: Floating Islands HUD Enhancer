@@ -2,7 +2,7 @@
 // @name         MH: Floating Islands HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      0.11
+// @version      0.12
 // @description  See more thing on your floating islands HUD!
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -14,7 +14,7 @@ $(document).ready(function() {
         if (debug == true) {
             console.log('FI Script Started');
         }
-        updateAndRender();
+        updateAndRender()
         watchTheHUD()
         watchThePopup();
     } else {
@@ -44,24 +44,20 @@ function callbackHUD(mutationList, observer) {
 
 //HUD Code
 function updateAndRender() {
-    updateData();
-    setTimeout(buildHUD(), 1000);
-}
-
-function updateData() {
+    localStorage.setItem('ws.fi.ocLevel', user.quests.QuestFloatingIslands.airship.oculus_level);
     hg.utils.UserInventory.getItem('sky_pirate_seal_stat_item', function(data) {
         localStorage.setItem('ws.fi.numSeals', data.quantity);
+        hg.utils.UserInventory.getItem('floating_trap_upgrade_stat_item', function(data) {
+            localStorage.setItem('ws.fi.numJewels', data.quantity);
+            hg.utils.UserInventory.getItem('floating_islands_cloud_gem_stat_item', function(data) {
+                localStorage.setItem('ws.fi.numGlass', data.quantity);
+                hg.utils.UserInventory.getItem('floating_islands_sky_ore_stat_item', function(data) {
+                    localStorage.setItem('ws.fi.numOre', data.quantity);
+                    buildHUD()
+                });
+            });
+        });
     });
-    hg.utils.UserInventory.getItem('floating_trap_upgrade_stat_item', function(data) {
-        localStorage.setItem('ws.fi.numJewels', data.quantity);
-    });
-    hg.utils.UserInventory.getItem('floating_islands_cloud_gem_stat_item', function(data) {
-        localStorage.setItem('ws.fi.numGlass', data.quantity);
-    });
-    hg.utils.UserInventory.getItem('floating_islands_sky_ore_stat_item', function(data) {
-        localStorage.setItem('ws.fi.numOre', data.quantity);
-    });
-    localStorage.setItem('ws.fi.ocLevel', user.quests.QuestFloatingIslands.airship.oculus_level);
 }
 
 function buildHUD() {
@@ -78,14 +74,14 @@ function buildHUD() {
     if ($("[data-item-type=pirate_seals]").get(0)) {
         pirateSeals = $("[data-item-type=pirate_seals]");
     } else {
-        pirateSeals = $(bangles).clone().appendTo(body);
+        pirateSeals = $(bangles).clone().prependTo(body);
     }
     pirateSeals.attr('data-item-type', 'pirate_seals');
     $(pirateSeals).find('.floatingIslandsHUD-item-image.cloudstone_bangle_stat_item').removeClass('cloudstone_bangle_stat_item').addClass('pirate_seals');
     $('.floatingIslandsHUD-item-image.pirate_seals').css({
         'background-image': 'url(https://www.mousehuntgame.com/images/items/stats/db3bb7de0241624283b99481f7c7a6b8.gif?cv=247)',
     });
-    $(pirateSeals).find('.floatingIslandsHUD-statItem-quantity.quantity').attr('data-item-type', 'pirate_seals').text(parseInt(localStorage.getItem('ws.fi.numSeals'), 10));
+    $(pirateSeals).find('.floatingIslandsHUD-statItem-quantity.quantity').attr('data-item-type', 'pirate_seals').text(localStorage.getItem('ws.fi.numSeals'));
     $(pirateSeals).find('.mousehuntTooltip.tight.top.noEvents').text('Sky Pirate Seals').css({
         'font-weight': 'bold',
     });
@@ -105,11 +101,15 @@ function buildHUD() {
     $(jewels).find('.mousehuntTooltip.tight.top.noEvents').text('Adorned Empyrean Jewel').css({
         'font-weight': 'bold',
     });
+    //Hide Wind on islands not launchpad
+    if ($('.floatingIslandsHUD.launch_pad_island ').length == 0) {
+        $('[data-item-type=bottled_wind_stat_item]:not(.floatingIslandsHUD-fuel-quantity)').hide();
+    }
     //Ore/Glass
     const oculusLevel = localStorage.getItem('ws.fi.ocLevel');
-    const skyGlass = $("[data-item-type=floating_islands_cloud_gem_stat_item]:not(.itemPurchaseView-action-itemCost-owned)");
+    const skyGlass = $('.floatingIslandsHUD-craftingItem.floating_islands_cloud_gem_stat_item').find("[data-item-type=floating_islands_cloud_gem_stat_item]")
     const skyGlassQty = parseInt(localStorage.getItem('ws.fi.numGlass'), 10)
-    const skyOre = $("[data-item-type=floating_islands_sky_ore_stat_item]:not(.itemPurchaseView-action-itemCost-owned)");
+    const skyOre  = $('.floatingIslandsHUD-craftingItem.floating_islands_sky_ore_stat_item').find("[data-item-type=floating_islands_sky_ore_stat_item]")
     const skyOreQty = parseInt(localStorage.getItem('ws.fi.numOre'), 10)
     let upgradeCost = 0;
     if (oculusLevel == 1) {
@@ -137,6 +137,7 @@ function buildHUD() {
     const windStatus = user.quests.QuestFloatingIslands.hunting_site_atts.is_fuel_enabled;
     const allRemainingHunts = user.quests.QuestFloatingIslands.hunting_site_atts.enemy_encounter_hunts_remaining;
     let warGons = 'Paragon: ';
+    //floatingIslandsHUD-enemyContainer   mousehuntTooltipParent hasEnemy
     if (user.quests.QuestFloatingIslands.hunting_site_atts.is_high_altitude == null) {
         warGons = 'Warden: ';
     }
