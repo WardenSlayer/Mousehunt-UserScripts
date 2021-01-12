@@ -2,7 +2,7 @@
 // @name         MH: Floating Islands HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      0.12
+// @version      1.0
 // @description  See more thing on your floating islands HUD!
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -138,7 +138,9 @@ function buildHUD() {
     const allRemainingHunts = user.quests.QuestFloatingIslands.hunting_site_atts.enemy_encounter_hunts_remaining;
     let warGons = 'Paragon: ';
     //floatingIslandsHUD-enemyContainer   mousehuntTooltipParent hasEnemy
-    if (user.quests.QuestFloatingIslands.hunting_site_atts.is_high_altitude == null) {
+    if (user.quests.QuestFloatingIslands.hunting_site_atts.has_enemy == null) {
+        warGons = 'Enemy: ';
+    } else if (user.quests.QuestFloatingIslands.hunting_site_atts.is_high_altitude == null) {
         warGons = 'Warden: ';
     }
     $('.floatingIslandsHUD-enemy-state.enemyApproaching:not(.enemyActive)').text(warGons + allRemainingHunts);
