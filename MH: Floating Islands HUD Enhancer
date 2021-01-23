@@ -2,7 +2,7 @@
 // @name         MH: Floating Islands HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.0.1
+// @version      1.0.2
 // @description  See more thing on your floating islands HUD!
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -138,7 +138,6 @@ function buildHUD() {
     $(skyGlass).text(skyGlassQty + '/' + upgradeCost);
     $(skyOre).text(skyOreQty + '/' + upgradeCost);
     //Warden/Paragon Progress
-    const windStatus = user.quests.QuestFloatingIslands.hunting_site_atts.is_fuel_enabled;
     const allRemainingHunts = user.quests.QuestFloatingIslands.hunting_site_atts.enemy_encounter_hunts_remaining;
     let warGons = 'Paragon: ';
     if (user.quests.QuestFloatingIslands.hunting_site_atts.has_enemy == null) {
@@ -147,18 +146,21 @@ function buildHUD() {
         warGons = 'Warden: ';
     }
     $('.floatingIslandsHUD-enemy-state.enemyApproaching:not(.enemyActive)').text(warGons + allRemainingHunts);
+    //wind on maybe
+    const useWind = localStorage.getItem('ws.fi.useWind');
+    if (useWind == 'yes') {
+        if (user.quests.QuestFloatingIslands.hunting_site_atts.is_fuel_enabled == null) {
+            hg.views.HeadsUpDisplayFloatingIslandsView.toggleFuel();
+        }
+    }
 }
-//clicks to update
-$(document).on('click', '.floatingIslandsHUD-statItem.mousehuntTooltipParent', function() {
-    updateAndRender();
+$(document).on('click', '.floatingIslandsHUD-fuel-button', function() {
+    if (user.quests.QuestFloatingIslands.hunting_site_atts.is_fuel_enabled == null) {
+        localStorage.setItem('ws.fi.useWind', 'yes');
+    } else {
+        localStorage.setItem('ws.fi.useWind', 'no');
+    }
 })
-$(document).on('click', '.floatingIslandsHUD-craftingItem.floating_islands_cloud_gem_stat_item', function() {
-    updateAndRender();
-})
-$(document).on('click', '.floatingIslandsHUD-craftingItem.floating_islands_sky_ore_stat_item', function() {
-    updateAndRender();
-})
-
 
 function watchTheHunts() {
     const huntWatcher = new MutationObserver(callbackHunt);
@@ -194,22 +196,70 @@ function callbackPopup(mutationList, observer) {
     const mutation = $(mutationList).get(0);
     if (mutation.type == 'attributes') {
         if ($('.floatingIslandsAdventureBoard-container').get(0)) {
-            //setTimeout(cycleTracker, 1000);
-            drawParagons()
             observer.disconnect();
+            setTimeout(renderSkyMap, 100);
         }
     }
 }
 
+function renderSkyMap() {
+    drawParagons()
+    //cycleTracker()
+    const body = $('.floatingIslandsAdventureBoard-trapLibrary');
+    $(body).removeAttr("href").removeAttr("onclick");
+    const trapLibrary = $('.floatingIslandsAdventureBoard-trapLibrary-text:not(.wind)');
+    let useWindDiv = $('.floatingIslandsAdventureBoard-trapLibrary-text.wind');
+    if ($(useWindDiv).length == 0) {
+        useWindDiv = $(trapLibrary).clone().appendTo(body);
+        $(useWindDiv).addClass('wind');
+    }
+    let useWindCb = $(useWindDiv).find('.floatingIslandsAdventureBoard-trapLibrary-checkbox');
+    $(useWindCb).addClass('wind');
+    $(useWindDiv).children().empty().append(useWindCb).append("Use Wind");
+    forceWind()
+}
+
+function forceWind() {
+    const windBox = $('.floatingIslandsAdventureBoard-trapLibrary-checkbox.wind');
+    const useWind = localStorage.getItem('ws.fi.useWind');
+    if (useWind == 'yes') {
+        $(windBox).prop('checked',true)
+    } else {
+        $(windBox).prop('checked',false)
+    }
+}
+
+$(document).on('click', '.floatingIslandsAdventureBoard-trapLibrary-text:not(.wind)', function() {
+    if ($('.floatingIslandsAdventureBoard-trapLibrary').hasClass('disabled')){
+    } else {
+        hg.views.FloatingIslandsAdventureBoardView.toggleUseSavedSetup()
+        setTimeout(forceWind, 500)
+    }
+})
+$(document).on('click', '.floatingIslandsAdventureBoard-trapLibrary-text.wind', function() {
+    const windBox = $('.floatingIslandsAdventureBoard-trapLibrary-checkbox.wind');
+    const useWind = localStorage.getItem('ws.fi.useWind');
+    if ($('.floatingIslandsAdventureBoard-trapLibrary').hasClass('disabled')){
+    } else {
+        if (useWind == 'yes') {
+            $(windBox).prop('checked',false)
+            localStorage.setItem('ws.fi.useWind', 'no')
+        } else {
+            $(windBox).prop('checked',true)
+            localStorage.setItem('ws.fi.useWind', 'yes')
+        }
+    }
+})
+
+//to do
 function cycleTracker() {
     $('.floatingIslandsAdventureBoard-rerollImage').text('1234').css({
         'font-size': '14x',
         'font-weight': 'bold',
         'color': 'red',
     });
+
 }
-
-
 
 function drawParagons() {
     const overlayCont = $('.floatingIslandsAdventureBoard-container');
@@ -264,5 +314,4 @@ function drawParagons() {
 $(document).ajaxStop(function(){
     loadFunction()
 });
-//wind auto starts
-//cycle counter
+
