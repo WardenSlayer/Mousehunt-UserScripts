@@ -2,7 +2,7 @@
 // @name         MH: Floating Islands HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.0.3
+// @version      1.0.4
 // @description  See more thing on your floating islands HUD!
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -24,27 +24,8 @@ $(document).ready(function() {
 
 function loadFunction() {
     updateAndRender()
-    watchTheHUD()
     watchThePopup();
 }
-
-function watchTheHUD() {
-    const hudWatcher = new MutationObserver(callbackHUD);
-    const hudWatcherOptions = {
-        childList: false,
-        attributes: true,
-        subtree: false,
-    };
-    hudWatcher.observe($('.floatingIslandsHUD').get(0), hudWatcherOptions);
-}
-
-function callbackHUD(mutationList, observer) {
-    const mutation = $(mutationList).get(0);
-    if (mutation.type == 'attributes') {
-        updateAndRender()
-    }
-}
-
 
 //HUD Code
 function updateAndRender() {
@@ -148,11 +129,12 @@ function buildHUD() {
     $('.floatingIslandsHUD-enemy-state.enemyApproaching:not(.enemyActive)').text(warGons + allRemainingHunts);
     //wind on maybe
     const useWind = localStorage.getItem('ws.fi.useWind');
+    const numWind = parseInt($('.floatingIslandsHUD-statItem-quantity.quantity').filter('[data-item-type=bottled_wind_stat_item]').text(),10);
     if (useWind == 'yes') {
         if (user.quests.QuestFloatingIslands.hunting_site_atts.is_fuel_enabled == null) {
-            const numWind = parseInt($('.floatingIslandsHUD-statItem-quantity.quantity').filter('[data-item-type=bottled_wind_stat_item]').text(),10);
             if (numWind > 0 ) {
                 hg.views.HeadsUpDisplayFloatingIslandsView.toggleFuel();
+                localStorage.setItem('ws.fi.useWind', 'yes');
             }
         }
     }
@@ -164,25 +146,6 @@ $(document).on('click', '.floatingIslandsHUD-fuel-button', function() {
         localStorage.setItem('ws.fi.useWind', 'no');
     }
 })
-
-function watchTheHunts() {
-    const huntWatcher = new MutationObserver(callbackHunt);
-    const huntWatcherOptions = {
-        childList: false,
-        attributes: true,
-        subtree: false,
-    };
-    huntWatcher.observe($('.floatingIslandsHUD-modPanel-progress-pip').get(0), huntWatcherOptions);
-}
-
-function callbackHunt(mutationList, observer) {
-    mutationList.forEach(mutation => {
-        if (mutation.type == 'attributes') {
-            updateAndRender();
-        }
-    })
-}
-
 
 //Paragon Overlay
 function watchThePopup() {
@@ -315,6 +278,7 @@ function drawParagons() {
 }
 
 $(document).ajaxStop(function(){
-    loadFunction()
+    if (user.environment_name == 'Floating Islands') {
+        loadFunction()
+    }
 });
-
