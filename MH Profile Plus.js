@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.9.10
+// @version      1.10
 // @description  Community requested features for the tabs on your MH profile.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -75,7 +75,12 @@ function generate() {
         lockFavorites();
     }
     if (localStorage.getItem("ShowCommunityRanks") == "Y") {
-        showCommunityRanks();
+        localStorage.setItem('ws.mh.profplus.numMice',"");
+        hg.utils.MouseUtil.getMouseNames(function (data) {
+            const numMice = Object.keys($(data)[0]).length-2;
+            localStorage.setItem('ws.mh.profplus.numMice',numMice);
+        })
+        setTimeout(showCommunityRanks, 1000)
     }
 }
 
@@ -224,7 +229,7 @@ $(document).on("change", "#communityRanks", function() {
 });
 
 function showCommunityRanks() {
-    var totalMice = 1067;
+    const totalMice = localStorage.getItem('ws.mh.profplus.numMice');
     if ($(".crownheader.crownheadercommunity").length > 0) {
         return;
     }
@@ -267,14 +272,16 @@ function showCommunityRanks() {
     var diamondText = document.createTextNode("Diamond: " + diamondCrowns + " (" + ((diamondCrowns / totalMice) * 100).toFixed(2) + "%)");
     var aBronze = document.createElement('a');
     aBronze.appendChild(bronzeText);
-    var bronzeRank = getRankBronze(allBronze.length)
-    aBronze.title = "90% Crowned Scoreboard: " + bronzeRank;
+    //var bronzeRank = getRankBronze(allBronze.length)
+    //aBronze.title = "90% Crowned Scoreboard: " + bronzeRank;
+    aBronze.title = "90% Crowned Scoreboard";
     aBronze.href = bronzeLink;
     $(aBronze).attr("target", "_blank");
     var aSilver = document.createElement('a');
     aSilver.appendChild(silverText);
-    var silverRank = getRankSilver(allSilver.length)
-    aSilver.title = "MHCC Scoreboard: " + silverRank;
+    //var silverRank = getRankSilver(allSilver.length)
+    //aSilver.title = "MHCC Scoreboard: " + silverRank;
+    aSilver.title = "MHCC Scoreboard";
     aSilver.href = silverLink;
     $(aSilver).attr("target", "_blank");
     var aGold = document.createElement('a');
@@ -286,7 +293,7 @@ function showCommunityRanks() {
 }
 
 function getRankBronze(crowns) {
-    var totalMice = 1067;
+    const totalMice = localStorage.getItem('ws.mh.profplus.numMice');
     var crownPrecent = ((crowns / totalMice) * 100).toFixed(2) + "%";
     var rank = "";
     if (crowns >= totalMice) {
@@ -317,7 +324,7 @@ function getRankBronze(crowns) {
 }
 
 function getRankSilver(crowns) {
-    var totalMice = 1067;
+    const totalMice = localStorage.getItem('ws.mh.profplus.numMice');
     var crownPrecent = ((crowns / totalMice) * 100).toFixed(2) + "%";
     var rank = "";
     if (crowns >= 960) {
