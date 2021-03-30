@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         MH: Profile+
-// @author       Warden Slayer - Warden Slayer#2302
+// @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.10
+// @version      1.11
 // @description  Community requested features for the tabs on your MH profile.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -10,87 +10,127 @@
 // @grant GM_setClipboard
 // ==/UserScript==
 $(document).ready(function() {
-    var observerB = new MutationObserver(callback);
-    var observerOptionsB = {
-        childList: true,
-        attributes: true,
-        subtree: true
+    const debug = localStorage.getItem('ws.debug');
+    if (debug == true) {
+        console.log('Profile+ Started');
     };
+    localStorage.setItem('ws.pfp.skip.fetch',"");
+    loadFunction();
+});
+
+function loadFunction(){
     if ($('.mousehuntHud-page-tabHeader.kings_crowns').hasClass('active')) {
         //On king's crowns tab
-        generate()
-        observerB.observe($(".mousehuntHud-page-tabHeader-container").get(0), observerOptionsB);
+        generateCrowns();
     } else if ($('.mousehuntHud-page-tabHeader.items').hasClass('active')) {
         //On item tab
-        generateItems()
-        observerB.observe($(".mousehuntHud-page-tabHeader-container").get(0), observerOptionsB);
-    } else if ($('.mousehuntHud-page-tabContentContainer').children().filter('.active').attr('data-template') == 'tab_profile') {
+        generateItems();
+    } else if ($('.mousehuntHud-page-tabHeader.profile').hasClass('active')) {
         //On profile tab
-        observerB.observe($(".mousehuntHud-page-tabHeader-container").get(0), observerOptionsB);
-    } else if ($('.mousehuntHud-page-tabContentContainer').children().filter('.active').attr('data-template') == 'tab_mice') {
+        generateProfile();
+    } else if ($('.mousehuntHud-page-tabHeader.mice').hasClass('active')) {
         //On mouse Tab
-        observerB.observe($(".mousehuntHud-page-tabHeader-container").get(0), observerOptionsB);
-    } else if ($('.mousehuntHud-page-tabContentContainer').get(0)) {
-        //not on profile at all. probably at camp.
-        observerB.observe($('.mousehuntHud-page-tabContentContainer').get(0), observerOptionsB);
     } else {
         return false
     }
+}
+
+$(document).ajaxStop(function(){
+    loadFunction();
 });
 
-function callback(mutationList, observer) {
-    mutationList.forEach(mutation => {
-        if (mutation.type == 'childList') {
-            let $nodes = $(mutation.addedNodes).filter('.active');
-            if ($nodes.attr('data-template') == 'tab_kings_crowns') {
-                generate()
-            } else if ($nodes.attr('data-template') == 'tab_items') {
-                generateItems()
-            }
-        } else if (mutation.type == 'attributes') {
-            let $nodes = $(mutation.target);
-            if ($nodes.hasClass('mousehuntHud-page-tabHeader kings_crowns active')) {
-                if (localStorage.getItem("crownsAlreadyRan") == "Y") {
-                    localStorage.setItem("crownsAlreadyRan", "N");
-                } else {
-                    setTimeout(generate, 1000);
-                    localStorage.setItem("crownsAlreadyRan", "Y");
-                }
-            } else if ($nodes.hasClass('mousehuntHud-page-tabHeader items active')) {
-                if (localStorage.getItem("itemsAlreadyRan") == "Y") {
-                    localStorage.setItem("itemsAlreadyRan", "N");
-                } else {
-                    setTimeout(generateItems, 1000);
-                    localStorage.setItem("itemsAlreadyRan", "Y");
-                }
-            }
-        }
-    })
-};
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Profile TAB
+//
+//
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function generateProfile() {
+    //With the mhcc level, an egg, a checkmark, a crown, a star
+    const userID = $(location).attr("href").split('snuid=')[1].split('&tab=')[0];
+    const snuidOld = localStorage.getItem('ws.pfp.snuid');
+    localStorage.setItem('ws.pfp.snuid',userID);
+    let skipFetch = localStorage.getItem('ws.pfp.skip.fetch');
+    if (snuidOld == userID) {
+        //do nothing
+    } else {
+        skipFetch = "";
+    }
+    const dataItemOfInterest = ['is_egg_master','not_a_real_field'];
+    if (skipFetch) {
+        //dont trigger another ajax and start an infinite loop
+    } else {
+        localStorage.setItem('ws.pfp.eggMaster',"")
+        hg.utils.User.getUserData([userID],dataItemOfInterest,function(data) {
+            localStorage.setItem('ws.pfp.eggMaster',data[0].is_egg_master);
+        });
+    }
+    const eggMaster = localStorage.getItem('ws.pfp.eggMaster');
+    const debug = localStorage.getItem('ws.debug');
+    if (debug == true) {
+        console.log('Profile Tab',snuidOld,userID,eggMaster);
+    };
+    if (eggMaster == true) {
+        if ($(".eggMasterIcon").length > 0) return;
+        const hunterID = $('.friendsPage-friendRow-titleBar');
+        const eggMasterIcon = document.createElement("div");
+        eggMasterIcon.classList.add("eggMasterIcon");
+        $(eggMasterIcon).attr('title', 'Is an Egg Master')
+        $(eggMasterIcon).css({
+            'background-size': '25px 25px',
+            'background-image': "url('https://i.ibb.co/qj01CGk/image-removebg-preview-35.png')",
+            'width': '25px',
+            'height': '25px',
+            'float': 'right',
+            'margin-right': '7px',
+        });
+        hunterID.append(eggMasterIcon)
+    }
+    localStorage.setItem('ws.pfp.skip.fetch',"Y");
+}
 
-function generate() {
+function generateCrowns() {
+    const debug = localStorage.getItem('ws.debug');
+    if (debug == true) {
+        console.log('Crowns Tab',localStorage.getItem("Lock Favorites"),localStorage.getItem("ShowCommunityRanks"));
+    };
     buildToolbar();
     decorate();
     if (localStorage.getItem("Lock Favorites") == "Y" && $(".mouseCrownsView-group-mouse-favouriteButton").length > 0) {
         lockFavorites();
     }
     if (localStorage.getItem("ShowCommunityRanks") == "Y") {
-        localStorage.setItem('ws.mh.profplus.numMice',"");
+        localStorage.setItem('ws.mh.pfp.numMice',"");
         hg.utils.MouseUtil.getMouseNames(function (data) {
             const numMice = Object.keys($(data)[0]).length-2;
-            localStorage.setItem('ws.mh.profplus.numMice',numMice);
+            localStorage.setItem('ws.mh.pfp.numMice',numMice);
+            if (debug == true) {
+                console.log('Total Mice',numMice);
+            };
         })
         setTimeout(showCommunityRanks, 1000)
     }
 }
 
+function generateItems() {
+    if ($('.hunterProfileItemsView-filter.collected').hasClass('active')) {
+        manageCollected();
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Crowns TAB
+//
+//
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function buildToolbar() {
     if ($(".toolBar").length > 0) return;
-    var toolBar = document.createElement("div");
+    const toolBar = document.createElement("div");
     toolBar.classList.add("toolBar");
 
     // Lock Favs CB
-    var lockFavs = document.createElement("input");
+    const lockFavs = document.createElement("input");
     lockFavs.type = "checkbox";
     lockFavs.name = "lockFavs";
     lockFavs.value = "";
@@ -101,7 +141,7 @@ function buildToolbar() {
         lockFavs.checked = "";
     }
 
-    var lockFavsLabel = document.createElement("label");
+    const lockFavsLabel = document.createElement("label");
     lockFavsLabel.htmlFor = "lockFavsLabel";
     lockFavsLabel.appendChild(document.createTextNode("Lock Favorites"));
     if ($(".mouseCrownsView-group-mouse-favouriteButton").length > 0) {
@@ -109,7 +149,7 @@ function buildToolbar() {
         toolBar.appendChild(lockFavsLabel);
     }
     // Community Ranks CB
-    var communityRanks = document.createElement("input");
+    const communityRanks = document.createElement("input");
     communityRanks.type = "checkbox";
     communityRanks.name = "communityRanks";
     communityRanks.value = "";
@@ -121,7 +161,7 @@ function buildToolbar() {
         communityRanks.checked = "";
     }
 
-    var communityRanksLabel = document.createElement("label");
+    const communityRanksLabel = document.createElement("label");
     communityRanksLabel.htmlFor = "communityRanksLabel";
     communityRanksLabel.appendChild(
         document.createTextNode("Show Community Ranks  ")
@@ -130,7 +170,7 @@ function buildToolbar() {
     toolBar.appendChild(communityRanksLabel);
 
     //Copy Crown Button
-    var copyCrownsButton = document.createElement("button");
+    const copyCrownsButton = document.createElement("button");
     copyCrownsButton.id = "copyCrownsButton";
     if ($(".mouseCrownsView-group-mouse-favouriteButton").length > 0) {
         copyCrownsButton.addEventListener("click", copyMyCrowns)
@@ -182,7 +222,7 @@ function lockFavorites() {
         lockFavs.checked = "";
         return;
     }
-    var allMice = $(".mouseCrownsView-group-mouse").find('.mouseCrownsView-group-mouse-favouriteButton');
+    const allMice = $(".mouseCrownsView-group-mouse").find('.mouseCrownsView-group-mouse-favouriteButton');
     allMice.css("pointer-events", "none");
     $(".mouseCrownsView-crown.favourite").css(
         "background",
@@ -192,7 +232,7 @@ function lockFavorites() {
 
 function unlockFavorites() {
     localStorage.setItem("Lock Favorites", "N");
-    var allMice = $(".mouseCrownsView-group-mouse").find('.mouseCrownsView-group-mouse-favouriteButton');
+    const allMice = $(".mouseCrownsView-group-mouse").find('.mouseCrownsView-group-mouse-favouriteButton');
     allMice.css("pointer-events", "auto");
     $(".mouseCrownsView-crown.favourite").css({
         'background-image': "url('https://www.mousehuntgame.com/images/ui/camp/trap/star_favorite.png')",
@@ -229,12 +269,13 @@ $(document).on("change", "#communityRanks", function() {
 });
 
 function showCommunityRanks() {
-    const totalMice = localStorage.getItem('ws.mh.profplus.numMice');
+    const debug = localStorage.getItem('ws.debug');
+    const totalMice = localStorage.getItem('ws.mh.pfp.numMice');
     if ($(".crownheader.crownheadercommunity").length > 0) {
         return;
     }
-    var crownBreak = $(".mouseCrownsView-group.favourite");
-    var communityCrownHeader = $(
+    const crownBreak = $(".mouseCrownsView-group.favourite");
+    const communityCrownHeader = $(
         "<div class='crownheader crownheadercommunity'>Community Ranks</div>"
     );
     communityCrownHeader.css({
@@ -242,49 +283,52 @@ function showCommunityRanks() {
         'background-repeat': 'no-repeat',
     });
     communityCrownHeader.insertAfter(crownBreak);
-    var allUncrowned = $(".mouseCrownsView-group.none").find(".mouseCrownsView-group-mouse");
-    var allBronze = $(".mouseCrownsView-group.bronze,.mouseCrownsView-group.silver,.mouseCrownsView-group.gold,.mouseCrownsView-group.platinum,.mouseCrownsView-group.diamond").find(".mouseCrownsView-group-mouse");
-    var allSilver = $(".mouseCrownsView-group.silver,.mouseCrownsView-group.gold,.mouseCrownsView-group.platinum,.mouseCrownsView-group.diamond").find(".mouseCrownsView-group-mouse");
-    var allGold = $(".mouseCrownsView-group.gold,.mouseCrownsView-group.platinum,.mouseCrownsView-group.diamond").find(".mouseCrownsView-group-mouse");
-    var allPlat = $(".mouseCrownsView-group.platinum,.mouseCrownsView-group.diamond").find(".mouseCrownsView-group-mouse");
-    var allDiamond = $(".mouseCrownsView-group.diamond").find(".mouseCrownsView-group-mouse");
-    var bronzeCrowns = allBronze.length;
-    var silverCrowns = allSilver.length;
-    var goldCrowns = allGold.length;
-    var platCrowns = allPlat.length;
-    var diamondCrowns = allDiamond.length;
-    var uncrowned = totalMice - bronzeCrowns;
-    var bronzeLink = "https://docs.google.com/spreadsheets/d/19_wHCkwiT5M6LS7XNLt4NYny98fjpg4UlHbgOD05ijw/pub?fbclid=IwAR3a1Ku2xTl1mIDksUr8Lk5ORMEnuv7jnvIy9K6OBeziG6AyvYYlZaIQkHY"
-    var silverLink = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQG5g3vp-q7LRYug-yZR3tSwQzAdN7qaYFzhlZYeA32vLtq1mJcq7qhH80planwei99JtLRFAhJuTZn/pubhtml?fbclid=IwAR3sPXNLloGnFk324a0HShroP1E-sNcnQBlRTjJ7gScWTWosqmXv5InB_Ns'
-    var goldLink = 'https://docs.google.com/spreadsheets/d/10OGD5OYkGIEAbiez7v92qU5Fdul0ZtCRgEjlECkwZJE/pubhtml?gid=478731024&single=true&fbclid=IwAR28w7IQyMp91I62CR3GOILpbeLwgKaydIoQimMNm7j3S0DL8Mj_IsRpGD4'
-    var rankSummary = $("<div class='rank summary'</div>");
+    const allUncrowned = $(".mouseCrownsView-group.none").find(".mouseCrownsView-group-mouse");
+    const allBronze = $(".mouseCrownsView-group.bronze,.mouseCrownsView-group.silver,.mouseCrownsView-group.gold,.mouseCrownsView-group.platinum,.mouseCrownsView-group.diamond").find(".mouseCrownsView-group-mouse");
+    const allSilver = $(".mouseCrownsView-group.silver,.mouseCrownsView-group.gold,.mouseCrownsView-group.platinum,.mouseCrownsView-group.diamond").find(".mouseCrownsView-group-mouse");
+    const allGold = $(".mouseCrownsView-group.gold,.mouseCrownsView-group.platinum,.mouseCrownsView-group.diamond").find(".mouseCrownsView-group-mouse");
+    const allPlat = $(".mouseCrownsView-group.platinum,.mouseCrownsView-group.diamond").find(".mouseCrownsView-group-mouse");
+    const allDiamond = $(".mouseCrownsView-group.diamond").find(".mouseCrownsView-group-mouse");
+    const bronzeCrowns = allBronze.length;
+    const silverCrowns = allSilver.length;
+    const goldCrowns = allGold.length;
+    const platCrowns = allPlat.length;
+    const diamondCrowns = allDiamond.length;
+    const uncrowned = totalMice - bronzeCrowns;
+    if (debug == true) {
+        console.log('Crown Counts',uncrowned,bronzeCrowns,silverCrowns,goldCrowns,platCrowns,diamondCrowns);
+    };
+    const bronzeLink = "https://docs.google.com/spreadsheets/d/19_wHCkwiT5M6LS7XNLt4NYny98fjpg4UlHbgOD05ijw/pub?fbclid=IwAR3a1Ku2xTl1mIDksUr8Lk5ORMEnuv7jnvIy9K6OBeziG6AyvYYlZaIQkHY"
+    const silverLink = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQG5g3vp-q7LRYug-yZR3tSwQzAdN7qaYFzhlZYeA32vLtq1mJcq7qhH80planwei99JtLRFAhJuTZn/pubhtml?fbclid=IwAR3sPXNLloGnFk324a0HShroP1E-sNcnQBlRTjJ7gScWTWosqmXv5InB_Ns'
+    const goldLink = 'https://docs.google.com/spreadsheets/d/10OGD5OYkGIEAbiez7v92qU5Fdul0ZtCRgEjlECkwZJE/pubhtml?gid=478731024&single=true&fbclid=IwAR28w7IQyMp91I62CR3GOILpbeLwgKaydIoQimMNm7j3S0DL8Mj_IsRpGD4'
+    const rankSummary = $("<div class='rank summary'</div>");
     rankSummary.css({
         'font-size': '12px',
         'margin-bottom': '10px',
     });
     rankSummary.insertAfter(communityCrownHeader);
-    var uncrownedText = document.createTextNode("Uncrowned: " + uncrowned + " (" + ((uncrowned / totalMice) * 100).toFixed(2) + "%) | ");
+    const uncrownedText = document.createTextNode("Uncrowned: " + uncrowned + " (" + ((uncrowned / totalMice) * 100).toFixed(2) + "%) | ");
     $(rankSummary).attr('title', 'Mobster and Leprechaun excluded from counts');
-    var bronzeText = document.createTextNode("Bronze: " + bronzeCrowns + " (" + ((bronzeCrowns / totalMice) * 100).toFixed(2) + "%) | ");
-    var silverText = document.createTextNode("Silver: " + silverCrowns + " (" + ((silverCrowns / totalMice) * 100).toFixed(2) + "%) | ");
-    var goldText = document.createTextNode("Gold: " + goldCrowns + " (" + ((goldCrowns / totalMice) * 100).toFixed(2) + "%) | ");
-    var platText = document.createTextNode("Platinum: " + platCrowns + " (" + ((platCrowns / totalMice) * 100).toFixed(2) + "%) | ");
-    var diamondText = document.createTextNode("Diamond: " + diamondCrowns + " (" + ((diamondCrowns / totalMice) * 100).toFixed(2) + "%)");
-    var aBronze = document.createElement('a');
+    const bronzeText = document.createTextNode("Bronze: " + bronzeCrowns + " (" + ((bronzeCrowns / totalMice) * 100).toFixed(2) + "%) | ");
+    const silverText = document.createTextNode("Silver: " + silverCrowns + " (" + ((silverCrowns / totalMice) * 100).toFixed(2) + "%) | ");
+    const goldText = document.createTextNode("Gold: " + goldCrowns + " (" + ((goldCrowns / totalMice) * 100).toFixed(2) + "%) | ");
+    const platText = document.createTextNode("Platinum: " + platCrowns + " (" + ((platCrowns / totalMice) * 100).toFixed(2) + "%) | ");
+    const diamondText = document.createTextNode("Diamond: " + diamondCrowns + " (" + ((diamondCrowns / totalMice) * 100).toFixed(2) + "%)");
+    const aBronze = document.createElement('a');
     aBronze.appendChild(bronzeText);
-    //var bronzeRank = getRankBronze(allBronze.length)
+    //const bronzeRank = getRankBronze(allBronze.length)
     //aBronze.title = "90% Crowned Scoreboard: " + bronzeRank;
     aBronze.title = "90% Crowned Scoreboard";
     aBronze.href = bronzeLink;
     $(aBronze).attr("target", "_blank");
-    var aSilver = document.createElement('a');
+    const aSilver = document.createElement('a');
     aSilver.appendChild(silverText);
-    //var silverRank = getRankSilver(allSilver.length)
+    //const silverRank = getRankSilver(allSilver.length)
     //aSilver.title = "MHCC Scoreboard: " + silverRank;
     aSilver.title = "MHCC Scoreboard";
     aSilver.href = silverLink;
     $(aSilver).attr("target", "_blank");
-    var aGold = document.createElement('a');
+    const aGold = document.createElement('a');
     aGold.appendChild(goldText);
     aGold.title = "MHCC Elite Scoreboard";
     aGold.href = goldLink;
@@ -293,9 +337,8 @@ function showCommunityRanks() {
 }
 
 function getRankBronze(crowns) {
-    const totalMice = localStorage.getItem('ws.mh.profplus.numMice');
-    var crownPrecent = ((crowns / totalMice) * 100).toFixed(2) + "%";
-    var rank = "";
+    const totalMice = localStorage.getItem('ws.mh.pfp.numMice');
+    let rank = "";
     if (crowns >= totalMice) {
         rank = "Hepatizon";
     } else if (crowns >= 1057) {
@@ -324,9 +367,8 @@ function getRankBronze(crowns) {
 }
 
 function getRankSilver(crowns) {
-    const totalMice = localStorage.getItem('ws.mh.profplus.numMice');
-    var crownPrecent = ((crowns / totalMice) * 100).toFixed(2) + "%";
-    var rank = "";
+    const totalMice = localStorage.getItem('ws.mh.pfp.numMice');
+    let rank = "";
     if (crowns >= 960) {
         rank = "Super Secret Squirrel";
     } else if (crowns >= 906) {
@@ -367,6 +409,7 @@ function hideCommunityRanks() {
 }
 
 function copyMyCrowns() {
+    const debug = localStorage.getItem('ws.debug');
     hg.utils.MouseUtil.getHuntingStats(function(data) {
         let statArray = [];
         data.forEach(function(arrayItem, index) {
@@ -375,9 +418,12 @@ function copyMyCrowns() {
             const misses = arrayItem.num_misses;
             statArray[index] = [mouseName, catches, misses];
         })
+        if (debug == true) {
+            console.log('My Mice Array',statArray);
+        };
         let finalTable = statArray.map(e => e.join(",")).join("\n");
         GM_setClipboard(finalTable);
-        var copyCrownsButton = $("#copyCrownsButton")
+        const copyCrownsButton = $("#copyCrownsButton")
         copyCrownsButton.css({
             'border-style': 'solid',
             'border-color': 'grey',
@@ -393,17 +439,21 @@ function copyMyCrowns() {
 
 
 function copyCrowns() {
-    var allMice = $(".mouseCrownsView-group.none,.mouseCrownsView-group.bronze,.mouseCrownsView-group.silver,.mouseCrownsView-group.gold,.mouseCrownsView-group.platinum,.mouseCrownsView-group.diamond").find(".mouseCrownsView-group-mouse");
-    var miceArray = [];
+    const debug = localStorage.getItem('ws.debug');
+    const allMice = $(".mouseCrownsView-group.none,.mouseCrownsView-group.bronze,.mouseCrownsView-group.silver,.mouseCrownsView-group.gold,.mouseCrownsView-group.platinum,.mouseCrownsView-group.diamond").find(".mouseCrownsView-group-mouse");
+    let miceArray = [];
     allMice.each(function(i) {
         let $mouse = correctMouseName($(this).find('.mouseCrownsView-group-mouse-name').text());
         let $count = parseInt($(this).find('.mouseCrownsView-group-mouse-catches').text().replace(',', ""), 10);
         miceArray[i] = [$mouse, $count];
     })
     // need to sort uncrowned by # instead of Alpha
+    if (debug == true) {
+        console.log('Their Mice Array',miceArray);
+    };
     let finalTable = miceArray.map(e => e.join(",")).join("\n");
     GM_setClipboard(finalTable);
-    var copyCrownsButton = $("#copyCrownsButton")
+    const copyCrownsButton = $("#copyCrownsButton")
     copyCrownsButton.css({
         'border-style': 'solid',
         'border-color': 'grey',
@@ -568,12 +618,6 @@ function decorate() {
 //
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function generateItems() {
-    if ($('.hunterProfileItemsView-filter.collected').hasClass('active')) {
-        manageCollected();
-    }
-}
-
 function manageCollected() {
     let itemContainer = $('.hunterProfileItemsView-content-padding');
     //Hide LE Layout
