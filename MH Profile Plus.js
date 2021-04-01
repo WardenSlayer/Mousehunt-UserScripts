@@ -2,9 +2,9 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.11
+// @version      1.12
 // @description  Community requested features for the tabs on your MH profile.
-// @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
+// @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
 // @include      https://www.mousehuntgame.com/*
 // @grant GM_setClipboard
@@ -47,7 +47,15 @@ $(document).ajaxStop(function(){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function generateProfile() {
     //With the mhcc level, an egg, a checkmark, a crown, a star
-    const userID = $(location).attr("href").split('snuid=')[1].split('&tab=')[0];
+    const debug = localStorage.getItem('ws.debug');
+    const profileLink =$(location).attr("href");
+    if (profileLink.search('snuid=')==-1) {
+        if (debug == true) {
+            console.log('SNUID Not Found',profileLink);
+        };
+        return false;
+    }
+    const userID = profileLink.split('snuid=')[1].split('&tab=')[0];
     const snuidOld = localStorage.getItem('ws.pfp.snuid');
     localStorage.setItem('ws.pfp.snuid',userID);
     let skipFetch = localStorage.getItem('ws.pfp.skip.fetch');
@@ -66,7 +74,6 @@ function generateProfile() {
         });
     }
     const eggMaster = localStorage.getItem('ws.pfp.eggMaster');
-    const debug = localStorage.getItem('ws.debug');
     if (debug == true) {
         console.log('Profile Tab',snuidOld,userID,eggMaster);
     };
@@ -87,7 +94,16 @@ function generateProfile() {
         hunterID.append(eggMasterIcon)
     }
     localStorage.setItem('ws.pfp.skip.fetch',"Y");
+    //stop the silly hyperlink on the hunter ID
+    const hunterID = $('.hunterInfoView-idCardBlock-secondaryHeader').children();
+    hunterID.removeAttr("href").removeAttr("onclick");
+    $(document).on('click', hunterID, function() {
+        const copiedID = $('.hunterInfoView-hunterId').find('span').text();
+        GM_setClipboard(copiedID);
+    })
 }
+
+
 
 function generateCrowns() {
     const debug = localStorage.getItem('ws.debug');
