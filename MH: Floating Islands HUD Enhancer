@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         MH: Floating Islands HUD Enhancer
-// @author       Warden Slayer - Warden Slayer#2302
+// @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.0.5
+// @version      1.0.6
 // @description  See more thing on your floating islands HUD!
-// @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
+// @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
 // @include      https://www.mousehuntgame.com/*
 // ==/UserScript==
@@ -82,13 +82,14 @@ function buildHUD() {
     $('.floatingIslandsHUD-item-image.jewels').css({
         'background-image': 'url(https://www.mousehuntgame.com/images/items/stats/964b5aeaac26714cac2ffa7194e55176.gif?cv=247)',
     });
+    //console.log(localStorage.getItem('ws.fi.numJewels'))
     $(jewels).find('.floatingIslandsHUD-statItem-quantity.quantity').attr('data-item-type', 'jewels').text(parseInt(localStorage.getItem('ws.fi.numJewels'), 10));
     $(jewels).find('.mousehuntTooltip.tight.top.noEvents').text('Adorned Empyrean Jewel').css({
         'font-weight': 'bold',
     });
     //Hide Wind on islands not launchpad
     if ($('.floatingIslandsHUD.launch_pad_island ').length == 0) {
-        $('[data-item-type=bottled_wind_stat_item]:not(.floatingIslandsHUD-fuel-quantity)').hide();
+        $('.floatingIslandsHUD-statItem.mousehuntTooltipParent').filter('[data-item-type=bottled_wind_stat_item]').hide();
     }
     //Ore/Glass
     const oculusLevel = localStorage.getItem('ws.fi.ocLevel');
@@ -131,21 +132,15 @@ function buildHUD() {
     const useWind = localStorage.getItem('ws.fi.useWind');
     const numWind = parseInt($('.floatingIslandsHUD-statItem-quantity.quantity').filter('[data-item-type=bottled_wind_stat_item]').text(),10);
     if (useWind == 'yes') {
-        if (user.quests.QuestFloatingIslands.hunting_site_atts.is_fuel_enabled == null) {
+        if (user.quests.QuestFloatingIslands.hunting_site_atts.is_fuel_enabled) {
+            localStorage.setItem('ws.fi.useWind', 'no');
+        } else {
             if (numWind > 0 ) {
                 hg.views.HeadsUpDisplayFloatingIslandsView.toggleFuel();
-                localStorage.setItem('ws.fi.useWind', 'yes');
             }
         }
     }
 }
-$(document).on('click', '.floatingIslandsHUD-fuel-button', function() {
-    if (user.quests.QuestFloatingIslands.hunting_site_atts.is_fuel_enabled == null) {
-        localStorage.setItem('ws.fi.useWind', 'yes');
-    } else {
-        localStorage.setItem('ws.fi.useWind', 'no');
-    }
-})
 
 //Paragon Overlay
 function watchThePopup() {
