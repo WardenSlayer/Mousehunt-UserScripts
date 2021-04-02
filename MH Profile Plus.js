@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.12
+// @version      1.13
 // @description  Community requested features for the tabs on your MH profile.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -77,7 +77,7 @@ function generateProfile() {
     if (debug == true) {
         console.log('Profile Tab',snuidOld,userID,eggMaster);
     };
-    if (eggMaster == true) {
+    if (eggMaster == 'true') {
         if ($(".eggMasterIcon").length > 0) return;
         const hunterID = $('.friendsPage-friendRow-titleBar');
         const eggMasterIcon = document.createElement("div");
