@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.13
+// @version      1.14
 // @description  Community requested features for the tabs on your MH profile.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -48,14 +48,25 @@ $(document).ajaxStop(function(){
 function generateProfile() {
     //With the mhcc level, an egg, a checkmark, a crown, a star
     const debug = localStorage.getItem('ws.debug');
-    const profileLink =$(location).attr("href");
-    if (profileLink.search('snuid=')==-1) {
+    let userID = "";
+    const myProfileLink = $('.mousehuntHud-shield').attr('href');
+    if ($('.userInteractionButtonsView-relationship').get(0)) {
+        userID = $('.userInteractionButtonsView-relationship').attr('data-recipient-snuid');
+    } else if (myProfileLink) {
+        if (myProfileLink.search('snuid=')==-1) {
+            if (debug == true) {
+                console.log('Your SNUID Not Found',myProfileLink);
+            };
+            return false;
+        } else {
+            userID = myProfileLink.split('snuid=')[1].split('&tab=')[0];
+        }
+    } else {
         if (debug == true) {
-            console.log('SNUID Not Found',profileLink);
+            console.log('SNUID Not Found',myProfileLink,userID);
         };
         return false;
     }
-    const userID = profileLink.split('snuid=')[1].split('&tab=')[0];
     const snuidOld = localStorage.getItem('ws.pfp.snuid');
     localStorage.setItem('ws.pfp.snuid',userID);
     let skipFetch = localStorage.getItem('ws.pfp.skip.fetch');
@@ -97,13 +108,16 @@ function generateProfile() {
     //stop the silly hyperlink on the hunter ID
     const hunterID = $('.hunterInfoView-idCardBlock-secondaryHeader').children();
     hunterID.removeAttr("href").removeAttr("onclick");
-    $(document).on('click', hunterID, function() {
-        const copiedID = $('.hunterInfoView-hunterId').find('span').text();
-        GM_setClipboard(copiedID);
-    })
 }
 
-
+$(document).on('click', '.hunterInfoView-idCardBlock-secondaryHeader', function() {
+    const debug = localStorage.getItem('ws.debug');
+    const copiedID = $('.hunterInfoView-hunterId').find('span').text();
+    if (debug == true) {
+        console.log('ID Copied',copiedID)
+    };
+    GM_setClipboard(copiedID);
+})
 
 function generateCrowns() {
     const debug = localStorage.getItem('ws.debug');
