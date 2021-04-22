@@ -2,7 +2,7 @@
 // @name         MH: Floating Islands HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.0.9
+// @version      1.0.10
 // @description  See more thing on your floating islands HUD!
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -24,7 +24,7 @@ $(document).ready(function() {
 
 function loadFunction() {
     updateAndRender()
-    watchThePopup();
+    setTimeout(renderSkyMap, 100);
 }
 
 //HUD Code
@@ -38,7 +38,7 @@ function updateAndRender() {
                 localStorage.setItem('ws.fi.numGlass', data.quantity);
                 hg.utils.UserInventory.getItem('floating_islands_sky_ore_stat_item', function(data) {
                     localStorage.setItem('ws.fi.numOre', data.quantity);
-                    buildHUD()
+                    buildHUD();
                 }, true);
             }, true);
         }, true);
@@ -149,26 +149,6 @@ function buildHUD() {
 }
 
 //Paragon Overlay
-function watchThePopup() {
-    const popupWatcher = new MutationObserver(callbackPopup);
-    const popupWatcherOptons = {
-        childList: false,
-        attributes: true,
-        subtree: false,
-    };
-    popupWatcher.observe($('#overlayPopup').get(0), popupWatcherOptons);
-}
-
-function callbackPopup(mutationList, observer) {
-    const mutation = $(mutationList).get(0);
-    if (mutation.type == 'attributes') {
-        if ($('.floatingIslandsAdventureBoard-container').get(0)) {
-            observer.disconnect();
-            setTimeout(renderSkyMap, 100);
-        }
-    }
-}
-
 function renderSkyMap() {
     drawParagons()
     //cycleTracker()
@@ -230,56 +210,32 @@ function cycleTracker() {
 
 function drawParagons() {
     const overlayCont = $('.floatingIslandsAdventureBoard-container');
-    const physicalParagon = $('.floatingIslandsHUD-powerType.physical:not(.fipcmask)');
-    const physicalCatch = hg.utils.MouseUtil.getMouse('physical_paragon', function(resp) {
-        return resp.num_catches;
-    });
-    const tacticalParagon = $('.floatingIslandsHUD-powerType.tactical:not(.fipcmask)');
-    const tacticalCatch = hg.utils.MouseUtil.getMouse('tactical_paragon', function(resp) {
-        return resp.num_catches;
-    });
-    const lawParagon = $('.floatingIslandsHUD-powerType.law:not(.fipcmask)');
-    const lawCatch = hg.utils.MouseUtil.getMouse('law_paragon', function(resp) {
-        return resp.num_catches;
-    });
-    const draconicParagon = $('.floatingIslandsHUD-powerType.draconic:not(.fipcmask)');
-    const draconicCatch = hg.utils.MouseUtil.getMouse('draconic_paragon', function(resp) {
-        return resp.num_catches;
-    });
-    const arcaneParagon = $('.floatingIslandsHUD-powerType.arcane:not(.fipcmask)');
-    const arcaneCatch = hg.utils.MouseUtil.getMouse('arcane_paragon', function(resp) {
-        return resp.num_catches;
-    });
-    const forgottenParagon = $('.floatingIslandsHUD-powerType.forgotten:not(.fipcmask)');
-    const forgottenCatch = hg.utils.MouseUtil.getMouse('forgotten_paragon', function(resp) {
-        return resp.num_catches;
-    });
-    const hydroParagon = $('.floatingIslandsHUD-powerType.hydro:not(.fipcmask)');
-    const hydroCatch = hg.utils.MouseUtil.getMouse('hydro_paragon', function(resp) {
-        return resp.num_catches;
-    });
-    const shadowParagon = $('.floatingIslandsHUD-powerType.shadow:not(.fipcmask)');
-    const shadowCatch = hg.utils.MouseUtil.getMouse('shadow_paragon', function(resp) {
-        return resp.num_catches;
-    });
-    $(physicalParagon).text(physicalCatch);
-    $(tacticalParagon).text(tacticalCatch);
-    $(lawParagon).text(lawCatch);
-    $(draconicParagon).text(draconicCatch);
-    $(arcaneParagon).text(arcaneCatch);
-    $(forgottenParagon).text(forgottenCatch);
-    $(hydroParagon).text(hydroCatch);
-    $(shadowParagon).text(shadowCatch);
+    if (overlayCont.length == 1) {
+        const allParagons = $('.floatingIslandsHUD-powerType:not(.fipcmask)');
+        $(allParagons).each(function(e){
+            const thisParagon = $(this);
+            hg.utils.MouseUtil.getMouse(thisParagon.context.classList[1]+'_paragon', function(resp,) {
+                setTimeout(function(){thisParagon.text(resp.num_catches); }, (10-e)*35);
+            })
+        })
+    }
     $('.floatingIslandsHUD-powerType').css({
         'font-size': '14x',
         'font-weight': 'bold',
         'color': 'blue',
     });
-    watchThePopup();
 }
 
-$(document).ajaxStop(function(){
-    if (user.environment_name == 'Floating Islands') {
-        loadFunction()
+$(document).ajaxComplete(function(event,xhr,options){
+    //console.log(options.url);
+    if (options.url == 'https://www.mousehuntgame.com/managers/ajax/mice/getstat.php') {
+        //console.log('mice');
+    } else if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/userInventory.php') {
+        //console.log('items');
+    } else {
+       // console.log('some other ajax');
+        if (user.environment_name == 'Floating Islands') {
+            loadFunction();
+        }
     }
 });
