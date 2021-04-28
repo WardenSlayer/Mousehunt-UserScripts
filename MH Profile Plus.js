@@ -2,11 +2,14 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.14
+// @version      1.15
 // @description  Community requested features for the tabs on your MH profile.
+// @grant        GM_xmlhttpRequest
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
 // @include      https://www.mousehuntgame.com/*
+// @connect      http://www.mousehuntgame.com/*
+// @connect      https://www.mousehuntgame.com/*
 // @grant GM_setClipboard
 // ==/UserScript==
 $(document).ready(function() {
@@ -50,8 +53,10 @@ function generateProfile() {
     const debug = localStorage.getItem('ws.debug');
     let userID = "";
     const myProfileLink = $('.mousehuntHud-shield').attr('href');
+    let maybeYourFriend = "";
     if ($('.userInteractionButtonsView-relationship').get(0)) {
         userID = $('.userInteractionButtonsView-relationship').attr('data-recipient-snuid');
+        maybeYourFriend = userID;
     } else if (myProfileLink) {
         if (myProfileLink.search('snuid=')==-1) {
             if (debug == true) {
@@ -108,7 +113,61 @@ function generateProfile() {
     //stop the silly hyperlink on the hunter ID
     const hunterID = $('.hunterInfoView-idCardBlock-secondaryHeader').children();
     hunterID.removeAttr("href").removeAttr("onclick");
+    //
+    //tipping/misc
+    if (maybeYourFriend) {
+        const yourFriendsProfile = $('.friendsPage-friendRow-content');
+        if ($('#tipButton').get(0)) {
+            return false;
+        } else {
+            $('.friendsPage-friendRow-content').css({
+                'padding-top': '0px',
+            });
+            const tipButton = document.createElement("button");
+            tipButton.id = "tipButton";
+            $(tipButton).attr('title', 'Tip this hunter 10 SB+');
+            $(tipButton).text('Send Tip');
+            yourFriendsProfile.prepend(tipButton);
+            $(tipButton).css({
+                'background-image': "url('https://www.toptal.com/designers/subtlepatterns/patterns/interlaced.png')",
+                'background-repeat': 'no-repeat',
+                'background-size': 'contain',
+                'position': 'relative',
+                'left': '37px',
+                'width': '75px',
+                'height': '20px',
+            });
+        }
+
+    } else if ($('.friendsProfileView-selfStats').get(0)) {
+        const randomFriend = $('.friendsProfileView-randomFriend');
+        const randoSNUID = randomFriend.attr('href').split('snuid=')[1].split('&tab=')[0];
+        hg.utils.User.getUserData([randoSNUID],['not_a_real_field'],function(data) {
+            randomFriend.text('Visit Random Friend ('+data[0].name+')');
+        });
+    }
 }
+
+$(document).on('click', '#tipButton', function() {
+    const debug = localStorage.getItem('ws.debug');
+    const receivingHunter = $('.userInteractionButtonsView-relationship').attr('data-recipient-snuid');
+    const sendingHunter = user.unique_hash;
+    const url = 'https://www.mousehuntgame.com/managers/ajax/users/supplytransfer.php?/sn=Hitgrab&hg_is_ajax=1&receiver='+receivingHunter+'&uh='+sendingHunter+'&item=super_brie_cheese&item_quantity=10';
+    GM_xmlhttpRequest({
+        method: "POST",
+        url: url,
+        onload: function(response) {
+            if (debug == true) {
+                console.log('Tip Sent',receivingHunter);
+            }
+        },
+        onerror: function(response) {
+            if (debug == true) {
+                console.log('Tip No Good, Error',receivingHunter,url);
+            }
+        }
+    });
+})
 
 $(document).on('click', '.hunterInfoView-idCardBlock-secondaryHeader', function() {
     const debug = localStorage.getItem('ws.debug');
