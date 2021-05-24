@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.15
+// @version      1.16
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
@@ -126,7 +126,7 @@ function generateProfile() {
             const tipButton = document.createElement("button");
             tipButton.id = "tipButton";
             $(tipButton).attr('title', 'Tip this hunter 10 SB+');
-            $(tipButton).text('Send Tip');
+            $(tipButton).text('Tip 10 SB+');
             yourFriendsProfile.prepend(tipButton);
             $(tipButton).css({
                 'background-image': "url('https://www.toptal.com/designers/subtlepatterns/patterns/interlaced.png')",
@@ -134,7 +134,7 @@ function generateProfile() {
                 'background-size': 'contain',
                 'position': 'relative',
                 'left': '37px',
-                'width': '75px',
+                'width': '85px',
                 'height': '20px',
             });
         }
@@ -151,6 +151,7 @@ function generateProfile() {
 $(document).on('click', '#tipButton', function() {
     const debug = localStorage.getItem('ws.debug');
     const receivingHunter = $('.userInteractionButtonsView-relationship').attr('data-recipient-snuid');
+    const receivingName = $('.friendsPage-friendRow-titleBar-name').attr('data-text');
     const sendingHunter = user.unique_hash;
     const url = 'https://www.mousehuntgame.com/managers/ajax/users/supplytransfer.php?/sn=Hitgrab&hg_is_ajax=1&receiver='+receivingHunter+'&uh='+sendingHunter+'&item=super_brie_cheese&item_quantity=10';
     GM_xmlhttpRequest({
@@ -158,12 +159,14 @@ $(document).on('click', '#tipButton', function() {
         url: url,
         onload: function(response) {
             if (debug == true) {
-                console.log('Tip Sent',receivingHunter);
+                console.log('Tip Sent',receivingName,receivingHunter);
+                alert('10 SB+ sent to '+receivingName);
             }
         },
         onerror: function(response) {
             if (debug == true) {
-                console.log('Tip No Good, Error',receivingHunter,url);
+                console.log('Tip No Good, Error',receivingName,receivingHunter,url);
+                alert('Error, nothing sent');
             }
         }
     });
