@@ -1,13 +1,12 @@
 // ==UserScript==
 // @name         MH: Labyrinth Door Data Collector
-// @author       Warden Slayer - Warden Slayer#2302
+// @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.2.2
+// @version      1.2.3
 // @description  Mousehunt data collection tool for avilible labyrinth doors
-// @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
+// @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
 // @include      https://www.mousehuntgame.com/*
-// @grant GM_setClipboard
 // ==/UserScript==
 $(document).ready(function() {
     const debug = localStorage.getItem('ws.debug');
@@ -15,7 +14,8 @@ $(document).ready(function() {
         if (debug == true) {
             console.log('Labyrinth Door Script Running');
         }
-        buildCopyButton();
+        buildWorkingIndicator();
+        copyData();
     } else {
         if (debug == true) {
             console.log('Not in the Labyrinth');
@@ -24,29 +24,35 @@ $(document).ready(function() {
     }
 });
 
-function buildCopyButton() {
+$(document).ajaxStop(function(){
+    buildWorkingIndicator();
+    copyData();
+});
+
+function buildWorkingIndicator() {
     const debug = localStorage.getItem('ws.debug');
-    if ($(".copyButtonContainer").length > 0) return;
-    const copyButtonContainer = document.createElement("div");
-    copyButtonContainer.classList.add("copyButtonContainer");
-    const hudLocation = $(".hudLocationContent");
+    if ($('.workingIndicatorContainer').length > 0) return;
+    const workingIndicatorContainer = document.createElement("div");
+    workingIndicatorContainer.classList.add("workingIndicatorContainer");
+    const hudLocation = $('.labyrinthHUD-itemContainer');
     if (debug == true) {
         console.log('HUD Element:',hudLocation);
     }
-    //Copy Button
-    const copyButton = document.createElement("button");
-    copyButton.id = "copyButton";
-    copyButton.innerText = "Copy/Submit Data";
-    copyButton.addEventListener("click", copyData);
-    copyButtonContainer.appendChild(copyButton);
-    $(copyButton).css({
+    const workingIndicator = document.createElement("div");
+    workingIndicator.classList.add("workingIndicator");
+    $(workingIndicator).text('Collecting Door Data');
+    workingIndicator.addEventListener("click", copyData);
+    workingIndicatorContainer.appendChild(workingIndicator);
+    $(workingIndicator).css({
         'margin-right': '5px',
     })
-    hudLocation.after(copyButtonContainer);
-    $(".copyButtonContainer").css({
-        'width': '100%',
-        'margin-bottom': '10px',
-        'text-align': 'right',
+    hudLocation.after(workingIndicatorContainer);
+    $('.workingIndicatorContainer').css({
+        'height': '5%',
+        'width': '15%',
+        'right':'8px',
+        'bottom': '-10px',
+        'position': 'absolute',
     });
 }
 
@@ -66,85 +72,37 @@ function copyData() {
         if (debug == true) {
             console.log('Collecting Data')
         }
-        const fealtyClues = $('[class*="labyrinthHUD-clueDrawer-clue y"]').find(".labyrinthHUD-clueDrawer-quantity").text();
-        if (debug == true) {
-            console.log("Fealty Clues: ", fealtyClues)
-        }
-        const techClues = $('[class*="labyrinthHUD-clueDrawer-clue h"]').find(".labyrinthHUD-clueDrawer-quantity").text();
-        if (debug == true) {
-            console.log("Tech Clues: ", techClues)
-        }
-        const scholarClues = $('[class*="labyrinthHUD-clueDrawer-clue s"]').find(".labyrinthHUD-clueDrawer-quantity").text();
-        if (debug == true) {
-            console.log("Scholar Clues: ", scholarClues)
-        }
-        const treasureClues = $('[class*="labyrinthHUD-clueDrawer-clue t"]').find(".labyrinthHUD-clueDrawer-quantity").text();
-        if (debug == true) {
-            console.log("Treasury Clues: ", treasureClues)
-        }
-        const farmingClues = $('[class*="labyrinthHUD-clueDrawer-clue f"]').find(".labyrinthHUD-clueDrawer-quantity").text();
-        if (debug == true) {
-            console.log("Farming Clues: ", farmingClues)
-        }
-        const deadEndClues = $('[class*="labyrinthHUD-clueDrawer-clue m"]').find(".labyrinthHUD-clueDrawer-quantity").text();
-        if (debug == true) {
-            console.log("Dead End Clues: ", deadEndClues)
-        }
-        const A = isNaN(parseInt(fealtyClues, 10));
-        const B = isNaN(parseInt(techClues, 10));
-        const C = isNaN(parseInt(scholarClues, 10));
-        const D = isNaN(parseInt(treasureClues, 10));
-        const E = isNaN(parseInt(farmingClues, 10));
-        const F = isNaN(parseInt(deadEndClues, 10));
-        //if data is missing: stop
-        if (A || B || C || D || E || F) {
-            if (debug == true) {
-                console.log('Bad Data Parse, Submit cancelled', A, B, C, D, E, F)
-            }
-            return
-        }
+        let resultsArray = [];
+        const allFactions = $('[class*="labyrinthHUD-clueDrawer-clue"]');
+        allFactions.each(function(i) {
+            const thisClueQty = parseInt($(this).find(".labyrinthHUD-clueDrawer-quantity").text(),10)
+            resultsArray[i] = thisClueQty;
+        });
         const allDoors = $(".labyrinthHUD-doorContainer").children();
+        allDoors.each(function(i) {
+            const thisDoor = parseDoor(this);
+            resultsArray.push(thisDoor.doorLength,thisDoor.doorQuality,thisDoor.doorType)
+        });
+        if (debug == true) {
+            console.log(resultsArray);
+        }
         //Add flag to denote shuffling
         const journalText = $(".journaltext");
         const journalArray = journalText.toArray(0);
         const shuffleFlag = parseJournal(journalArray);
-        //Parse Doors
-        const doorOne = $(allDoors).first();
-        const doorThree = $(allDoors).last();
-        const doorTwo = $(allDoors).not(doorOne).not(doorThree);
-        const doorOneData = parseDoor(doorOne)
-        const doorOneObj = new doorOption(doorOneData.doorLength, doorOneData.doorQuality, doorOneData.doorType);
-        const doorTwoData = parseDoor(doorTwo)
-        const doorTwoObj = new doorOption(doorTwoData.doorLength, doorTwoData.doorQuality, doorTwoData.doorType);
-        const doorThreeData = parseDoor(doorThree)
-        const doorThreeObj = new doorOption(doorThreeData.doorLength, doorThreeData.doorQuality, doorThreeData.doorType);
-        const resultsArray = [fealtyClues,
-                            techClues,
-                            scholarClues,
-                            treasureClues,
-                            farmingClues,
-                            deadEndClues,
-                            doorOneObj.length,
-                            doorOneObj.quality,
-                            doorOneObj.type,
-                            doorTwoObj.length,
-                            doorTwoObj.quality,
-                            doorTwoObj.type,
-                            doorThreeObj.length,
-                            doorThreeObj.quality,
-                            doorThreeObj.type,
-                            shuffleFlag
-                           ];
-        const results = resultsArray.join()
-        console.log('Result String: ', results)
-        GM_setClipboard(results)
-        publishResults(results)
+        resultsArray.push(shuffleFlag);
+        const results = resultsArray.join();
+        console.log('Result String: ', results);
+        publishResults(results);
     }
 }
 
 function parseDoor(door) {
     const debug = localStorage.getItem('ws.debug');
-    const doorString = door.find(".labyrinthHUD-door-name-padding").text();
+    if ($(door).hasClass('mystery')) {
+        return
+    };
+    const doorString = $(door).find(".labyrinthHUD-door-name-padding").text();
     const doorArray = doorString.split(/\s+/);
     let doorLength = doorArray[0];
     let doorQuality = doorArray[1];
@@ -182,9 +140,6 @@ function parseDoor(door) {
     } else {
         doorType = "M";
     }
-    if (debug == true) {
-        console.log("Door after shortening: ", doorLength, doorQuality, doorType)
-    }
     return {
         doorLength,
         doorQuality,
@@ -201,12 +156,6 @@ function parseJournal(array) {
         } else {}
     })
     return shuffleFlag;
-}
-
-function doorOption(length, quality, type) {
-    this.length = length;
-    this.quality = quality;
-    this.type = type;
 }
 
 function publishResults(results) {
@@ -231,7 +180,11 @@ function publishResults(results) {
     }).success(function() {
         // do something
         console.log('Door Data Submitted!')
-        localStorage.setItem('Last Submission', results)
+        localStorage.setItem('Last Submission', results);
+        $('.workingIndicator').text('Data Submitted');
+        setTimeout(function() {
+            $('.workingIndicator').text('Collecting Door Data');
+        }, 1000);
     });
 
 
