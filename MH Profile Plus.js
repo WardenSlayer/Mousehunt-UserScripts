@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.17
+// @version      1.18
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
@@ -17,7 +17,7 @@ $(document).ready(function() {
     if (debug == true) {
         console.log('Profile+ Started');
     };
-    localStorage.setItem('ws.pfp.skip.fetch',"");
+    localStorage.setItem('ws.pfp.sortUorD','down');
     loadFunction();
 });
 
@@ -27,19 +27,23 @@ function loadFunction(){
         generateCrowns();
     } else if ($('.mousehuntHud-page-tabHeader.items').hasClass('active')) {
         //On item tab
-        generateItems();
+        manageCollected();
     } else if ($('.mousehuntHud-page-tabHeader.profile').hasClass('active')) {
         //On profile tab
         generateProfile();
     } else if ($('.mousehuntHud-page-tabHeader.mice').hasClass('active')) {
         //On mouse Tab
+        generateMice();
     } else {
         return false
     }
 }
 
-$(document).ajaxStop(function(){
-    loadFunction();
+$(document).ajaxComplete(function(event,xhr,options){
+    if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/userData.php') {
+    } else {
+        loadFunction();
+    }
 });
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,6 +58,7 @@ function generateProfile() {
     let userID = "";
     const myProfileLink = $('.mousehuntHud-shield').attr('href');
     let maybeYourFriend = "";
+    let eggMaster = localStorage.getItem('ws.pfp.eggMaster');
     if ($('.userInteractionButtonsView-relationship').get(0)) {
         userID = $('.userInteractionButtonsView-relationship').attr('data-recipient-snuid');
         maybeYourFriend = userID;
@@ -74,42 +79,19 @@ function generateProfile() {
     }
     const snuidOld = localStorage.getItem('ws.pfp.snuid');
     localStorage.setItem('ws.pfp.snuid',userID);
-    let skipFetch = localStorage.getItem('ws.pfp.skip.fetch');
     if (snuidOld == userID) {
         //do nothing
     } else {
-        skipFetch = "";
-    }
-    const dataItemOfInterest = ['is_egg_master','not_a_real_field'];
-    if (skipFetch) {
-        //dont trigger another ajax and start an infinite loop
-    } else {
         localStorage.setItem('ws.pfp.eggMaster',"")
+        const dataItemOfInterest = ['is_egg_master','not_a_real_field'];
         hg.utils.User.getUserData([userID],dataItemOfInterest,function(data) {
-            localStorage.setItem('ws.pfp.eggMaster',data[0].is_egg_master);
+            eggMaster = localStorage.setItem('ws.pfp.eggMaster',data[0].is_egg_master);
         });
+        setTimeout(flexEggMaster, 1000);
     }
-    const eggMaster = localStorage.getItem('ws.pfp.eggMaster');
     if (debug == true) {
         console.log('Profile Tab',snuidOld,userID,eggMaster);
     };
-    if (eggMaster == 'true') {
-        if ($(".eggMasterIcon").length > 0) return;
-        const hunterID = $('.friendsPage-friendRow-titleBar');
-        const eggMasterIcon = document.createElement("div");
-        eggMasterIcon.classList.add("eggMasterIcon");
-        $(eggMasterIcon).attr('title', 'Is an Egg Master')
-        $(eggMasterIcon).css({
-            'background-size': '25px 25px',
-            'background-image': "url('https://i.ibb.co/qj01CGk/image-removebg-preview-35.png')",
-            'width': '25px',
-            'height': '25px',
-            'float': 'right',
-            'margin-right': '7px',
-        });
-        hunterID.append(eggMasterIcon)
-    }
-    localStorage.setItem('ws.pfp.skip.fetch',"Y");
     //stop the silly hyperlink on the hunter ID
     const hunterID = $('.hunterInfoView-idCardBlock-secondaryHeader').children();
     hunterID.removeAttr("href").removeAttr("onclick");
@@ -148,6 +130,26 @@ function generateProfile() {
     }
 }
 
+function flexEggMaster() {
+    const eggMaster = localStorage.getItem('ws.pfp.eggMaster');
+    if (eggMaster == 'true') {
+        if ($(".eggMasterIcon").length > 0) return;
+        const hunterID = $('.friendsPage-friendRow-titleBar');
+        const eggMasterIcon = document.createElement("div");
+        eggMasterIcon.classList.add("eggMasterIcon");
+        $(eggMasterIcon).attr('title', 'Is an Egg Master')
+        $(eggMasterIcon).css({
+            'background-size': '25px 25px',
+            'background-image': "url('https://i.ibb.co/qj01CGk/image-removebg-preview-35.png')",
+            'width': '25px',
+            'height': '25px',
+            'float': 'right',
+            'margin-right': '7px',
+        });
+        hunterID.append(eggMasterIcon)
+    }
+}
+
 $(document).on('click', '#tipButton', function() {
     const debug = localStorage.getItem('ws.debug');
     const receivingHunter = $('.userInteractionButtonsView-relationship').attr('data-recipient-snuid');
@@ -181,6 +183,125 @@ $(document).on('click', '.hunterInfoView-idCardBlock-secondaryHeader', function(
     GM_setClipboard(copiedID);
 })
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Mouse TAB
+//
+//
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function generateMice() {
+    const debug = localStorage.getItem('ws.debug');
+    const allMice = $('.mouseListView-categoryContent-subgroup-mouse.stats:not(.header)');
+    const statsHeader = $('.mouseListView-categoryContent-subgroup-mouse.stats.header');
+    allMice.each(function(i) {
+        const thisThumb = $(this).find('.mouseListView-categoryContent-subgroup-mouse-thumb');
+        const thisCatches = parseInt($(this).find('.catches').text().replace(",", ""),10);
+        const thisMisses = parseInt($(this).find('.misses').text().replace(",", ""),10);
+        setCrownBorder(thisThumb,thisCatches);
+    });
+    $(statsHeader).css({
+        'cursor': 'pointer',
+    });
+}
+
+// $(document).on('click', '.mouseListView-categoryContent-subgroup-mouse-stats', function() {
+//     const sortUorD = localStorage.getItem('ws.pfp.sortUorD');
+//     let sortKey = "";
+//     if ($(this).hasClass('name')) {
+//         sortKey = '.name';
+//     } else if ($(this).hasClass('catches')) {
+//         sortKey = '.catches';
+//     } else if ($(this).hasClass('misses')) {
+//         sortKey = '.misses';
+//     } else if ($(this).hasClass('average_weight')) {
+//         sortKey = '.average_weight';
+//     } else if ($(this).hasClass('heaviest_catch')) {
+//         sortKey = '.heaviest_catch';
+//     }
+//     if (sortUorD == 'up') {
+//         sortMiceBy(sortKey,'down');
+//         localStorage.setItem('ws.pfp.sortUorD','down');
+//     } else {
+//         sortMiceBy(sortKey,'up');
+//         localStorage.setItem('ws.pfp.sortUorD','up');
+//     }
+// });
+
+function setCrownBorder(thumb,catches) {
+    let top = "";
+    let bottom = "";
+    if ((catches >= 10) && (catches < 100)) {
+        top = '#f0c693';
+        bottom = '#8d4823';
+    } else if ((catches >= 100) && (catches < 500)) {
+        top = '#d1d7e9';
+        bottom = '#66718b';
+    } else if ((catches >= 500) && (catches < 1000)) {
+        top = '#ffe589';
+        bottom = '#b67800';
+    } else if ((catches >= 1000) && (catches < 2500)) {
+        top = '#9191ff';
+        bottom = '#1d1781';
+    } else if (catches >= 2500) {
+        top = '#c4eae6';
+        bottom = '#63b9cf';
+    } else {
+        //no crown
+        top = '#ab9f92';
+        bottom = '#251B0A';
+    }
+    $(thumb).css({
+        'border-style': 'solid',
+        'border-width': '4px',
+        'border-radius': '4px',
+        'border-top-color': top,
+        'border-left-color': top,
+        'border-bottom-color': bottom,
+        'border-right-color': bottom,
+    });
+}
+
+function sortMiceBy(key,UD) {
+    const mouseContainer = $('.mouseListView-categoryContent-subgroupContainer');
+    const allMice = $('.mouseListView-categoryContent-subgroup-mouse.stats:not(.header)');
+    $(allMice).sort(function(a, b,) {
+        if (key == '.name') {
+            a = $(a).find(key).text();
+            b = $(b).find(key).text();
+            if ((UD == 'up') && (a < b)) {
+                return -1;
+            } else if ((UD == 'up') && (a > b)) {
+                return 1;
+            } else if ((UD == 'down') && (a > b)) {
+                return -1;
+            } else if ((UD == 'down') && (a < b)) {
+                return 1;
+            }
+        } else if ((key == '.catches') || (key == '.misses')) {
+            a = parseInt($(a).find(key).text(),10);
+            b = parseInt($(b).find(key).text(),10);
+            if ((UD == 'up') && (a > b)) {
+                return -1;
+            } else if ((UD == 'up') && (a < b)) {
+                return 1;
+            } else if ((UD == 'down') && (a < b)) {
+                return -1;
+            } else if ((UD == 'down') && (a > b)) {
+                return 1;
+            }
+        } else if ((key == '.average_weight') || (key == '.heaviest_catch')) {
+            // do nothing for now cause parsing lbs/oz is no fun
+        }
+    }).appendTo(mouseContainer);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Crowns TAB
+//
+//
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function generateCrowns() {
     const debug = localStorage.getItem('ws.debug');
     if (debug == true) {
@@ -204,18 +325,6 @@ function generateCrowns() {
     }
 }
 
-function generateItems() {
-    if ($('.hunterProfileItemsView-filter.collected').hasClass('active')) {
-        manageCollected();
-    }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Crowns TAB
-//
-//
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function buildToolbar() {
     if ($(".toolBar").length > 0) return;
     const toolBar = document.createElement("div");
@@ -588,121 +697,12 @@ function decorate() {
         'background-repeat': 'no-repeat',
         'background-size': 'contain'
     });
-    let favorites = $('.mouseCrownsView-group-mouse.highlight.favourite')
+    let favorites = $('.mouseCrownsView-group-mouse');
     $(favorites).each(function(i) {
-        let image = $(this).find('.mouseCrownsView-group-mouse-image');
-        let crown = $(this).find('.mouseCrownsView-crown');
-        let top = "";
-        let bottom = "";
-        if ($(crown).hasClass('bronze')) {
-            //bronze
-            top = '#f0c693';
-            bottom = '#8d4823';
-        } else if ($(crown).hasClass('silver')) {
-            //silver
-            top = '#d1d7e9';
-            bottom = '#66718b';
-        } else if ($(crown).hasClass('gold')) {
-            //gold
-            top = '#ffe589';
-            bottom = '#b67800';
-        } else if ($(crown).hasClass('platinum')) {
-            //plat
-            top = '#9191ff';
-            bottom = '#1d1781';
-        } else if ($(crown).hasClass('diamond')) {
-            //diamond
-            top = '#c4eae6';
-            bottom = '#63b9cf';
-        } else {
-            //no crown
-            top = '#ab9f92';
-            bottom = '#251B0A';
-        }
-        //Style all the favs
-        $(image).css({
-            'border-style': 'solid',
-            'border-width': '3px',
-            'border-radius': '4px',
-            'border-top-color': top,
-            'border-left-color': top,
-            'border-bottom-color': bottom,
-            'border-right-color': bottom,
-        })
-        //Stlye all the rest
-        let diamond = $('.mouseCrownsView-group.diamond').find(".mouseCrownsView-group-mouse-image");
-        if (diamond.get(0)) {
-            $(diamond).css({
-                'border-style': 'solid',
-                'border-width': '3px',
-                'border-radius': '4px',
-                'border-top-color': '#c4eae6',
-                'border-left-color': '#c4eae6',
-                'border-bottom-color': '#63b9cf',
-                'border-right-color': '#63b9cf',
-            })
-        }
-        let platinum = $('.mouseCrownsView-group.platinum').find(".mouseCrownsView-group-mouse-image");
-        if (platinum.get(0)) {
-            $(platinum).css({
-                'border-style': 'solid',
-                'border-width': '3px',
-                'border-radius': '4px',
-                'border-top-color': '#9191ff',
-                'border-left-color': '#9191ff',
-                'border-bottom-color': '#1d1781',
-                'border-right-color': '#1d1781',
-            })
-        }
-        let gold = $('.mouseCrownsView-group.gold').find(".mouseCrownsView-group-mouse-image");
-        if (gold.get(0)) {
-            $(gold).css({
-                'border-style': 'solid',
-                'border-width': '3px',
-                'border-radius': '4px',
-                'border-top-color': '#ffe589',
-                'border-left-color': '#ffe589',
-                'border-bottom-color': '#b67800',
-                'border-right-color': '#b67800',
-            })
-        }
-        let silver = $('.mouseCrownsView-group.silver').find(".mouseCrownsView-group-mouse-image");
-        if (silver.get(0)) {
-            $(silver).css({
-                'border-style': 'solid',
-                'border-width': '3px',
-                'border-radius': '4px',
-                'border-top-color': '#d1d7e9',
-                'border-left-color': '#d1d7e9',
-                'border-bottom-color': '#66718b',
-                'border-right-color': '#66718b',
-            })
-        }
-        let bronze = $('.mouseCrownsView-group.bronze').find(".mouseCrownsView-group-mouse-image");
-        if (bronze.get(0)) {
-            $(bronze).css({
-                'border-style': 'solid',
-                'border-width': '3px',
-                'border-radius': '4px',
-                'border-top-color': '#f0c693',
-                'border-left-color': '#f0c693',
-                'border-bottom-color': '#8d4823',
-                'border-right-color': '#8d4823',
-            })
-        }
-        let none = $('.mouseCrownsView-group.none').find(".mouseCrownsView-group-mouse-image");
-        if (none.get(0)) {
-            $(none).css({
-                'border-style': 'solid',
-                'border-width': '3px',
-                'border-radius': '4px',
-                'border-top-color': '#ab9f92',
-                'border-left-color': '#ab9f92',
-                'border-bottom-color': '#251B0A',
-                'border-right-color': '#251B0A',
-            })
-        }
-    })
+        const image = $(this).find('.mouseCrownsView-group-mouse-image');
+        const catches = parseInt($(this).find('.mouseCrownsView-group-mouse-catches').text().replace(",", ""),10);
+        setCrownBorder(image,catches);
+    });
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //ITEMS TAB
