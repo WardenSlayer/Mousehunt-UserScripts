@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.18
+// @version      1.19
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
@@ -80,7 +80,9 @@ function generateProfile() {
     const snuidOld = localStorage.getItem('ws.pfp.snuid');
     localStorage.setItem('ws.pfp.snuid',userID);
     if (snuidOld == userID) {
-        //do nothing
+        if (eggMaster == 'true') {
+            flexEggMaster();
+        }
     } else {
         localStorage.setItem('ws.pfp.eggMaster',"")
         const dataItemOfInterest = ['is_egg_master','not_a_real_field'];
