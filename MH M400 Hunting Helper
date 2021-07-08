@@ -2,7 +2,7 @@
 // @name         MH: M400 Hunting Helper
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.0.1
+// @version      1.0.2
 // @description  Adds the ability to one click travel to the next m400 assigment location
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -18,22 +18,66 @@ $(document).ready(function() {
 });
 
 $(document).on('click', '.campPage-tabs-tabHeader.quests', function() {
-    setTimeout(function() {
-        $('.campPage-quests-footer-smash').removeAttr("href").removeAttr("onclick");
-    }, 500);
+    setTimeout(renderQuestTab, 300);
 });
 
-$(document).on('click', '.campPage-quests-objective-container:not(".locked")', function() {
+function renderQuestTab() {
+    $('.campPage-quests-footer-smash').removeAttr("href").removeAttr("onclick");
+    if ($('#questTravelButton').length > 0) {
+    } else {
+        const allTasks = $('.campPage-quests-objective-container:not(".locked")');
+        $(allTasks).find('.campPage-quests-objective-content').css({'width': '50%',});
+        const questTravelButton = document.createElement('button');
+        questTravelButton.id = 'questTravelButton';
+        $(questTravelButton).addClass('mousehuntActionButton small');
+        $(questTravelButton).attr('title', 'Travel to task location');
+        const travelText = document.createElement('span');
+        $(travelText).addClass('travelText').text('Travel').css({
+            'font-size': '12px',
+        });
+        $(questTravelButton).append(travelText);
+        $(allTasks).find('.campPage-quests-objective').append(questTravelButton);
+        $('.mousehuntActionButton.small').css({
+            'width': '75px',
+            'height': '25px',
+            'vertical-align': 'middle',
+        });
+        // smashing
+        const smashBox = $('.campPage-quests-footer-smash');
+        const smashBtn = $(smashBox).find('.campPage-quests-footer-smash-icon');
+        $(smashBox).text('');
+        $(smashBtn).removeClass('campPage-quests-footer-smash-icon').addClass('mousehuntActionButton small');
+        $(smashBtn).attr('id','smashBtn');
+        const smashBtnText = document.createElement('span');
+        $(smashBtn).append(smashBtnText);
+        $(smashBtnText).addClass('smashBtnText').text('Smash').css({
+            'font-size': '12px',
+        });
+        const smashTxt = document.createElement('span');
+        $(smashTxt).text("Don't like an assignment? Cancel it by smashing the assignment with your Hunter's Hammer.");
+        $(smashTxt).css({
+            'float': 'left',
+            'margin-bottom': '10px',
+        });
+        $(smashBox).append(smashTxt);
+        $(smashBox).append(smashBtn);
+        $(smashBtn).css({
+            'width': '50px',
+            'height': '15px',
+            'vertical-align': 'middle',
+        });
+    }
+}
+
+$(document).on('click', '#questTravelButton', function() {
     if ($('.campPage-tabs-tabHeader.quests').hasClass('active')) {
         if ($('.campPage-quests-title').text() == 'Track down the elusive M400') {
-            let location = $(this).find('.campPage-quests-objective-task').text()
+            let location = $(this).parent().parent().find('.campPage-quests-objective-task').text()
             const locationSplit = location.split('in ');
             if (locationSplit[1] == undefined) {
                 const mouseSplit = location.split('from ');
-                //console.log('NOT',mouseSplit[1].replace(' Mice','xyz').replace(' Mouse','xyz').split('xyz')[0])
                 location = convertMouseToLocation(mouseSplit[1].replace(' Mice','xyz').replace(' Mouse','xyz').split('xyz')[0])
             } else {
-                //console.log('IN',locationSplit)
                 location = locationSplit[1].replace('the ','');
             }
             app.pages.TravelPage.travel(convertNameToClass(location))
@@ -157,7 +201,7 @@ function convertNameToClass(locationName) {
     } else if (locationName == 'Crystal Library') {
         locationTag = 'zugzwang_library';
     } else if (locationName == 'Slushy Shoreline') {
-        locationTag = 'slushy_shorelinee';
+        locationTag = 'slushy_shoreline';
     } else if (locationName == 'Iceberg') {
         locationTag = 'iceberg';
     } else if (locationName == 'Sunken City') {
@@ -183,7 +227,7 @@ function convertNameToClass(locationName) {
     return locationTag;
 }
 
-$(document).on('click', '.campPage-quests-footer-smash', function() {
+$(document).on('click', '#smashBtn', function() {
     if (confirm("Smash Your m400 Research Assignment?")) {
         // change this to something to test with
         let smashIt = 'essence_b_crafting_item';
