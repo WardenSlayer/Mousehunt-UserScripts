@@ -2,7 +2,7 @@
 // @name         MH: M400 Hunting Helper
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.0
+// @version      1.0.1
 // @description  Adds the ability to one click travel to the next m400 assigment location
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -24,14 +24,58 @@ $(document).on('click', '.campPage-tabs-tabHeader.quests', function() {
 });
 
 $(document).on('click', '.campPage-quests-objective-container:not(".locked")', function() {
-    const debug = localStorage.getItem('ws.debug');
     if ($('.campPage-tabs-tabHeader.quests').hasClass('active')) {
         if ($('.campPage-quests-title').text() == 'Track down the elusive M400') {
-            const location = $(this).find('.campPage-quests-objective-task').text().split('in ')[1].replace('the ','')
-            convertNameToClass(location)
+            let location = $(this).find('.campPage-quests-objective-task').text()
+            const locationSplit = location.split('in ');
+            if (locationSplit[1] == undefined) {
+                const mouseSplit = location.split('from ');
+                //console.log('NOT',mouseSplit[1].replace(' Mice','xyz').replace(' Mouse','xyz').split('xyz')[0])
+                location = convertMouseToLocation(mouseSplit[1].replace(' Mice','xyz').replace(' Mouse','xyz').split('xyz')[0])
+            } else {
+                //console.log('IN',locationSplit)
+                location = locationSplit[1].replace('the ','');
+            }
+            app.pages.TravelPage.travel(convertNameToClass(location))
         }
     }
 });
+
+function convertMouseToLocation(mouseName) {
+    let locationName = "";
+    const meadow = ['Meadow','Bionic'];
+    const bazaar = ['Bazaar','Master Burglar'];
+    const kGauntlet = ["King's Gauntlet",'Cavalier'];
+    const training = ['Training Grounds','Ninja'];
+    const meditation = ['Meditation Room','Master of the Cheese Belt','Master of the Cheese Claw','Master of the Cheese Fang'];
+    const pinacle = ['Pinnacle Chamber','Master of the Dojo'];
+    const catacombs = ['Catacombs','Lycan','Terror Knight'];
+    const fGrove = ['Forbidden Grove','Realm Ripper'];
+    const aRealm = ['Acolyte Realm','Gate Guardian','Sorceror'];
+    const ssh4 = ['S.S. Huntington IV','Buccaneer','Captain'];
+    const derrDunes = ['Derr Dunes','Grunt','Guardian','Renegade','Seer','Trailblazer'];
+    const nergPlains = ['Nerg Plains','Conjurer','Conqueror','Defender','Finder','Pathfinder'];
+    const elubShore = ['Elub Shore','Mystic','Pack','Protector','Scout','Vanquisher'];
+    const jod = ['Jungle of Dread','Magma Carrier','Primal','Stonework Warrior'];
+    const balacksCove = ["Balack's Cove",'Derr Lich','Elub Lich','Nerg Lich'];
+    const dracano = ['Dracano','Draconic Warden','Whelping','Dragon'];
+    const slushyShoreline = ['Slushy Shoreline','Chipper','Snow Slinger','Snow Sniper','Snow Soldier','Yeti'];
+    const csc = ['Claw Shot City','Prospector','Ruffian'];
+    const seasonalGarden = ['Seasonal Garden','Mystic Knight','Technic Knight'];
+    const muridaeMarket = ['Muridae Market','Blacksmith','Mage Weaver','Market Guard','Spice Merchant'];
+    const sandDunes = ['Sand Dunes','Sand Colossus','Scarab','Serpentine','Grubling Herder','Sand Pilgrim'];
+    const livingGarden = ['Living Garden','Barkshell','Camofusion','Thorn','Twisted Hotcakes','Bark','Camoflower','Strawberry Hotcakes','Thistle'];
+    const lostCity = ['Lost City','Cursed Librarian','Cursed Enchanter','Essence Guardian','Essence Collector','Ethereal Enchanter','Ethereal Librarian'];
+    const allLocations = [meadow,bazaar,kGauntlet,training,meditation,pinacle,catacombs,fGrove,aRealm,ssh4,
+                          derrDunes,nergPlains,elubShore,jod,dracano,balacksCove,slushyShoreline,csc,seasonalGarden,
+                          muridaeMarket,livingGarden,lostCity,sandDunes];
+    allLocations.forEach(function(array,e) {
+        if (array.includes(mouseName)) {
+            locationName = array[0];
+        }
+    })
+    return locationName;
+}
 
 function convertNameToClass(locationName) {
     const debug = localStorage.getItem('ws.debug');
@@ -134,9 +178,9 @@ function convertNameToClass(locationName) {
         locationTag = 'sand_dunes';
     }
     if (debug == true) {
-        console.log(locationName,locationTag)
+        console.log('Traveling to: ',locationName,locationTag);
     }
-    app.pages.TravelPage.travel(locationTag);
+    return locationTag;
 }
 
 $(document).on('click', '.campPage-quests-footer-smash', function() {
