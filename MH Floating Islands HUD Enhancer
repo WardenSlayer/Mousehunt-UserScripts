@@ -2,7 +2,7 @@
 // @name         MH: Floating Islands HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.0.10
+// @version      1.1
 // @description  See more thing on your floating islands HUD!
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -23,80 +23,84 @@ $(document).ready(function() {
 });
 
 function loadFunction() {
-    updateAndRender()
+    updateAndRender();
     setTimeout(renderSkyMap, 100);
 }
 
 //HUD Code
 function updateAndRender() {
-    localStorage.setItem('ws.fi.ocLevel', user.quests.QuestFloatingIslands.airship.oculus_level);
-    hg.utils.UserInventory.getItem('sky_pirate_seal_stat_item', function(data) {
-        localStorage.setItem('ws.fi.numSeals', data.quantity);
-        hg.utils.UserInventory.getItem('floating_trap_upgrade_stat_item', function(data) {
-            localStorage.setItem('ws.fi.numJewels', data.quantity);
-            hg.utils.UserInventory.getItem('floating_islands_cloud_gem_stat_item', function(data) {
-                localStorage.setItem('ws.fi.numGlass', data.quantity);
-                hg.utils.UserInventory.getItem('floating_islands_sky_ore_stat_item', function(data) {
-                    localStorage.setItem('ws.fi.numOre', data.quantity);
-                    buildHUD();
-                }, true);
+    hg.utils.UserInventory.getItem('empyrean_codex_page_stat_item', function(data) {
+        localStorage.setItem('ws.fi.numPages', data.quantity);
+        hg.utils.UserInventory.getItem('floating_islands_cloud_gem_stat_item', function(data) {
+            localStorage.setItem('ws.fi.numGlass', data.quantity);
+            hg.utils.UserInventory.getItem('floating_islands_sky_ore_stat_item', function(data) {
+                localStorage.setItem('ws.fi.numOre', data.quantity);
+                renderHUD();
             }, true);
         }, true);
     }, true);
 }
 
-function buildHUD() {
-    let body = $('.floatingIslandsHUD-statItemContainer');
-    $(body).css({
-        'width': '350px',
-    });
-    if ($('.floatingIslandsHUD-statItem-separator').get(0)) {
-        $('.floatingIslandsHUD-statItem-separator').hide();
-    }
-    let bangles = $('.floatingIslandsHUD-statItem.mousehuntTooltipParent[data-item-type="cloudstone_bangle_stat_item"]');
-    //Seals
-    let pirateSeals = "";
-    if ($("[data-item-type=pirate_seals]").get(0)) {
-        pirateSeals = $("[data-item-type=pirate_seals]");
+function renderHUD() {
+    const ShowPages = localStorage.getItem('ws.fi.showPages');
+    let empyreanPages = $('.floatingIslandsHUD-statItem[data-item-type="empyrean_codex_page_stat_item"]');
+    if (empyreanPages.length > 0 ) {
     } else {
-        pirateSeals = $(bangles).clone().prependTo(body);
+        const itemContainer = $('.floatingIslandsHUD-statItemContainer');
+        const statItem = $(itemContainer).find('.floatingIslandsHUD-statItem[data-item-type="bottled_wind_stat_item"]');
+        let empyreanPages = $(statItem ).clone().appendTo(itemContainer);
+        $(empyreanPages).find('.floatingIslandsHUD-item-image.bottled_wind_stat_item').removeClass('bottled_wind_stat_item').addClass('empyrean_codex_page_stat_item');
+        $(empyreanPages).find('*').removeAttr('data-item-type').attr('data-item-type', 'empyrean_codex_page_stat_item');
+        $(empyreanPages).removeAttr('data-item-type').attr('data-item-type', 'empyrean_codex_page_stat_item');
+        $(empyreanPages).find('.floatingIslandsHUD-inventoryBag-item-name').text('Empyrean Codex Page');
+        const pageCount = parseInt(localStorage.getItem('ws.fi.numPages'),10);
+        $(empyreanPages).find('.floatingIslandsHUD-statItem-quantity.quantity').text(pageCount);
+        empyreanPages.removeAttr("href").removeAttr("onclick");
+        $('.floatingIslandsHUD-item-image.empyrean_codex_page_stat_item').css({
+            'background-image': 'url(https://www.mousehuntgame.com/images/items/stats/5d8cf4e7ab765abc5b4a72c44bae6b98.gif?cv=2)',
+        });
+        $(empyreanPages).find('.floatingIslandsHUD-state.floatingIslandsHUD-island').text('Empyrean Codex Page');
     }
-    pirateSeals.attr('data-item-type', 'pirate_seals');
-    $(pirateSeals).find('.floatingIslandsHUD-item-image.cloudstone_bangle_stat_item').removeClass('cloudstone_bangle_stat_item').addClass('pirate_seals');
-    $('.floatingIslandsHUD-item-image.pirate_seals').css({
-        'background-image': 'url(https://www.mousehuntgame.com/images/items/stats/db3bb7de0241624283b99481f7c7a6b8.gif?cv=247)',
-    });
-    $(pirateSeals).find('.floatingIslandsHUD-statItem-quantity.quantity').attr('data-item-type', 'pirate_seals').text(localStorage.getItem('ws.fi.numSeals'));
-    $(pirateSeals).find('.mousehuntTooltip.tight.top.noEvents').text('Sky Pirate Seals').css({
-        'font-weight': 'bold',
-    });
-    //Jewels
-    let jewels = "";
-    if ($("[data-item-type=jewels]").get(0)) {
-        jewels = $("[data-item-type=jewels]");
+    if (ShowPages == "Y") {
+        $(empyreanPages).removeClass('hidden');
     } else {
-        jewels = $(bangles).clone().appendTo(body);
+        $(empyreanPages).addClass('hidden');
     }
-    jewels.attr('data-item-type', 'jewels');
-    $(jewels).find('.floatingIslandsHUD-item-image.cloudstone_bangle_stat_item').removeClass('cloudstone_bangle_stat_item').addClass('jewels');
-    $('.floatingIslandsHUD-item-image.jewels').css({
-        'background-image': 'url(https://www.mousehuntgame.com/images/items/stats/964b5aeaac26714cac2ffa7194e55176.gif?cv=247)',
-    });
-    //console.log(localStorage.getItem('ws.fi.numJewels'))
-    $(jewels).find('.floatingIslandsHUD-statItem-quantity.quantity').attr('data-item-type', 'jewels').text(parseInt(localStorage.getItem('ws.fi.numJewels'), 10));
-    $(jewels).find('.mousehuntTooltip.tight.top.noEvents').text('Adorned Empyrean Jewel').css({
-        'font-weight': 'bold',
-    });
     //Hide Wind on islands not launchpad
-    if ($('.floatingIslandsHUD.launch_pad_island ').length == 0) {
+    if (user.quests.QuestFloatingIslands.hunting_site_atts.hunts_remaining == null) {
         $('.floatingIslandsHUD-statItem.mousehuntTooltipParent').filter('[data-item-type=bottled_wind_stat_item]').hide();
     }
-    //Ore/Glass
-    const oculusLevel = localStorage.getItem('ws.fi.ocLevel');
-    const skyGlass = $('.floatingIslandsHUD-craftingItem.floating_islands_cloud_gem_stat_item').find("[data-item-type=floating_islands_cloud_gem_stat_item]")
-    const skyGlassQty = parseInt(localStorage.getItem('ws.fi.numGlass'), 10)
-    const skyOre  = $('.floatingIslandsHUD-craftingItem.floating_islands_sky_ore_stat_item').find("[data-item-type=floating_islands_sky_ore_stat_item]")
-    const skyOreQty = parseInt(localStorage.getItem('ws.fi.numOre'), 10)
+    //wind on maybe
+    const useWind = localStorage.getItem('ws.fi.useWind');
+    const numWind = parseInt($('.floatingIslandsHUD-statItem-quantity.quantity').filter('[data-item-type=bottled_wind_stat_item]').text(),10);
+    if (useWind == 'yes') {
+        if (user.quests.QuestFloatingIslands.hunting_site_atts.is_fuel_enabled) {
+            localStorage.setItem('ws.fi.useWind', 'no');
+        } else {
+            if (numWind > 0 ) {
+                hg.views.HeadsUpDisplayFloatingIslandsView.toggleFuel();
+            }
+        }
+    }
+    //Hide retreat button if the warden/paragon is not caught already
+    if (user.quests.QuestFloatingIslands.hunting_site_atts.has_defeated_enemy) {
+        $('.floatingIslandsHUD-retreatButton').show();
+    } else {
+        $('.floatingIslandsHUD-retreatButton').hide();
+    }
+    showOreGlass();
+    showBossProgress();
+}
+$(document).on('click', '.floatingIslandsHUD-statItem[data-item-type="empyrean_codex_page_stat_item"]', function() {
+    hg.views.ItemView.show('empyrean_codex_page_stat_item');
+})
+
+function showOreGlass() {
+    const oculusLevel = user.quests.QuestFloatingIslands.airship.oculus_level;
+    const skyGlass = $('.floatingIslandsHUD-craftingItem.floating_islands_cloud_gem_stat_item').find("[data-item-type=floating_islands_cloud_gem_stat_item]");
+    const skyGlassQty = parseInt(localStorage.getItem('ws.fi.numGlass'), 10);
+    const skyOre = $('.floatingIslandsHUD-craftingItem.floating_islands_sky_ore_stat_item').find("[data-item-type=floating_islands_sky_ore_stat_item]");
+    const skyOreQty = parseInt(localStorage.getItem('ws.fi.numOre'), 10);
     let upgradeCost = 0;
     if (oculusLevel == 1) {
         upgradeCost = 35;
@@ -119,39 +123,65 @@ function buildHUD() {
     }
     $(skyGlass).text(skyGlassQty + '/' + upgradeCost);
     $(skyOre).text(skyOreQty + '/' + upgradeCost);
-    //Warden/Paragon Progress
+}
+
+function showBossProgress() {
     const allRemainingHunts = user.quests.QuestFloatingIslands.hunting_site_atts.enemy_encounter_hunts_remaining;
     let warGons = 'Paragon: ';
     if (user.quests.QuestFloatingIslands.hunting_site_atts.has_enemy == null) {
         warGons = 'Enemy: ';
     } else if (user.quests.QuestFloatingIslands.hunting_site_atts.is_high_altitude == null) {
         warGons = 'Warden: ';
+    } else if (user.quests.QuestFloatingIslands.hunting_site_atts.is_vault_island != null) {
+        warGons = 'Empress: ';
     }
     $('.floatingIslandsHUD-enemy-state.enemyApproaching:not(.enemyActive)').text(warGons + allRemainingHunts);
-    //wind on maybe
-    const useWind = localStorage.getItem('ws.fi.useWind');
-    const numWind = parseInt($('.floatingIslandsHUD-statItem-quantity.quantity').filter('[data-item-type=bottled_wind_stat_item]').text(),10);
-    if (useWind == 'yes') {
-        if (user.quests.QuestFloatingIslands.hunting_site_atts.is_fuel_enabled) {
-            localStorage.setItem('ws.fi.useWind', 'no');
-        } else {
-            if (numWind > 0 ) {
-                hg.views.HeadsUpDisplayFloatingIslandsView.toggleFuel();
-            }
-        }
-    }
-    //Hide retreat button if the warden/paragon is not caught already
-    if (user.quests.QuestFloatingIslands.hunting_site_atts.has_defeated_enemy) {
-        $('.floatingIslandsHUD-retreatButton').show();
-    } else {
-        $('.floatingIslandsHUD-retreatButton').hide();
-    }
 }
+
+function renderItemBag() {
+    const itemBagBody = $('.floatingIslandsHUD-inventoryBag-itemContainer');
+    const empyreanTroves = $('.floatingIslandsHUD-inventoryBag-item[data-item-type="empyrean_floating_loot_cache_convertible"]');
+    let empyreanPages = "";
+    empyreanPages = $(empyreanTroves).clone().appendTo(itemBagBody)
+    $(empyreanPages).removeClass('active').removeClass('inactive');
+    const ShowPages = localStorage.getItem('ws.fi.showPages');
+    if (ShowPages == "Y") {
+        $(empyreanPages).addClass('active');
+    } else {
+        $(empyreanPages).addClass('inactive');
+    }
+    $(empyreanPages).find('.floatingIslandsHUD-item-image.empyrean_floating_loot_cache_convertible').removeClass('empyrean_floating_loot_cache_convertible').addClass('empyrean_codex_page_stat_item');
+    $('.floatingIslandsHUD-item-image.empyrean_codex_page_stat_item').find('*').removeAttr('data-item-type').attr('data-item-type', 'empyrean_codex_page_stat_item');
+    $(empyreanPages).removeAttr('data-item-type').attr('data-item-type', 'empyrean_codex_page_stat_item');
+    $(empyreanPages).find('.floatingIslandsHUD-inventoryBag-item-name').text('Empyrean Codex Page');
+    const pageCount = parseInt(localStorage.getItem('ws.fi.numPages'),10);
+    $(empyreanPages).find('.floatingIslandsHUD-inventoryBag-item-quantity.quantity').text(pageCount);
+    $('.floatingIslandsHUD-item-image.empyrean_codex_page_stat_item').css({
+        'background-image': 'url(https://www.mousehuntgame.com/images/items/stats/5d8cf4e7ab765abc5b4a72c44bae6b98.gif?cv=2)',
+    });
+
+}
+
+$(document).on('click', '.floatingIslandsHUD-inventoryBagButton.mousehuntTooltipParent', function() {
+    renderItemBag();
+})
+$(document).on('click', '.floatingIslandsHUD-inventoryBag-item-toggleButton[data-item-type="empyrean_codex_page_stat_item"]', function() {
+    const empyreanPages = $('.floatingIslandsHUD-inventoryBag-item[data-item-type="empyrean_codex_page_stat_item"]');
+    if (empyreanPages.hasClass('inactive')) {
+        empyreanPages.removeClass('inactive').addClass('active');
+        localStorage.setItem('ws.fi.showPages',"Y");
+    } else if (empyreanPages.hasClass('active')) {
+        empyreanPages.removeClass('active').addClass('inactive');
+        localStorage.setItem('ws.fi.showPages',"");
+    } else {
+        empyreanPages.addClass('active');
+        localStorage.setItem('ws.fi.showPages',"Y");
+    }
+})
 
 //Paragon Overlay
 function renderSkyMap() {
     drawParagons()
-    //cycleTracker()
     const body = $('.floatingIslandsAdventureBoard-trapLibrary');
     $(body).removeAttr("href").removeAttr("onclick");
     const trapLibrary = $('.floatingIslandsAdventureBoard-trapLibrary-text:not(.wind)');
@@ -163,7 +193,7 @@ function renderSkyMap() {
     let useWindCb = $(useWindDiv).find('.floatingIslandsAdventureBoard-trapLibrary-checkbox');
     $(useWindCb).addClass('wind');
     $(useWindDiv).children().empty().append(useWindCb).append("Use Wind");
-    forceWind()
+    forceWind();
 }
 
 function forceWind() {
@@ -198,16 +228,6 @@ $(document).on('click', '.floatingIslandsAdventureBoard-trapLibrary-text.wind', 
     }
 })
 
-//to do
-function cycleTracker() {
-    $('.floatingIslandsAdventureBoard-rerollImage').text('1234').css({
-        'font-size': '14x',
-        'font-weight': 'bold',
-        'color': 'red',
-    });
-
-}
-
 function drawParagons() {
     const overlayCont = $('.floatingIslandsAdventureBoard-container');
     if (overlayCont.length == 1) {
@@ -233,7 +253,7 @@ $(document).ajaxComplete(function(event,xhr,options){
     } else if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/userInventory.php') {
         //console.log('items');
     } else {
-       // console.log('some other ajax');
+        // console.log('some other ajax');
         if (user.environment_name == 'Floating Islands') {
             loadFunction();
         }
