@@ -2,7 +2,7 @@
 // @name         MH: M400 Hunting Helper
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.0.2
+// @version      1.0.3
 // @description  Adds the ability to one click travel to the next m400 assigment location
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -18,11 +18,10 @@ $(document).ready(function() {
 });
 
 $(document).on('click', '.campPage-tabs-tabHeader.quests', function() {
-    setTimeout(renderQuestTab, 300);
+    setTimeout(renderQuestTab, 400);
 });
 
 function renderQuestTab() {
-    $('.campPage-quests-footer-smash').removeAttr("href").removeAttr("onclick");
     if ($('#questTravelButton').length > 0) {
     } else {
         const allTasks = $('.campPage-quests-objective-container:not(".locked")');
@@ -42,45 +41,32 @@ function renderQuestTab() {
             'height': '25px',
             'vertical-align': 'middle',
         });
-        // smashing
-        const smashBox = $('.campPage-quests-footer-smash');
-        const smashBtn = $(smashBox).find('.campPage-quests-footer-smash-icon');
-        $(smashBox).text('');
-        $(smashBtn).removeClass('campPage-quests-footer-smash-icon').addClass('mousehuntActionButton small');
-        $(smashBtn).attr('id','smashBtn');
-        const smashBtnText = document.createElement('span');
-        $(smashBtn).append(smashBtnText);
-        $(smashBtnText).addClass('smashBtnText').text('Smash').css({
-            'font-size': '12px',
-        });
-        const smashTxt = document.createElement('span');
-        $(smashTxt).text("Don't like an assignment? Cancel it by smashing the assignment with your Hunter's Hammer.");
-        $(smashTxt).css({
-            'float': 'left',
-            'margin-bottom': '10px',
-        });
-        $(smashBox).append(smashTxt);
-        $(smashBox).append(smashBtn);
-        $(smashBtn).css({
-            'width': '50px',
-            'height': '15px',
-            'vertical-align': 'middle',
-        });
     }
+    $('.campPage-quests-footer-smash').text('Smash m400 Assigment');
 }
 
 $(document).on('click', '#questTravelButton', function() {
     if ($('.campPage-tabs-tabHeader.quests').hasClass('active')) {
         if ($('.campPage-quests-title').text() == 'Track down the elusive M400') {
-            let location = $(this).parent().parent().find('.campPage-quests-objective-task').text()
-            const locationSplit = location.split('in ');
+             let location = $(this).parent().parent().find('.campPage-quests-objective-task').text();
+            let bait = "";
+            const locationSplit = location.split(' in ');
             if (locationSplit[1] == undefined) {
                 const mouseSplit = location.split('from ');
                 location = convertMouseToLocation(mouseSplit[1].replace(' Mice','xyz').replace(' Mouse','xyz').split('xyz')[0])
             } else {
-                location = locationSplit[1].replace('the ','');
+                const baitSplit = locationSplit[1].replace('the ','').split(' using ');
+                if (baitSplit[1] == undefined) {
+                    location = baitSplit[0];
+                } else {
+                    location = baitSplit[0];
+                    bait = baitSplit[1];
+                }
             }
-            app.pages.TravelPage.travel(convertNameToClass(location))
+            app.pages.TravelPage.travel(convertNameToClass(location));
+            if (bait == 'Fusion Fondue') {
+                hg.utils.TrapControl.setBait(1386).go();
+            }
         }
     }
 });
@@ -94,7 +80,7 @@ function convertMouseToLocation(mouseName) {
     const meditation = ['Meditation Room','Master of the Cheese Belt','Master of the Cheese Claw','Master of the Cheese Fang'];
     const pinacle = ['Pinnacle Chamber','Master of the Dojo'];
     const catacombs = ['Catacombs','Lycan','Terror Knight'];
-    const fGrove = ['Forbidden Grove','Realm Ripper'];
+    const fGrove = ['Forbidden Grove','Realm Ripper','Realm Rippers'];
     const aRealm = ['Acolyte Realm','Gate Guardian','Sorceror'];
     const ssh4 = ['S.S. Huntington IV','Buccaneer','Captain'];
     const derrDunes = ['Derr Dunes','Grunt','Guardian','Renegade','Seer','Trailblazer'];
@@ -107,9 +93,9 @@ function convertMouseToLocation(mouseName) {
     const csc = ['Claw Shot City','Prospector','Ruffian'];
     const seasonalGarden = ['Seasonal Garden','Mystic Knight','Technic Knight'];
     const muridaeMarket = ['Muridae Market','Blacksmith','Mage Weaver','Market Guard','Spice Merchant'];
-    const sandDunes = ['Sand Dunes','Sand Colossus','Scarab','Serpentine','Grubling Herder','Sand Pilgrim'];
+    const sandDunes = ['Sand Dunes','Sand Colossus','Scarab','Serpentine','Grubling Herder','Sand Pilgrim','Sand Pilgrims'];
     const livingGarden = ['Living Garden','Barkshell','Camofusion','Thorn','Twisted Hotcakes','Bark','Camoflower','Strawberry Hotcakes','Thistle'];
-    const lostCity = ['Lost City','Cursed Librarian','Cursed Enchanter','Essence Guardian','Essence Collector','Ethereal Enchanter','Ethereal Librarian'];
+    const lostCity = ['Lost City','Cursed Librarian','Cursed Enchanter','Essence Guardian','Essence Collector','Ethereal Enchanter','Ethereal Librarian','Ethereal Librarians'];
     const allLocations = [meadow,bazaar,kGauntlet,training,meditation,pinacle,catacombs,fGrove,aRealm,ssh4,
                           derrDunes,nergPlains,elubShore,jod,dracano,balacksCove,slushyShoreline,csc,seasonalGarden,
                           muridaeMarket,livingGarden,lostCity,sandDunes];
@@ -173,7 +159,7 @@ function convertNameToClass(locationName) {
     } else if (locationName == 'Forbidden Grove') {
         locationTag = 'forbidden_grove';
     } else if (locationName == 'Acolyte Realm') {
-        locationTag = 'acolyte_realm';
+        locationTag = 'forbidden_grove';
     } else if (locationName == 'Cape Clawed') {
         locationTag = 'cape_clawed';
     } else if (locationName == 'Elub Shore') {
@@ -227,12 +213,9 @@ function convertNameToClass(locationName) {
     return locationTag;
 }
 
-$(document).on('click', '#smashBtn', function() {
+$(document).on('click', '.campPage-quests-footer-smash', function() {
     if (confirm("Smash Your m400 Research Assignment?")) {
-        // change this to something to test with
-        let smashIt = 'essence_b_crafting_item';
-        //Uncomment to make live
-        //smashIt = 'library_m400_research_quest_item';
+        const smashIt = 'library_m400_research_quest_item';
         hg.utils.UserInventory.smashItem(smashIt,1,function (resp) {;})
     }
 })
