@@ -2,7 +2,7 @@
 // @name         MH: Living Garden HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.1.3
+// @version      1.1.4
 // @description  Quick travel buttons for the Living Garden area locations. More features comning soon.
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -77,6 +77,22 @@ function buildAreaHUD(location) {
             'bottom': '-10px',
             'position': 'absolute',
         });
+        const shatteringCharm = document.createElement('div');
+            shatteringCharm.classList.add('shatteringCharm');
+            $(shatteringCharm).text('Shattering');
+            $(shatteringCharm).css({
+                'width': '55px',
+                'height': '15px',
+                'float': 'left',
+                'color': 'white',
+                'text-align': 'center',
+                'margin-right': '3px',
+                'margin-top': '2px',
+                'border': '1px solid white',
+                'background-color': 'rgb(0, 179, 33)',
+                'cursor': 'pointer',
+            });
+        //
         if (location == 'Living Garden') {
             //LG Buttons
             const spongeBlue = document.createElement('div');
@@ -250,6 +266,8 @@ function buildAreaHUD(location) {
                 'cursor': 'pointer',
             });
             charmHUD.append(spongeDoubleYellow);
+            //
+            charmHUD.append(shatteringCharm);
         } else if (location == 'Cursed City') {
             //Cursed Buttons
             const bravery = document.createElement('div');
@@ -312,12 +330,15 @@ function buildAreaHUD(location) {
                 'float': 'left',
                 'color': 'white',
                 'text-align': 'center',
+                'margin-right': '3px',
                 'margin-top': '2px',
                 'border': '1px solid white',
                 'background-color': 'rgb(76, 36, 105)',
                 'cursor': 'pointer',
             });
             charmHUD.append(safeguard);
+            //
+            charmHUD.append(shatteringCharm);
         } else if (location == 'Sand Crypts') {
             //Crypt Buttons
             const saltCharm = document.createElement('div');
@@ -370,6 +391,8 @@ function buildAreaHUD(location) {
                 'cursor': 'pointer',
             });
             charmHUD.append(scentCharm);
+            //
+            charmHUD.append(shatteringCharm);
         }
         //Last
         miniGameContainer.append(charmHUD);
@@ -429,6 +452,10 @@ $(document).on('click', '.doubleSaltCharm', function() {
 })
 $(document).on('click', '.scentCharm', function() {
     hg.utils.TrapControl.setTrinket(1015).go();
+})
+//Shattering
+$(document).on('click', '.shatteringCharm', function() {
+    hg.utils.TrapControl.setTrinket(1074).go();
 })
 
 
