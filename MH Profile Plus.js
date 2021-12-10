@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.19
+// @version      1.20
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
@@ -204,30 +204,33 @@ function generateMice() {
     $(statsHeader).css({
         'cursor': 'pointer',
     });
+    $('.mouseListView-categoryContent-subgroup-mouse.stats.header').on('click', '.mouseListView-categoryContent-subgroup-mouse-stats', function() {
+        SortMice(this);
+    })
 }
 
-// $(document).on('click', '.mouseListView-categoryContent-subgroup-mouse-stats', function() {
-//     const sortUorD = localStorage.getItem('ws.pfp.sortUorD');
-//     let sortKey = "";
-//     if ($(this).hasClass('name')) {
-//         sortKey = '.name';
-//     } else if ($(this).hasClass('catches')) {
-//         sortKey = '.catches';
-//     } else if ($(this).hasClass('misses')) {
-//         sortKey = '.misses';
-//     } else if ($(this).hasClass('average_weight')) {
-//         sortKey = '.average_weight';
-//     } else if ($(this).hasClass('heaviest_catch')) {
-//         sortKey = '.heaviest_catch';
-//     }
-//     if (sortUorD == 'up') {
-//         sortMiceBy(sortKey,'down');
-//         localStorage.setItem('ws.pfp.sortUorD','down');
-//     } else {
-//         sortMiceBy(sortKey,'up');
-//         localStorage.setItem('ws.pfp.sortUorD','up');
-//     }
-// });
+function SortMice(sortBy) {
+    const sortUorD = localStorage.getItem('ws.pfp.sortUorD');
+    let sortKey = "";
+    if ($(sortBy).hasClass('name')) {
+        sortKey = '.name';
+    } else if ($(sortBy).hasClass('catches')) {
+        sortKey = '.catches';
+    } else if ($(sortBy).hasClass('misses')) {
+        sortKey = '.misses';
+    } else if ($(sortBy).hasClass('average_weight')) {
+        sortKey = '.average_weight';
+    } else if ($(sortBy).hasClass('heaviest_catch')) {
+        sortKey = '.heaviest_catch';
+    }
+    if (sortUorD == 'up') {
+        sortMiceBy(sortKey,'down');
+        localStorage.setItem('ws.pfp.sortUorD','down');
+    } else {
+        sortMiceBy(sortKey,'up');
+        localStorage.setItem('ws.pfp.sortUorD','up');
+    }
+}
 
 function setCrownBorder(thumb,catches) {
     let top = "";
@@ -264,37 +267,49 @@ function setCrownBorder(thumb,catches) {
 }
 
 function sortMiceBy(key,UD) {
-    const mouseContainer = $('.mouseListView-categoryContent-subgroupContainer');
-    const allMice = $('.mouseListView-categoryContent-subgroup-mouse.stats:not(.header)');
+    let activeGrouping = $('.mousehuntHud-page-subTabContent.active[data-template-file="AdversariesPage"]');
+    let activeSubGroup = "";
+    if ($('.mouseListView-categoryContent-category.active.hasFilter.caught').length > 0) {
+        activeSubGroup = $(activeGrouping).find('.mouseListView-categoryContent-category.active.hasFilter.caught');
+    } else if ($('.mouseListView-categoryContent-category.active.hasFilter.uncaught').length > 0) {
+        activeSubGroup = $(activeGrouping).find('.mouseListView-categoryContent-category.active.hasFilter.uncaught');
+    } else {
+        activeSubGroup = $(activeGrouping).find('.mouseListView-categoryContent-category.all.active');
+    }
+    const mouseContainer = $(activeSubGroup).find('.mouseListView-categoryContent-subgroupContainer');
+    const allMice = $(activeSubGroup).find('.mouseListView-categoryContent-subgroup-mouse.stats:not(.header)');
     $(allMice).sort(function(a, b,) {
         if (key == '.name') {
             a = $(a).find(key).text();
             b = $(b).find(key).text();
-            if ((UD == 'up') && (a < b)) {
-                return -1;
-            } else if ((UD == 'up') && (a > b)) {
-                return 1;
-            } else if ((UD == 'down') && (a > b)) {
-                return -1;
-            } else if ((UD == 'down') && (a < b)) {
-                return 1;
-            }
         } else if ((key == '.catches') || (key == '.misses')) {
             a = parseInt($(a).find(key).text(),10);
             b = parseInt($(b).find(key).text(),10);
-            if ((UD == 'up') && (a > b)) {
-                return -1;
-            } else if ((UD == 'up') && (a < b)) {
-                return 1;
-            } else if ((UD == 'down') && (a < b)) {
-                return -1;
-            } else if ((UD == 'down') && (a > b)) {
-                return 1;
-            }
         } else if ((key == '.average_weight') || (key == '.heaviest_catch')) {
-            // do nothing for now cause parsing lbs/oz is no fun
+            a = parseUntits($(a).find(key).text());
+            b = parseUntits($(b).find(key).text());
+        }
+        if ((UD == 'up') && (a > b)) {
+            return -1;
+        } else if ((UD == 'up') && (a < b)) {
+            return 1;
+        } else if ((UD == 'down') && (a < b)) {
+            return -1;
+        } else if ((UD == 'down') && (a > b)) {
+            return 1;
         }
     }).appendTo(mouseContainer);
+}
+
+function parseUntits(unitString) {
+    let oz = 0;
+    const rawNumArray = unitString.replace(' lb. ',",").replace(' oz.',"").split(',');
+    if (rawNumArray.length == 1) {
+        oz = parseInt(rawNumArray[0],10);
+    } else {
+        oz = 16*parseInt(rawNumArray[0],10)+parseInt(rawNumArray[1],10);
+    }
+    return oz
 }
 
 
@@ -383,7 +398,7 @@ function buildToolbar() {
     $(copyCrownsButton).attr('title', 'Copy Crowns to Clipboard');
     toolBar.appendChild(copyCrownsButton);
     $(copyCrownsButton).css({
-        'background-image': "url('https://image.flaticon.com/icons/svg/1250/1250214.svg')",
+        'background-image': "url('https://cdn3.iconfinder.com/data/icons/files-folders-line/100/copy-512.png')",
         'background-repeat': 'no-repeat',
         'background-size': 'contain',
         'width': '25px',
@@ -479,11 +494,12 @@ function showCommunityRanks() {
     }
     const crownBreak = $(".mouseCrownsView-group.favourite");
     const communityCrownHeader = $(
-        "<div class='crownheader crownheadercommunity'>Community Ranks</div>"
+        "<div class='crownheader crownheadercommunity'>King's Crown Summary</div>"
     );
     communityCrownHeader.css({
-        'background-image': "url('https://image.flaticon.com/icons/svg/478/478941.svg')",
+        'background-image': "url('https://icon-library.com/images/138339.png')",
         'background-repeat': 'no-repeat',
+        'background-size': '25px 25px',
     });
     communityCrownHeader.insertAfter(crownBreak);
     const allUncrowned = $(".mouseCrownsView-group.none").find(".mouseCrownsView-group-mouse");
@@ -686,6 +702,8 @@ function correctMouseName(mouseName) {
         newMouseName = "Vincent The Magnificent";
     } else if (mouseName == "Corky, the Collector") {
         newMouseName = "Corky the Collector";
+    } else if (mouseName == "Ol' King Coal") {
+        newMouseName = "Ol King Coal";
     } else {
         newMouseName = mouseName;
     }
