@@ -2,7 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.5.3
+// @version      1.5.4
 // @description  Handy script to keep track of the various MH location timers
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @resource     YOUR_CSS https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css
@@ -2108,16 +2108,7 @@ function updateSeasonalGardenTimer() {
 	$(".seasonalGardenWinterValue").text(formatOutput(winterObj.days, winterObj.hours, winterObj.minutes));
 	$(".seasonalGardenSpringValue").text(formatOutput(springObj.days, springObj.hours, springObj.minutes));
 	$(".seasonalGardenSummerValue").text(formatOutput(summerObj.days, summerObj.hours, summerObj.minutes));
-	$(".seasonalGardenFallValue").css({
-		'float': 'right'
-	});
-	$(".seasonalGardenWinterValue").css({
-		'float': 'right'
-	});
-	$(".seasonalGardenSpringValue").css({
-		'float': 'right'
-	});
-	$(".seasonalGardenSummerValue").css({
+	$('.seasonalGardenFallValue,.seasonalGardenWinterValue,.seasonalGardenSpringValue,.seasonalGardenSummerValue').css({
 		'float': 'right'
 	});
 }
@@ -3097,28 +3088,7 @@ function updateToxicSpillTimer() {
 	$(".toxicSpillKnightValue").text(formatOutput(knightObj.days, knightObj.hours, knightObj.minutes));
 	$(".toxicSpillHeroValue").text(formatOutput(heroObj.days, heroObj.hours, heroObj.minutes));
 	//https://mhwiki.hitgrab.com/wiki/index.php/Toxic_Spill#Pollution_Levels
-	$(".toxicSpillArchdukeValue").css({
-		'float': 'right'
-	});
-	$(".toxicSpillGrandDukeValue").css({
-		'float': 'right'
-	});
-	$(".toxicSpillDukeValue").css({
-		'float': 'right'
-	});
-	$(".toxicSpillCountValue").css({
-		'float': 'right'
-	});
-	$(".toxicSpillBaronValue").css({
-		'float': 'right'
-	});
-	$(".toxicSpillLordValue").css({
-		'float': 'right'
-	});
-	$(".toxicSpillKnightValue").css({
-		'float': 'right'
-	});
-	$(".toxicSpillHeroValue").css({
+	$('.toxicSpillArchdukeValue,.toxicSpillGrandDukeValue,.toxicSpillDukeValue,.toxicSpillCountValue,.toxicSpillBaronValue,.toxicSpillLordValue,.toxicSpillKnightValue,.toxicSpillHeroValue').css({
 		'float': 'right'
 	});
 }
