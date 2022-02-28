@@ -2,7 +2,7 @@
 // @name         MH Region Quick Travel
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.4
+// @version      1.5
 // @description  Adds a travel toolbar to the HUD to make traveling between areas in the same region quicker and easier
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -18,9 +18,11 @@ $(document).ready(function() {
 });
 
 $(document).ajaxComplete(function(event,xhr,options){
+    //console.log(options.url);
     let properties = JSON.parse(localStorage.getItem('ws.mh.travel.props'));
     if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/userData.php') {
-        //
+    } else if (options.url == 'https://www.mousehuntgame.com/managers/ajax/mice/getstat.php') {
+    } else if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/userInventory.php') {
     } else if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/changeenvironment.php') {
         properties.previousLocation = properties.currentLocation;
         localStorage.setItem('ws.mh.travel.props',JSON.stringify(properties));
