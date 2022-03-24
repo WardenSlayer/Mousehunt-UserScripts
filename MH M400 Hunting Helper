@@ -47,8 +47,8 @@ function renderQuestTab() {
 
 $(document).on('click', '#questTravelButton', function() {
     if ($('.campPage-tabs-tabHeader.quests').hasClass('active')) {
-        if ($('.campPage-quests-title').text() == 'Track down the elusive M400') {
-             let location = $(this).parent().parent().find('.campPage-quests-objective-task').text();
+        if ($('.campPage-quests-title').text() == 'Track down the elusive M400'||'M400 Bait Research') {
+        let location = $(this).parent().parent().find('.campPage-quests-objective-task').text();
             let bait = "";
             const locationSplit = location.split(' in ');
             if (locationSplit[1] == undefined) {
@@ -74,31 +74,35 @@ $(document).on('click', '#questTravelButton', function() {
 function convertMouseToLocation(mouseName) {
     let locationName = "";
     const meadow = ['Meadow','Bionic'];
-    const bazaar = ['Bazaar','Master Burglar'];
-    const kGauntlet = ["King's Gauntlet",'Cavalier'];
-    const training = ['Training Grounds','Ninja'];
+    const bazaar = ['Bazaar','Master Burglar','Burglar','Granite'];
+    const kGauntlet = ["King's Gauntlet",'Cavalier','Terra','Knight','Page','Phalanx','Stealth'];
+    const training = ['Training Grounds','Ninja','Kung Fu','Samurai','Archer'];
     const meditation = ['Meditation Room','Master of the Cheese Belt','Master of the Cheese Claw','Master of the Cheese Fang'];
-    const pinacle = ['Pinnacle Chamber','Master of the Dojo'];
-    const catacombs = ['Catacombs','Lycan','Terror Knight'];
+    const pinacle = ['Pinnacle Chamber','Master of the Dojo','Dojo Sensei'];
+    const catacombs = ['Catacombs','Lycan','Terror Knight','Keeper'];
     const fGrove = ['Forbidden Grove','Realm Ripper','Realm Rippers'];
-    const aRealm = ['Acolyte Realm','Gate Guardian','Sorceror'];
+    const aRealm = ['Acolyte Realm','Gate Guardian','Sorceror','Gorgon'];
     const ssh4 = ['S.S. Huntington IV','Buccaneer','Captain'];
     const derrDunes = ['Derr Dunes','Grunt','Guardian','Renegade','Seer','Trailblazer'];
     const nergPlains = ['Nerg Plains','Conjurer','Conqueror','Defender','Finder','Pathfinder'];
     const elubShore = ['Elub Shore','Mystic','Pack','Protector','Scout','Vanquisher'];
-    const jod = ['Jungle of Dread','Magma Carrier','Primal','Stonework Warrior'];
+    const jod = ['Jungle of Dread','Magma Carrier','Primal','Stonework Warrior','Pygmy Wrangler','Swarm of Pygmy'];
     const balacksCove = ["Balack's Cove",'Derr Lich','Elub Lich','Nerg Lich'];
-    const dracano = ['Dracano','Draconic Warden','Whelping','Dragon'];
-    const slushyShoreline = ['Slushy Shoreline','Chipper','Snow Slinger','Snow Sniper','Snow Soldier','Yeti'];
-    const csc = ['Claw Shot City','Prospector','Ruffian'];
-    const seasonalGarden = ['Seasonal Garden','Mystic Knight','Technic Knight'];
-    const muridaeMarket = ['Muridae Market','Blacksmith','Mage Weaver','Market Guard','Spice Merchant'];
-    const sandDunes = ['Sand Dunes','Sand Colossus','Scarab','Serpentine','Grubling Herder','Sand Pilgrim','Sand Pilgrims'];
-    const livingGarden = ['Living Garden','Barkshell','Camofusion','Thorn','Twisted Hotcakes','Bark','Camoflower','Strawberry Hotcakes','Thistle'];
-    const lostCity = ['Lost City','Cursed Librarian','Cursed Enchanter','Essence Guardian','Essence Collector','Ethereal Enchanter','Ethereal Librarian','Ethereal Librarians'];
+    const dracano = ['Dracano','Draconic Warden','Whelpling','Dragon'];
+    const slushyShoreline = ['Slushy Shoreline','Chipper','Snow Slinger','Snow Sniper','Snow Soldier','Yeti','Polar Bear'];
+    const csc = ['Claw Shot City','Prospector','Ruffian','Saloon Gal','Lasso Cowgirl','Shopkeeper','Tumbleweed','Pyrite'];
+    const seasonalGarden = ['Seasonal Garden','Mystic Knight','Technic Knight','Mystic Bishop','Technic Bishop'];
+    const muridaeMarket = ['Muridae Market','Blacksmith','Mage Weaver','Market Guard','Spice Merchant','Market Thief','Pie Thief','Lumberjack','Glass Blower','Limestone Miner'];
+    const sandDunes = ['Sand Dunes','Sand Colossus','Scarab','Serpentine','Grubling Herder','Sand Pilgrim','Sand Pilgrims','Quesodillo','Spiky Devil','Dunehopper'];
+    const livingGarden = ['Living Garden','Barkshell','Camofusion','Thorn','Twisted Hotcakes','Bark','Camoflower','Strawberry Hotcakes','Thistle','Calalilly','Shroom'];
+    const lostCity = ['Lost City','Cursed Librarian','Cursed Enchanter','Essence Guardian','Essence Collector','Ethereal Enchanter','Ethereal Librarian','Ethereal Librarians','Ethereal Thief','Ethereal Engineer'];
+	const crystalLibrary = ['Crystal Library','Effervescent','Walker','Tome Sprite','Pocketwatch'];
+	const mousoleum = ['Mousoleum','Zombie','Ravenous Zombie'];
+	const tod = ['Town of Digby','Lambent Crystal'];
+	const laboratory = ['Laboratory','Monster'];
     const allLocations = [meadow,bazaar,kGauntlet,training,meditation,pinacle,catacombs,fGrove,aRealm,ssh4,
                           derrDunes,nergPlains,elubShore,jod,dracano,balacksCove,slushyShoreline,csc,seasonalGarden,
-                          muridaeMarket,livingGarden,lostCity,sandDunes];
+                          muridaeMarket,livingGarden,lostCity,sandDunes,crystalLibrary,mousoleum,tod,laboratory];
     allLocations.forEach(function(array,e) {
         if (array.includes(mouseName)) {
             locationName = array[0];
