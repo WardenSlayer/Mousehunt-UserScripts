@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.20
+// @version      1.21
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
@@ -41,6 +41,7 @@ function loadFunction(){
 
 $(document).ajaxComplete(function(event,xhr,options){
     if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/userData.php') {
+    } else if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/userInventory.php') {
     } else {
         loadFunction();
     }
@@ -77,22 +78,14 @@ function generateProfile() {
         };
         return false;
     }
-    const snuidOld = localStorage.getItem('ws.pfp.snuid');
-    localStorage.setItem('ws.pfp.snuid',userID);
-    if (snuidOld == userID) {
-        if (eggMaster == 'true') {
-            flexEggMaster();
-        }
-    } else {
-        localStorage.setItem('ws.pfp.eggMaster',"")
-        const dataItemOfInterest = ['is_egg_master','not_a_real_field'];
-        hg.utils.User.getUserData([userID],dataItemOfInterest,function(data) {
-            eggMaster = localStorage.setItem('ws.pfp.eggMaster',data[0].is_egg_master);
-        });
-        setTimeout(flexEggMaster, 1000);
-    }
+    localStorage.setItem('ws.pfp.eggMaster',"")
+    const dataItemOfInterest = ['is_egg_master','not_a_real_field'];
+    hg.utils.User.getUserData([userID],dataItemOfInterest,function(data) {
+        eggMaster = localStorage.setItem('ws.pfp.eggMaster',data[0].is_egg_master);
+    });
+    setTimeout(flexEggMaster, 1000);
     if (debug == true) {
-        console.log('Profile Tab',snuidOld,userID,eggMaster);
+        console.log('Profile Tab',userID,eggMaster);
     };
     //stop the silly hyperlink on the hunter ID
     const hunterID = $('.hunterInfoView-idCardBlock-secondaryHeader').children();
@@ -382,7 +375,7 @@ function buildToolbar() {
     const communityRanksLabel = document.createElement("label");
     communityRanksLabel.htmlFor = "communityRanksLabel";
     communityRanksLabel.appendChild(
-        document.createTextNode("Show Community Ranks  ")
+        document.createTextNode("Show King's Crown Summary  ")
     );
     toolBar.appendChild(communityRanks);
     toolBar.appendChild(communityRanksLabel);
@@ -704,6 +697,8 @@ function correctMouseName(mouseName) {
         newMouseName = "Corky the Collector";
     } else if (mouseName == "Ol' King Coal") {
         newMouseName = "Ol King Coal";
+    } else if (mouseName == "Dread Piratert") {
+        newMouseName = "Dread Pirate";
     } else {
         newMouseName = mouseName;
     }
