@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.21
+// @version      1.22
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
@@ -698,7 +698,7 @@ function correctMouseName(mouseName) {
     } else if (mouseName == "Ol' King Coal") {
         newMouseName = "Ol King Coal";
     } else if (mouseName == "Dread Piratert") {
-        newMouseName = "Dread Pirate";
+        newMouseName = "Dread Pirate Mousert";
     } else {
         newMouseName = mouseName;
     }
