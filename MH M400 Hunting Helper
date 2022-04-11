@@ -2,7 +2,7 @@
 // @name         MH: M400 Hunting Helper
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.0.5
+// @version      1.0.6
 // @description  Adds the ability to one click travel to the next m400 assigment location
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
@@ -42,13 +42,17 @@ function renderQuestTab() {
             'vertical-align': 'middle',
         });
     }
-    $('.campPage-quests-footer-smash').text('Smash m400 Assigment');
+    if ($('.campPage-quests-title').text() == 'Track down the elusive M400') {
+        $('.campPage-quests-footer-smash').text('Smash M400 Hunting Research Assigment')
+    } else if ($('.campPage-quests-title').text() == 'M400 Bait Research') {
+        $('.campPage-quests-footer-smash').text('Smash M400 Bait Research Assigment')
+    }
 }
 
 $(document).on('click', '#questTravelButton', function() {
     if ($('.campPage-tabs-tabHeader.quests').hasClass('active')) {
         if ($('.campPage-quests-title').text() == 'Track down the elusive M400'||'M400 Bait Research') {
-        let location = $(this).parent().parent().find('.campPage-quests-objective-task').text();
+            let location = $(this).parent().parent().find('.campPage-quests-objective-task').text();
             let bait = "";
             const locationSplit = location.split(' in ');
             if (locationSplit[1] == undefined) {
@@ -77,7 +81,7 @@ function convertMouseToLocation(mouseName) {
     const bazaar = ['Bazaar','Master Burglar','Burglar','Granite'];
     const kGauntlet = ["King's Gauntlet",'Cavalier','Terra','Knight','Page','Phalanx','Stealth'];
     const training = ['Training Grounds','Ninja','Kung Fu','Samurai','Archer'];
-    const meditation = ['Meditation Room','Master of the Cheese Belt','Master of the Cheese Claw','Master of the Cheese Fang'];
+    const meditation = ['Meditation Room','Master of the Cheese Belt','Master of the Cheese Claw','Master of the Cheese Fang','Masters of the Cheese Belt','Masters of the Cheese Claw','Masters of the Cheese Fang'];
     const pinacle = ['Pinnacle Chamber','Master of the Dojo','Masters of the Dojo','Dojo Sensei'];
     const catacombs = ['Catacombs','Lycan','Terror Knight','Keeper'];
     const fGrove = ['Forbidden Grove','Realm Ripper','Realm Rippers'];
@@ -218,8 +222,15 @@ function convertNameToClass(locationName) {
 }
 
 $(document).on('click', '.campPage-quests-footer-smash', function() {
-    if (confirm("Smash Your m400 Research Assignment?")) {
-        const smashIt = 'library_m400_research_quest_item';
-        hg.utils.UserInventory.smashItem(smashIt,1,function (resp) {;})
+    if ($('.campPage-quests-title').text() == 'Track down the elusive M400') {
+        if (confirm("Smash Your M400 Hunting Research Assignment?")) {
+            const smashIt = 'library_m400_research_quest_item';
+            hg.utils.UserInventory.smashItem(smashIt,1,function (resp) {;})
+        }
+    } else if ($('.campPage-quests-title').text() == 'M400 Bait Research') {
+        if (confirm("Smash Your M400 Bait Research Assignment?")) {
+            const smashIt = 'library_m400_bait_research_quest_item';
+            hg.utils.UserInventory.smashItem(smashIt,1,function (resp) {;})
+        }
     }
 })
