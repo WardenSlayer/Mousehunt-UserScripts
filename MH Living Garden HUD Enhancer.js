@@ -2,8 +2,9 @@
 // @name         MH: Living Garden HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.1.4
+// @version      1.1.5
 // @description  Quick travel buttons for the Living Garden area locations. More features comning soon.
+// @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
 // @include      https://www.mousehuntgame.com/*
