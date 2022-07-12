@@ -2,7 +2,7 @@
 // @name         MH: Labyrinth Door Data Collector
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.2.5
+// @version      1.2.6
 // @description  Mousehunt data collection tool for avilible labyrinth doors
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
@@ -173,9 +173,10 @@ function publishResults(results) {
         }
         return
     }
-    const url = 'https://script.google.com/macros/s/AKfycbwmnDYV_3f5XFj7xzKcPclMcrzTaDkG1SMLwm2e8A8ABN5ms_j6/exec';
+    const url = 'https://script.google.com/macros/s/AKfycbwDDR4REjef09wnByanmJN2-XZuNPtjY6LgLNt6Pt-HREcKI4rnam5uqosiVASz21FLiA/exec';
     const form = new submitData(results)
     const jqxhr = $.ajax({
+        crossDomain: true,
         url: url,
         method: "GET",
         dataType: "json",
