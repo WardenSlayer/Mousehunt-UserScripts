@@ -2,7 +2,7 @@
 // @name         MH: Floating Islands HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.3
+// @version      1.4
 // @description  See more thing on your floating islands HUD!
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
@@ -27,6 +27,20 @@ function loadFunction() {
     updateAndRender();
     setTimeout(renderSkyMap, 100);
 }
+
+$(document).ajaxComplete(function(event,xhr,options){
+    //console.log(options.url);
+    if (options.url == 'https://www.mousehuntgame.com/managers/ajax/mice/getstat.php') {
+        //console.log('mice');
+    } else if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/userInventory.php') {
+        //console.log('items');
+    } else {
+        // console.log('some other ajax');
+        if (user.environment_name == 'Floating Islands') {
+            loadFunction();
+        }
+    }
+});
 
 //HUD Code
 function updateAndRender() {
@@ -98,6 +112,7 @@ function renderHUD() {
 }
 $(document).on('click', '.floatingIslandsHUD-statItem[data-item-type="empyrean_codex_page_stat_item"]', function() {
     hg.views.ItemView.show('empyrean_codex_page_stat_item');
+    //hg.views.ItemView.show($(this).attr('data-type'))
 })
 
 function showOreGlass() {
@@ -164,7 +179,8 @@ function renderItemBag() {
     $('.floatingIslandsHUD-item-image.empyrean_codex_page_stat_item').css({
         'background-image': 'url(https://www.mousehuntgame.com/images/items/stats/5d8cf4e7ab765abc5b4a72c44bae6b98.gif?cv=2)',
     });
-
+    //
+    itemBagBody.children().on('click', function () {hg.views.ItemView.show($(this).attr('data-item-type'))});
 }
 
 $(document).on('click', '.floatingIslandsHUD-inventoryBagButton.mousehuntTooltipParent', function() {
@@ -187,17 +203,17 @@ $(document).on('click', '.floatingIslandsHUD-inventoryBag-item-toggleButton[data
 //Paragon Overlay
 function renderSkyMap() {
     drawParagons()
-    //     const body = $('.floatingIslandsAdventureBoard-container.paragon.loading.skyMap');
-    //      $(body).removeAttr("href").removeAttr("onclick");
-    //         const trapLibrary = $('.floatingIslandsAdventureBoard-trapLibrary-text:not(.wind)');
-    //         let useWindDiv = $('.floatingIslandsAdventureBoard-trapLibrary-text.wind');
-    //         if ($(useWindDiv).length == 0) {
-    //             useWindDiv = $(trapLibrary).clone().appendTo(body);
-    //             $(useWindDiv).addClass('wind');
-    //         }
-    //         let useWindCb = $(useWindDiv).find('.floatingIslandsAdventureBoard-trapLibrary-checkbox');
-    //         $(useWindCb).addClass('wind');
-    //         $(useWindDiv).children().empty().append(useWindCb).append("Use Wind");
+    //         const body = $('.floatingIslandsAdventureBoard-container.paragon.loading.skyMap');
+    //          $(body).removeAttr("href").removeAttr("onclick");
+    //             const trapLibrary = $('.floatingIslandsAdventureBoard-trapLibrary-text:not(.wind)');
+    //             let useWindDiv = $('.floatingIslandsAdventureBoard-trapLibrary-text.wind');
+    //             if ($(useWindDiv).length == 0) {
+    //                 useWindDiv = $(trapLibrary).clone().appendTo(body);
+    //                 $(useWindDiv).addClass('wind');
+    //             }
+    //             let useWindCb = $(useWindDiv).find('.floatingIslandsAdventureBoard-trapLibrary-checkbox');
+    //             $(useWindCb).addClass('wind');
+    //             $(useWindDiv).children().empty().append(useWindCb).append("Use Wind");
     //         forceWind();
 }
 
@@ -251,16 +267,4 @@ function drawParagons() {
     });
 }
 
-$(document).ajaxComplete(function(event,xhr,options){
-    //console.log(options.url);
-    if (options.url == 'https://www.mousehuntgame.com/managers/ajax/mice/getstat.php') {
-        //console.log('mice');
-    } else if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/userInventory.php') {
-        //console.log('items');
-    } else {
-        // console.log('some other ajax');
-        if (user.environment_name == 'Floating Islands') {
-            loadFunction();
-        }
-    }
-});
+
