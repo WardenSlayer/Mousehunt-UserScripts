@@ -2,7 +2,7 @@
 // @name         MH Region Quick Travel
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.6
+// @version      1.6.1
 // @description  Adds a travel toolbar to the HUD to make traveling between areas in the same region quicker and easier
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
@@ -161,6 +161,8 @@ function getRegionLocations(currentRegion) {
         tags = ['desert_warpath','desert_city','desert_oasis','lost_city','sand_dunes'];
     } else if (currentRegion == 'Hollow Heights') {
         tags = ['fungal_cavern','labyrinth','ancient_city','moussu_picchu','floating_islands'];
+    } else if (currentRegion == 'Folklore Forest') {
+        tags = ['foreword_farm','prologue_pond','table_of_contents'];
     } else if (currentRegion == 'Rift Plane') {
         tags = ['rift_gnawnia','rift_burroughs','rift_whisker_woods','rift_furoma','rift_bristle_woods','rift_valour'];
     }
@@ -226,6 +228,9 @@ function getLocationNames(tag) {
         'ancient_city':'Zokor',
         'moussu_picchu':'Moussu Picchu',
         'floating_islands':'Floating Islands',
+        'foreword_farm':'Foreword Farm',
+        'prologue_pond':'Prologue Pond',
+        'table_of_contents':'Table of Contents',
         'rift_gnawnia':'Gnawnia Rift',
         'rift_burroughs':'Burroughs Rift',
         'rift_whisker_woods':'Whisker Woods Rift',
