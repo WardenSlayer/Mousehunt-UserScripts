@@ -2,7 +2,7 @@
 // @name         MH Region Quick Travel
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.6.1
+// @version      1.6.2
 // @description  Adds a travel toolbar to the HUD to make traveling between areas in the same region quicker and easier
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
@@ -165,6 +165,8 @@ function getRegionLocations(currentRegion) {
         tags = ['foreword_farm','prologue_pond','table_of_contents'];
     } else if (currentRegion == 'Rift Plane') {
         tags = ['rift_gnawnia','rift_burroughs','rift_whisker_woods','rift_furoma','rift_bristle_woods','rift_valour'];
+    } else if (currentRegion == 'Great Winter Taiga') {
+        tags = ['winter_hunt_grove','winter_hunt_workshop','winter_hunt_fortress'];
     }
     tags.forEach(function(loc) {
         const thisLocation = {};
@@ -236,7 +238,10 @@ function getLocationNames(tag) {
         'rift_whisker_woods':'Whisker Woods Rift',
         'rift_furoma':'Furoma Rift',
         'rift_bristle_woods':'Bristle Woods Rift',
-        'rift_valour':'Valour Rift'
+        'rift_valour':'Valour Rift',
+        'winter_hunt_grove': 'Cinnamon Hill',
+        'winter_hunt_workshop': 'Golem Workshop',
+        'winter_hunt_fortress': 'Ice Fortress',
     };
     return locNames[tag];
 }
