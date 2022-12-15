@@ -2,7 +2,7 @@
 // @name         MH Region Quick Travel
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.6.2
+// @version      1.6.3
 // @description  Adds a travel toolbar to the HUD to make traveling between areas in the same region quicker and easier
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
@@ -21,14 +21,9 @@ $(document).ready(function() {
 $(document).ajaxComplete(function(event,xhr,options){
     //console.log(options.url);
     let properties = JSON.parse(localStorage.getItem('ws.mh.travel.props'));
-    if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/userData.php') {
-    } else if (options.url == 'https://www.mousehuntgame.com/managers/ajax/mice/getstat.php') {
-    } else if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/userInventory.php') {
-    } else if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/changeenvironment.php') {
+    if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/changeenvironment.php') {
         properties.previousLocation = properties.currentLocation;
         localStorage.setItem('ws.mh.travel.props',JSON.stringify(properties));
-        loadFunction();
-    } else {
         loadFunction();
     }
 });
@@ -52,7 +47,7 @@ function getData() {
         properties.currentLocation = user.environment_type;
         localStorage.setItem('ws.mh.travel.props',JSON.stringify(properties));
         if (debug == true) {
-            console.log(properties);
+            console.log("props",properties);
         }
     });
 }
