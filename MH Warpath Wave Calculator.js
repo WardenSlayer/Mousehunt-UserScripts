@@ -2,12 +2,13 @@
 // @name         MH: Warpath Wave Calculator
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.1.7
+// @version      1.1.8
 // @description  Keeps track of remaining wave mice to help you manage the wave.
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
 // @include      https://www.mousehuntgame.com/*
+// @grant        GM_setClipboard
 // ==/UserScript==
 $(document).ready(function() {
     const debug = localStorage.getItem('ws.debug');
@@ -16,10 +17,18 @@ $(document).ready(function() {
             console.log('FW Script Started');
         }
         updateWave();
+        renderHUD();
     } else {
         if (debug == true) {
             console.log('Not at the FW');
         }
+    }
+});
+
+$(document).ajaxComplete(function(){
+    if (user.environment_name == 'Fiery Warpath') {
+        updateWave();
+        renderHUD();
     }
 });
 
@@ -47,14 +56,14 @@ function updateWave() {
         waveMice = $('.warpathHUD-wave.wave_3').children();
     } else {
         if (debug == true) {
-            console.log('Wave 4: Script Stopped');
+            console.log('Wave 4: Update Stopped');
         }
         return
     };
     if (debug == true) {
         console.log('Wave Retreat@',waveRetreat);
-    };
-    waveMice.each(function(i) {
+    }
+    waveMice.each(function() {
         const thisRemaning = parseInt($(this).find('.warpathHUD-wave-mouse-population').text(), 10);
         let thisStreaked = 0;
         if (thisRemaning >= streak) {
@@ -69,7 +78,7 @@ function updateWave() {
     });
     if (debug == true) {
         console.log('Mouse Breakdown:',remainingWaveMice);
-    };
+    }
     const panicMeter = $('.warpathHUD-moraleBar.mousehuntTooltipParent');
     if (totalRemaining > waveRetreat) {
         const retreatingIn = totalRemaining - waveRetreat;
@@ -103,12 +112,12 @@ function updateWave() {
         console.log('Hover Text:',resultString);
     }
     return resultString
-};
+}
 
 function mouseClass(remaining,streaked) {
     this.remaining = remaining;
     this.streaked = streaked;
-};
+}
 
 $('.warpathHUD-moraleBar.mousehuntTooltipParent').mouseover(function() {
     const title = updateWave();
@@ -116,10 +125,61 @@ $('.warpathHUD-moraleBar.mousehuntTooltipParent').mouseover(function() {
     $('.warpathHUD-moraleBar.mousehuntTooltipParent').css('cursor', 'pointer');
 });
 
-$(document).ajaxComplete(function(event,xhr,options){
-    if (user.environment_name == 'Fiery Warpath') {
-        updateWave();
+function renderHUD() {
+    let container = $('.warpathHUD-streakContainer');
+    if ($('#snipingButton').get(0)) {
+        //dont add another button but you may need to update the text/title
+    } else {
+        const thisButton = document.createElement("button");
+        thisButton.id = 'snipingButton';
+        $(thisButton).addClass('mousehuntActionButton small');
+        const title = 'Copy Snipes';
+        $(thisButton).attr('title', title);
+        const snipinglText = document.createElement('span');
+        $(snipinglText).addClass('travelText').text("Sniping").css({
+            'font-size': '12px',
+            'top': '-3px',
+            'left': '-2px',
+        });
+        $(thisButton).css({
+            'width': '58px',
+            'height': '22%',
+            'top': '-20px',
+            'position': 'absolute',
+        });
+        $(thisButton).append(snipinglText);
+        container.prepend(thisButton);
     }
-});
+};
 
+$(document).on('click', '#snipingButton', function() {
+    let snipingListingText = "";
+    let waveMice = "";
+    let price = "";
+    if ($('.warpathHUD.wave_1').get(0)) {
+        waveMice = "Wave 1";
+        price = 'N SB+';
+        snipingListingText = "Sniping:"+"\n"+waveMice+' - '+price;
+    } else if ($('.warpathHUD.wave_2').get(0)) {
+        waveMice = "Wave 2";
+        price = 'N SB+';
+        snipingListingText = "Sniping:"+"\n"+waveMice+' - '+price;
+    } else if ($('.warpathHUD.wave_3').get(0)) {
+        waveMice = "Wave 3";
+        price = 'N SB+';
+        snipingListingText = "Sniping:"+"\n"+waveMice+' - '+price;
+    } else {
+        waveMice = "Warmonger";
+        price = 'N SB+';
+        const wardenCount = $('.warpathHUD-wave-mouse.desert_elite_gaurd').find('.warpathHUD-wave-mouse-population').first().text();
+        if (wardenCount == 1) {
+            snipingListingText = "Sniping:"+"\n"+waveMice+' - '+price+"\n"+wardenCount+" Warden Remaining (N SB+ ea)";
+        } else if (wardenCount > 0) {
+            snipingListingText = "Sniping:"+"\n"+waveMice+' - '+price+"\n"+wardenCount+" Wardens Remaining (N SB+ ea)";
+        } else {
+            snipingListingText = "Sniping:"+"\n"+waveMice+' - '+price+' RTC';
+        }
 
+    };
+    GM_setClipboard(snipingListingText)
+})
