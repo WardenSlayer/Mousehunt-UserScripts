@@ -2,7 +2,7 @@
 // @name         MH: Warpath Wave Calculator
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.1.8
+// @version      1.1.9
 // @description  Keeps track of remaining wave mice to help you manage the wave.
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
@@ -75,7 +75,7 @@ function updateWave() {
         remainingWaveMice[$(this).attr('data-mouse')] = thisMouse;
         totalRemaining += thisRemaning;
         streaked += thisStreaked;
-    });
+    })
     if (debug == true) {
         console.log('Mouse Breakdown:',remainingWaveMice);
     }
@@ -150,7 +150,7 @@ function renderHUD() {
         $(thisButton).append(snipinglText);
         container.prepend(thisButton);
     }
-};
+}
 
 $(document).on('click', '#snipingButton', function() {
     let snipingListingText = "";
@@ -180,6 +180,6 @@ $(document).on('click', '#snipingButton', function() {
             snipingListingText = "Sniping:"+"\n"+waveMice+' - '+price+' RTC';
         }
 
-    };
+    }
     GM_setClipboard(snipingListingText)
 })
