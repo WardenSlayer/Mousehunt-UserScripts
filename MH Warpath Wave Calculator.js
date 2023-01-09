@@ -2,7 +2,7 @@
 // @name         MH: Warpath Wave Calculator
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.1.9
+// @version      1.2
 // @description  Keeps track of remaining wave mice to help you manage the wave.
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
@@ -59,7 +59,7 @@ function updateWave() {
             console.log('Wave 4: Update Stopped');
         }
         return
-    };
+    }
     if (debug == true) {
         console.log('Wave Retreat@',waveRetreat);
     }
