@@ -1,0 +1,41 @@
+// ==UserScript==
+// @name         MH Usr Script Template
+// @author       Your Name Here
+// @namespace    https://greasyfork.org/en/users/#####-your-name
+// @version      1.0
+// @description  Userscript template for Mousehuntgame.com. You would change this to describe your script
+// @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
+// @include      http://www.mousehuntgame.com/*
+// @include      https://www.mousehuntgame.com/*
+//
+// ==/UserScript==
+$(document).ready(function() {
+    //this is the starting function. Gets the script running but only runs once per refresh (Ctr+R for hard refesh to run again)
+    console.log('Hello, '+user.firstname+' MouseHunt is an awesome game!');
+    loadFunction();
+});
+
+$(document).ajaxComplete(function(event,xhr,options){
+    //This is called each time an ajax call is made in game. This happens when the page changes, you travel, sound the horn, etc
+    console.log(options.url)
+    if (options.url == 'https://www.mousehuntgame.com/managers/ajax/pages/page.php') {
+        //changing pages in game (ie camp > inventory)
+        loadFunction();
+    } else if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/changeenvironment.php') {
+        //changing locations via travel
+        loadFunction();
+    } else if (options.url == 'https://www.mousehuntgame.com/managers/ajax/turns/activeturn.php') {
+        //sounding the horn
+        loadFunction();
+    } else {
+        //some other ajax call
+        loadFunction();
+    }
+});
+
+function loadFunction() {
+    //this runs once on doc ready and then each time the ajax function tells it to. This can be used to update something on the webpage regularly
+    //
+    //Run all other code from here
+}
+
