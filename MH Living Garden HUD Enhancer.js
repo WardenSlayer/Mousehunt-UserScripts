@@ -2,68 +2,50 @@
 // @name         MH: Living Garden HUD Enhancer
 // @author       Warden Slayer - Warden Slayer#2302
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.1.3
+// @version      1.1.5
 // @description  Quick travel buttons for the Living Garden area locations. More features comning soon.
+// @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
 // @include      http://www.mousehuntgame.com/*
 // @include      https://www.mousehuntgame.com/*
 // ==/UserScript==
 $(document).ready(function() {
     const debug = localStorage.getItem('ws.debug');
-    const location = user.environment_name;
-    const hudWatcher = new MutationObserver(callback);
-    const hudWatcherOptions = {
-        childList: false,
-        attributes: true,
-        subtree: false
-    };
-    if ($('#hudLocationContent').hasClass('hudLocationContent desert_oasis')) {
-        if (debug == true) {
-            console.log('LG Script Started');
-        }
-        buildAreaHUD(location)
-    } else if ($('#hudLocationContent').hasClass('hudLocationContent lost_city')) {
-        if (debug == true) {
-            console.log('LG Script Started');
-        }
-        buildAreaHUD(location);
-    } else if ($('#hudLocationContent').hasClass('hudLocationContent sand_dunes')) {
-        if (debug == true) {
-            console.log('LG Script Started');
-        }
-        buildAreaHUD(location);
-    } else {
-        if (debug == true) {
-            console.log('Not in the LG region');
-        }
+    if (debug == true) {
+        console.log('LG Script Started');
     }
-    hudWatcher.observe($('#hudLocationContent').get(0), hudWatcherOptions);
+    loadFunction();
 })
 
-function callback(mutationList, observer) {
-    mutationList.forEach(mutation => {
-        if (mutation.type == 'attributes') {
-            const lastObserved = localStorage.getItem('ws.lg.lastObserved');
-            const $nodes = $(mutation.target);
-            const location = user.environment_name;
-            if (lastObserved == location) {
-                return false
-            } else if ($nodes.hasClass('desert_oasis')) {
-                buildAreaHUD(location)
-            } else if ($nodes.hasClass('lost_city')) {
-                buildAreaHUD(location)
-            } else if ($nodes.hasClass('sand_dunes')) {
-                buildAreaHUD(location)
-            }
-            localStorage.setItem('ws.lg.lastObserved',location);
-        }
-    })
+function loadFunction() {
+    buildAreaHUD();
 }
 
+$(document).ajaxComplete(function(event,xhr,options){
+    if (options.url == 'https://www.mousehuntgame.com/managers/ajax/mice/getstat.php') {
+    } else if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/userInventory.php') {
+    } else {
+        loadFunction();
+    }
+});
 
 //**=========================================**//
 //HUD Code
-function buildAreaHUD(location) {
+function buildAreaHUD() {
+    const debug = localStorage.getItem('ws.debug');
+    const location = user.environment_name;
+    if (location == 'Living Garden' || location == 'Twisted Garden') {
+    } else if (location == 'Lost City' || location == 'Cursed City') {
+    } else if (location == 'Sand Dunes' || location == 'Sand Crypts') {
+    } else {
+        if (debug == true) {
+            console.log('Not in a LG area');
+        }
+        return false;
+    }
+    if (debug == true) {
+        console.log('Currently in: '+location);
+    }
     buildTravelHUD();
     wipeCheeseBoard();
     populateEssences();
@@ -77,11 +59,29 @@ function buildAreaHUD(location) {
             'bottom': '-10px',
             'position': 'absolute',
         });
+        const shatteringCharm = document.createElement('div');
+        shatteringCharm.classList.add('shatteringCharm');
+        $(shatteringCharm).text('Shattering');
+        $(shatteringCharm).click(function() { charmArm(1074) });
+        $(shatteringCharm).css({
+            'width': '55px',
+            'height': '15px',
+            'float': 'left',
+            'color': 'white',
+            'text-align': 'center',
+            'margin-right': '3px',
+            'margin-top': '2px',
+            'border': '1px solid white',
+            'background-color': 'rgb(0, 179, 33)',
+            'cursor': 'pointer',
+        });
+        //
         if (location == 'Living Garden') {
             //LG Buttons
             const spongeBlue = document.createElement('div');
             spongeBlue.classList.add('spongeBlue');
             $(spongeBlue).text('Blue');
+            $(spongeBlue).click(function() { charmArm(1020) });
             $(spongeBlue).css({
                 'width': '40px',
                 'height': '15px',
@@ -99,6 +99,7 @@ function buildAreaHUD(location) {
             const spongeDoubleBlue = document.createElement('div');
             spongeDoubleBlue.classList.add('spongeDoubleBlue');
             $(spongeDoubleBlue).text('x2 Blue');
+            $(spongeDoubleBlue).click(function() { charmArm(1130) });
             $(spongeDoubleBlue).css({
                 'width': '40px',
                 'height': '15px',
@@ -117,6 +118,7 @@ function buildAreaHUD(location) {
             const searcher = document.createElement('div');
             searcher.classList.add('searcher');
             $(searcher).text('Searcher');
+            $(searcher).click(function() { charmArm(1018) });
             $(searcher).css({
                 'width': '45px',
                 'height': '15px',
@@ -134,6 +136,7 @@ function buildAreaHUD(location) {
             const safeguard = document.createElement('div');
             safeguard.classList.add('safeguard');
             $(safeguard).text('Safeguard');
+            $(safeguard).click(function() { charmArm(1133) });
             $(safeguard).css({
                 'width': '50px',
                 'height': '15px',
@@ -151,6 +154,7 @@ function buildAreaHUD(location) {
             const grublingChow = document.createElement('div');
             grublingChow.classList.add('grublingChow');
             $(grublingChow).text('Chow');
+            $(grublingChow).click(function() { charmArm(1016) });
             $(grublingChow).css({
                 'width': '45px',
                 'height': '15px',
@@ -168,6 +172,7 @@ function buildAreaHUD(location) {
             const grublingBonanza = document.createElement('div');
             grublingBonanza.classList.add('grublingBonanza');
             $(grublingBonanza).text('Bonanza');
+            $(grublingBonanza).click(function() { charmArm(1131) });
             $(grublingBonanza).css({
                 'width': '45px',
                 'height': '15px',
@@ -186,6 +191,7 @@ function buildAreaHUD(location) {
             const spongeRed = document.createElement('div');
             spongeRed.classList.add('spongeRed');
             $(spongeRed).text('Red');
+            $(spongeRed).click(function() { charmArm(1017) });
             $(spongeRed).css({
                 'width': '40px',
                 'height': '15px',
@@ -203,6 +209,7 @@ function buildAreaHUD(location) {
             const spongeDoubleRed = document.createElement('div');
             spongeDoubleRed.classList.add('spongeDoubleRed');
             $(spongeDoubleRed).text('x2 Red');
+            $(spongeDoubleRed).click(function() { charmArm(1132) });
             $(spongeDoubleRed).css({
                 'width': '40px',
                 'height': '15px',
@@ -220,6 +227,7 @@ function buildAreaHUD(location) {
             const spongeYellow = document.createElement('div');
             spongeYellow.classList.add('spongeYellow');
             $(spongeYellow).text('Yellow');
+            $(spongeYellow).click(function() { charmArm(1022) });
             $(spongeYellow).css({
                 'width': '40px',
                 'height': '15px',
@@ -237,6 +245,7 @@ function buildAreaHUD(location) {
             const spongeDoubleYellow = document.createElement('div');
             spongeDoubleYellow.classList.add('spongeDoubleYellow');
             $(spongeDoubleYellow).text('x2 Yellow');
+            $(spongeDoubleYellow).click(function() { charmArm(1135) });
             $(spongeDoubleYellow).css({
                 'width': '50px',
                 'height': '15px',
@@ -250,11 +259,14 @@ function buildAreaHUD(location) {
                 'cursor': 'pointer',
             });
             charmHUD.append(spongeDoubleYellow);
+            //
+            charmHUD.append(shatteringCharm);
         } else if (location == 'Cursed City') {
             //Cursed Buttons
             const bravery = document.createElement('div');
             bravery.classList.add('bravery');
             $(bravery).text('Bravery');
+            $(bravery).click(function() { charmArm(1011) });
             $(bravery).css({
                 'width': '40px',
                 'height': '15px',
@@ -272,6 +284,7 @@ function buildAreaHUD(location) {
             const shine = document.createElement('div');
             shine.classList.add('shine');
             $(shine).text('Shine');
+            $(shine).click(function() { charmArm(1019) });
             $(shine).css({
                 'width': '40px',
                 'height': '15px',
@@ -289,6 +302,7 @@ function buildAreaHUD(location) {
             const clarity = document.createElement('div');
             clarity.classList.add('clarity');
             $(clarity).text('Clarity');
+            $(clarity).click(function() { charmArm(1012) });
             $(clarity).css({
                 'width': '40px',
                 'height': '15px',
@@ -306,23 +320,28 @@ function buildAreaHUD(location) {
             const safeguard = document.createElement('div');
             safeguard.classList.add('safeguard');
             $(safeguard).text('Safeguard');
+            $(safeguard).click(function() { charmArm(1133) });
             $(safeguard).css({
                 'width': '50px',
                 'height': '15px',
                 'float': 'left',
                 'color': 'white',
                 'text-align': 'center',
+                'margin-right': '3px',
                 'margin-top': '2px',
                 'border': '1px solid white',
                 'background-color': 'rgb(76, 36, 105)',
                 'cursor': 'pointer',
             });
             charmHUD.append(safeguard);
+            //
+            charmHUD.append(shatteringCharm);
         } else if (location == 'Sand Crypts') {
             //Crypt Buttons
             const saltCharm = document.createElement('div');
             saltCharm.classList.add('saltCharm');
             $(saltCharm).text('Salt');
+            $(saltCharm).click(function() { charmArm(1014) });
             $(saltCharm).css({
                 'width': '40px',
                 'height': '15px',
@@ -340,6 +359,7 @@ function buildAreaHUD(location) {
             const doubleSaltCharm = document.createElement('div');
             doubleSaltCharm.classList.add('doubleSaltCharm');
             $(doubleSaltCharm).text('x2 Salt');
+            $(doubleSaltCharm).click(function() { charmArm(1134) });
             $(doubleSaltCharm).css({
                 'width': '40px',
                 'height': '15px',
@@ -357,6 +377,7 @@ function buildAreaHUD(location) {
             const scentCharm = document.createElement('div');
             scentCharm.classList.add('scentCharm');
             $(scentCharm).text('Scent');
+            $(scentCharm).click(function() { charmArm(1015) });
             $(scentCharm).css({
                 'width': '40px',
                 'height': '15px',
@@ -370,66 +391,17 @@ function buildAreaHUD(location) {
                 'cursor': 'pointer',
             });
             charmHUD.append(scentCharm);
+            //
+            charmHUD.append(shatteringCharm);
         }
         //Last
         miniGameContainer.append(charmHUD);
     }
 }
 //Charm Arm Code
-//LG
-$(document).on('click', '.spongeBlue', function() {
-    hg.utils.TrapControl.setTrinket(1020).go();
-})
-$(document).on('click', '.spongeDoubleBlue', function() {
-    hg.utils.TrapControl.setTrinket(1130).go();
-})
-//LC
-$(document).on('click', '.searcher', function() {
-    hg.utils.TrapControl.setTrinket(1018).go();
-})
-$(document).on('click', '.safeguard', function() {
-    hg.utils.TrapControl.setTrinket(1133).go();
-})
-//SD
-$(document).on('click', '.grublingChow', function() {
-    hg.utils.TrapControl.setTrinket(1016).go();
-})
-$(document).on('click', '.grublingBonanza', function() {
-    hg.utils.TrapControl.setTrinket(1131).go();
-})
-//TG
-$(document).on('click', '.spongeRed', function() {
-    hg.utils.TrapControl.setTrinket(1017).go();
-})
-$(document).on('click', '.spongeDoubleRed', function() {
-    hg.utils.TrapControl.setTrinket(1132).go();
-})
-$(document).on('click', '.spongeYellow', function() {
-    hg.utils.TrapControl.setTrinket(1022).go();
-})
-$(document).on('click', '.spongeDoubleYellow', function() {
-    hg.utils.TrapControl.setTrinket(1135).go();
-})
-//CC
-$(document).on('click', '.bravery', function() {
-    hg.utils.TrapControl.setTrinket(1011).go();
-})
-$(document).on('click', '.shine', function() {
-    hg.utils.TrapControl.setTrinket(1019).go();
-})
-$(document).on('click', '.clarity', function() {
-    hg.utils.TrapControl.setTrinket(1012).go();
-})
-//SC
-$(document).on('click', '.saltCharm', function() {
-    hg.utils.TrapControl.setTrinket(1014).go();
-})
-$(document).on('click', '.doubleSaltCharm', function() {
-    hg.utils.TrapControl.setTrinket(1134).go();
-})
-$(document).on('click', '.scentCharm', function() {
-    hg.utils.TrapControl.setTrinket(1015).go();
-})
+function charmArm(id) {
+    hg.utils.TrapControl.setTrinket(id).go();
+}
 
 
 function wipeCheeseBoard() {
@@ -462,60 +434,73 @@ function petalsOnClick(name) {
 }
 
 function populateEssences() {
-    const allEssences = $('.essenceContainer').children();
-    allEssences.each(function(i) {
-        const essenceTitle = calculateYourPotential(this.title);
-        this.title = essenceTitle;
+    let allEssences = $('.essenceContainer').children();
+    allEssences.each(function(i,e) {
+        const thisClass = $(e).attr('class');
+        if (thisClass != 'livingGardenRecipes') {
+            const essenceTitle = calculateYourPotential(thisClass);
+            this.title = essenceTitle;
+        }
     })
 }
 
-function calculateYourPotential(name) {
-    const A = $('.item.essence_a_crafting_item');
-    const B = $('.item.essence_b_crafting_item');
-    const C = $('.item.essence_c_crafting_item');
-    const D = $('.item.essence_d_crafting_item');
-    const E = $('.item.essence_e_crafting_item');
-    const F = $('.item.essence_f_crafting_item');
-    const G = $('.item.essence_g_crafting_item');
-    const H = $('.item.essence_h_crafting_item');
-    const I = $('.item.essence_i_crafting_item');
-    const a = parseInt(A.text(),10);
-    const b = parseInt(B.text(),10);
-    const c = parseInt(C.text(),10);
-    const d = parseInt(D.text(),10);
-    const e = parseInt(E.text(),10);
-    const f = parseInt(F.text(),10);
-    const g = parseInt(G.text(),10);
-    const h = parseInt(H.text(),10);
-    const i = parseInt(I.text(),10);
+function calculateYourPotential(id) {
+    const location = user.environment_name;
+    let thisQuest = "";
+    if (location == 'Living Garden' || location == 'Twisted Garden') {
+        thisQuest = user.quests.QuestLivingGarden;
+    } else if (location == 'Lost City' || location == 'Cursed City') {
+        thisQuest = user.quests.QuestLostCity;
+    } else if (location == 'Sand Dunes' || location == 'Sand Crypts') {
+        thisQuest = user.quests.QuestSandDunes;
+    }
+    const a = thisQuest.essences[0].quantity;
+    const b = thisQuest.essences[1].quantity;
+    const c = thisQuest.essences[2].quantity;
+    const d = thisQuest.essences[3].quantity;
+    const e = thisQuest.essences[4].quantity;
+    const f = thisQuest.essences[5].quantity;
+    const g = thisQuest.essences[6].quantity;
+    const h = thisQuest.essences[7].quantity;
+    const i = thisQuest.essences[8].quantity;
+    let name = "";
     let newTitle = "";
     let haveNow = "";
     let totalCanCraft = 0;
-    if (name == 'Aleth Essence') {
+    if (id == 'item essence_a_crafting_item') {
+        name = 'Aleth Essence';
         haveNow = a;
         totalCanCraft = 'NA';
-    } else if (name == 'Ber Essence') {
+    } else if (id == 'item essence_b_crafting_item') {
+        name = 'Ber Essence';
         totalCanCraft = tallyEssences (0,a);
         haveNow = b;
-    } else if (name == 'Cynd Essence') {
+    } else if (id == 'item essence_c_crafting_item') {
+        name = 'Cynd Essence';
         totalCanCraft = tallyEssences (1,a,b);
         haveNow = c;
-    } else if (name == 'Dol Essence') {
+    } else if (id == 'item essence_d_crafting_item') {
+        name = 'Dol Essence';
         totalCanCraft = tallyEssences (2,a,b,c);
         haveNow = d;
-    } else if (name == 'Est Essence') {
+    } else if (id == 'item essence_e_crafting_item') {
+        name = 'Est Essence';
         totalCanCraft = tallyEssences (3,a,b,c,d);
         haveNow = e;
-    } else if (name == 'Fel Essence') {
+    } else if (id == 'item essence_f_crafting_item') {
+        name = 'Fel Essence';
         totalCanCraft = tallyEssences (4,a,b,c,d,e);
         haveNow = f;
-    } else if (name == 'Gur Essence') {
+    } else if (id == 'item essence_g_crafting_item') {
+        name = 'Gur Essence';
         totalCanCraft = tallyEssences (5,a,b,c,d,e,f);
         haveNow = g;
-    } else if (name == 'Hix Essence') {
+    } else if (id == 'item essence_h_crafting_item') {
+        name = 'Hix Essence';
         totalCanCraft = tallyEssences (6,a,b,c,d,e,f,g);
         haveNow = h;
-    } else if (name == 'Icuri Essence') {
+    } else if (id == 'item essence_i_crafting_item') {
+        name = 'Icuri Essence';
         totalCanCraft = tallyEssences (7,a,b,c,d,e,f,g,h);
         haveNow = i;
     }

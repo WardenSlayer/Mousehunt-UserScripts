@@ -1,333 +1,236 @@
 // ==UserScript==
 // @name         MH Timers+
-// @author       Warden Slayer - Warden Slayer#2302
+// @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.5.2
+// @version      1.5.6
 // @description  Handy script to keep track of the various MH location timers
-// @resource     https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
+// @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @resource     YOUR_CSS https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css
 // @require      https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js
+// @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
 // @include      http://www.mousehuntgame.com/*
 // @include      https://www.mousehuntgame.com/*
-// @grant        GM_setClipboard
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // ==/UserScript==
 $(document).ready(function() {
-    var cssTxt = GM_getResourceText ("YOUR_CSS");
-    GM_addStyle (cssTxt);
+    const cssTxt = GM_getResourceText("YOUR_CSS");
+    GM_addStyle(cssTxt);
+    loadFunction();
+});
+
+function loadFunction() {
+    localStorage.setItem('ws.mh.travel.plus.currentLocation',user.environment_type);
     buildTimerBox();
-    buildControlPanels();
     buildTinkerPanel();
     runTimers();
+}
+
+$(document).ajaxComplete(function(event,xhr,options){
+    const currentLoc = localStorage.getItem('ws.mh.travel.plus.currentLocation');
+    if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/userData.php') {
+        //
+    } else if (options.url == 'https://www.mousehuntgame.com/managers/ajax/users/changeenvironment.php') {
+        localStorage.setItem('ws.mh.travel.plus.prevLocation',currentLoc);
+        loadFunction();
+    } else {
+        loadFunction();
+    }
 });
 
 function buildTimerBox() {
     if ($(".timerBox").length > 0) return;
     if ($(".accordion").length > 0) return;
-    var container = $("#mousehuntContainer");
-    var accordion = document.createElement("div");
+    const container = $("#mousehuntContainer");
+    const accordion = document.createElement("div");
     accordion.classList.add("accordion");
     $(accordion).css({
-        'background-image': "url('https://www.toptal.com/designers/subtlepatterns/patterns/interlaced.png')",
+        'background': 'rgb(116,125,205)',
         'width': '98%',
-        'height': '15px',
+        'height': '20px',
         'padding': '5px',
         'border': '2px solid black',
         'cursor': 'pointer'
     });
-    var accordionPrompt = document.createElement("div");
+    const accordionPrompt = document.createElement("div");
     accordionPrompt.classList.add("accordionPrompt");
-    var accordionTitle = document.createElement("div");
+    const accordionTitle = document.createElement("div");
     accordionTitle.classList.add("accordionTitle");
     $(accordionTitle).text("MouseHunt Timers+").css({
         'float': 'left',
+        'text-align': 'left',
+        'vertical-align': 'middle',
         'padding': '1px 0',
         'font-size': '12px',
         'font-weight': 'bold'
-    })
+    });
     $(accordionPrompt).text("Click to Hide").css({
         'float': 'right',
         'padding': '1px 0',
         'font-size': '11px',
         'font-weight': 'bold'
-    })
-    accordion.appendChild(accordionTitle)
-    accordion.appendChild(accordionPrompt)
-    var timerBox = document.createElement("div");
+    });
+    accordion.appendChild(accordionTitle);
+    accordion.appendChild(accordionPrompt);
+    const timerBox = document.createElement("div");
     if (localStorage.getItem('HideTimers') == "Y") {
-        timerBox.classList.add("timerBox")
+        timerBox.classList.add("timerBox");
         timerBox.classList.add("hide");
-        $(accordionPrompt).text("Click to Show")
+        $(accordionPrompt).text("Click to Show");
     } else {
         timerBox.classList.add("timerBox");
     }
     $(timerBox).css({
-        'background-image': "url('https://www.toptal.com/designers/subtlepatterns/patterns/interlaced.png')"
-    });
-    $(timerBox).css({
+        'background': 'linear-gradient(90deg, rgba(215,215,215,1) 2%, rgba(213,213,215,1) 71%, rgba(228,228,228,1) 100%)',
         'height': 150 + "px",
         'padding': 2 + "px"
     });
-    let forbiddenGrove = buildForbiddenGrove();
     if (localStorage.getItem('RemindGrove') == null) {
-        localStorage.setItem('RemindGrove', 'N')
+        localStorage.setItem('RemindGrove', 'N');
+    }
+    let forbiddenGrove = buildForbiddenGrove();
+    if (localStorage.getItem('RemindCove') == null) {
+        localStorage.setItem('RemindCove', 'N');
     }
     let balacksCove = buildBalacksCove();
-    if (localStorage.getItem('RemindCove') == null) {
-        localStorage.setItem('RemindCove', 'N')
+    if (localStorage.getItem('RemindGarden') == null) {
+        localStorage.setItem('RemindGarden', 'N');
     }
     let seasonalGarden = buildSeasonalGarden();
-    if (localStorage.getItem('RemindGarden') == null) {
-        localStorage.setItem('RemindGarden', 'N')
+    if (localStorage.getItem('RemindSpill') == null) {
+        localStorage.setItem('RemindSpill', 'N');
     }
     let toxicSpill = buildToxicSpill();
-    if (localStorage.getItem('RemindSpill') == null) {
-        localStorage.setItem('RemindSpill', 'N')
-    }
-    timerBox.appendChild(forbiddenGrove)
-    timerBox.appendChild(balacksCove)
-    timerBox.appendChild(seasonalGarden)
-    timerBox.appendChild(toxicSpill)
-    $(forbiddenGrove).css({
-        'float': 'left'
-    })
-    $(balacksCove).css({
-        'float': 'left',
-        'marginLeft': 1 + "px"
-    })
-    $(seasonalGarden).css({
-        'float': 'left',
-        'marginLeft': 1 + "px"
-    })
-    $(toxicSpill).css({
-        'float': 'left',
-        'marginLeft': 1 + "px"
-    })
+    timerBox.appendChild(forbiddenGrove);
+    timerBox.appendChild(balacksCove);
+    timerBox.appendChild(seasonalGarden);
+    timerBox.appendChild(toxicSpill);
     //LAST
-    container.prepend(timerBox)
-    container.prepend(accordion)
+    container.prepend(timerBox);
+    container.prepend(accordion);
 
 }
 $(document).on('click', '.accordion', function() {
     if (localStorage.getItem('HideTimers') == "Y") {
         //show
-        $('.timerBox').removeClass("hide")
-        $('.accordionPrompt').text("Click to Hide")
-        localStorage.setItem('HideTimers', "N")
+        $('.timerBox').removeClass("hide");
+        $('.accordionPrompt').text("Click to Hide");
+        localStorage.setItem('HideTimers', "N");
     } else {
         //hide
-        $('.timerBox').find('*').removeClass("hide")
-        $('.timerBox').addClass("hide")
-        $('.accordionPrompt').text("Click to Show")
+        $('.timerBox').find('*').removeClass("hide");
+        $('.timerBox').addClass("hide");
+        $('.accordionPrompt').text("Click to Show");
         $('.tinkerPanel').addClass("hide");
         $('.tinkerButton').text("Tinker");
-        localStorage.setItem('HideTimers', "Y")
+        localStorage.setItem('HideTimers', "Y");
     }
-})
+});
 
-function buildControlPanels() {
-    var timerBox = $(".timerBox");
-    //FG
+function buildTravelButtons(location) {
     const remindGrove = localStorage.getItem('RemindGrove');
-    var forbiddenGroveControlPanel = document.createElement("div");
-    forbiddenGroveControlPanel.classList.add("forbiddenGroveControlPanel");
-    var forbiddenGroveButton = document.createElement("button");
-    forbiddenGroveButton.id = "forbiddenGroveButton";
-    forbiddenGroveButton.innerText = "Travel";
-    forbiddenGroveControlPanel.appendChild(forbiddenGroveButton);
-    $(forbiddenGroveControlPanel).css({
-        'float': 'left',
-        'width': '21.5%',
-        'marginTop': 10 + "px"
-    })
-    $(forbiddenGroveButton).css({
-        'width': '75px',
-        'float': 'left',
-        'marginRight': 5 + "px"
-    })
-    var forbiddenGroveCb = document.createElement('input');
-    forbiddenGroveCb.type = "checkbox";
-    forbiddenGroveCb.name = "forbiddenGroveCb";
-    forbiddenGroveCb.value = "value";
-    forbiddenGroveCb.id = "forbiddenGroveCb";
-    if (remindGrove.search("N") < 0) {
-        forbiddenGroveCb.checked = "Yes";
-    } else {
-        forbiddenGroveCb.checked = "";
-    }
-    var forbiddenGroveCbLabel = document.createElement('label')
-    forbiddenGroveCbLabel.htmlFor = "forbiddenGroveCbLabel";
-    forbiddenGroveCbLabel.appendChild(document.createTextNode('Remind '));
-    forbiddenGroveControlPanel.appendChild(forbiddenGroveCbLabel);
-    forbiddenGroveControlPanel.appendChild(forbiddenGroveCb)
-    $(forbiddenGroveCbLabel).css({
-        'float': 'left',
-        'fontSize': "14px",
-        'width': '45px',
-    })
-    $(forbiddenGroveCb).css({
-        'float': 'left',
-        'width': '20px'
-    })
-    timerBox.append(forbiddenGroveControlPanel);
-    //BC
     const remindCove = localStorage.getItem('RemindCove');
-    var balacksCoveControlPanel = document.createElement("div");
-    balacksCoveControlPanel.classList.add("balacksCoveControlPanel");
-    var balacksCoveButton = document.createElement("button");
-    balacksCoveButton.id = "balacksCoveButton";
-    balacksCoveButton.innerText = "Travel";
-    balacksCoveControlPanel.appendChild(balacksCoveButton);
-    $(balacksCoveControlPanel).css({
-        'float': 'left',
-        'width': '25%',
-        'marginLeft': 5 + "px",
-        'marginTop': 10 + "px"
-    })
-    $(balacksCoveButton).css({
-        'width': '75px',
-        'float': 'left',
-        'marginRight': 5 + "px"
-    })
-    var balacksCoveCb = document.createElement('input');
-    balacksCoveCb.type = "checkbox";
-    balacksCoveCb.name = "balacksCoveCb";
-    balacksCoveCb.value = "value";
-    balacksCoveCb.id = "balacksCoveCb";
-    if (remindCove.search("N") < 0) {
-        balacksCoveCb.checked = "Yes";
-    } else {
-        balacksCoveCb.checked = "";
-    }
-    var balacksCoveCbLabel = document.createElement('label')
-    balacksCoveCbLabel.htmlFor = "balacksCoveCbLabel";
-    balacksCoveCbLabel.appendChild(document.createTextNode('Remind '));
-    balacksCoveControlPanel.appendChild(balacksCoveCbLabel);
-    balacksCoveControlPanel.appendChild(balacksCoveCb)
-    $(balacksCoveCbLabel).css({
-        'float': 'left',
-        'fontSize': "14px",
-        'width': '45px',
-    })
-    $(balacksCoveCb).css({
-        'float': 'left',
-        'width': '20px'
-    })
-    timerBox.append(balacksCoveControlPanel);
-    //SG
     const remindGarden = localStorage.getItem('RemindGarden');
-    var seasonalGardenControlPanel = document.createElement("div");
-    seasonalGardenControlPanel.classList.add("seasonalGardenControlPanel");
-    var seasonalGardenButton = document.createElement("button");
-    seasonalGardenButton.id = "seasonalGardenButton";
-    seasonalGardenButton.innerText = "Travel";
-    seasonalGardenControlPanel.appendChild(seasonalGardenButton);
-    $(seasonalGardenControlPanel).css({
-        'float': 'left',
-        'width': '24%',
-        'marginLeft': 5 + "px",
-        'marginTop': 10 + "px"
-    })
-    $(seasonalGardenButton).css({
-        'width': '75px',
-        'float': 'left',
-        'marginRight': 5 + "px"
-    })
-    var seasonalGardenCb = document.createElement('input');
-    seasonalGardenCb.type = "checkbox";
-    seasonalGardenCb.name = "seasonalGardenCb";
-    seasonalGardenCb.value = "value";
-    seasonalGardenCb.id = "seasonalGardenCb";
-    if (remindGarden.search("N") < 0) {
-        seasonalGardenCb.checked = "Yes";
-    } else {
-        seasonalGardenCb.checked = "";
-    }
-    var seasonalGardenCbLabel = document.createElement('label')
-    seasonalGardenCbLabel.htmlFor = "seasonalGardenCbLabel";
-    seasonalGardenCbLabel.appendChild(document.createTextNode('Remind '));
-    seasonalGardenControlPanel.appendChild(seasonalGardenCbLabel);
-    seasonalGardenControlPanel.appendChild(seasonalGardenCb)
-    $(seasonalGardenCbLabel).css({
-        'float': 'left',
-        'fontSize': "14px",
-        'width': '45px',
-    })
-    $(seasonalGardenCb).css({
-        'float': 'left',
-        'width': '20px'
-    })
-    timerBox.append(seasonalGardenControlPanel);
-    //TS
     const remindSpill = localStorage.getItem('RemindSpill');
-    var toxicSpillControlPanel = document.createElement("div");
-    toxicSpillControlPanel.classList.add("toxicSpillControlPanel");
-    var toxicSpillButton = document.createElement("button");
-    toxicSpillButton.id = "toxicSpillButton";
-    toxicSpillButton.innerText = "Travel";
-    toxicSpillControlPanel.appendChild(toxicSpillButton);
-    $(toxicSpillControlPanel).css({
-        'float': 'left',
-        'width': '26%',
-        'marginLeft': 10 + "px",
-        'marginTop': 10 + "px"
-    })
-    $(toxicSpillButton).css({
-        'width': '75px',
-        'float': 'left',
-        'marginRight': 5 + "px"
-    })
-    var toxicSpillCb = document.createElement('input');
-    toxicSpillCb.type = "checkbox";
-    toxicSpillCb.name = "toxicSpillCb";
-    toxicSpillCb.value = "value";
-    toxicSpillCb.id = "toxicSpillCb";
-    if (remindSpill.search("N") < 0) {
-        toxicSpillCb.checked = "Yes";
-    } else {
-        toxicSpillCb.checked = "";
+    const thisControlPanel = document.createElement("div");
+    thisControlPanel.classList.add(location + 'ControlPanel');
+    const thisButton = document.createElement("button");
+    thisButton.id = location + 'Button';
+    $(thisButton).addClass('mousehuntActionButton small');
+    let title = "";
+    let isChecked = "";
+    if (location == 'forbiddenGrove') {
+        title = 'Travel to the Forbidden Grove';
+        if (remindGrove.search("N") < 0) {
+            isChecked = "Yes";
+        }
+    } else if (location == 'balacksCove') {
+        title = "Travel to Balack's Cove";
+        if (remindCove.search("N") < 0) {
+            isChecked = "Yes";
+        }
+    } else if (location == 'seasonalGarden') {
+        title = 'Travel to the Seasonal Garden';
+        if (remindGarden.search("N") < 0) {
+            isChecked = "Yes";
+        }
+    } else if (location == 'toxicSpill') {
+        title = 'Travel to the Toxic Spill';
+        if (remindSpill.search("N") < 0) {
+            isChecked = "Yes";
+        }
     }
-    var toxicSpillCbLabel = document.createElement('label')
-    toxicSpillCbLabel.htmlFor = "toxicSpillCbLabel";
-    toxicSpillCbLabel.appendChild(document.createTextNode('Remind '));
-    toxicSpillControlPanel.appendChild(toxicSpillCbLabel);
-    toxicSpillControlPanel.appendChild(toxicSpillCb)
-    $(toxicSpillCbLabel).css({
+    $(thisButton).attr('title', title);
+    const travelText = document.createElement('span');
+    $(travelText).addClass('travelText').text('Travel').css({
+        'font-size': '12px',
+    });
+    $(thisButton).append(travelText);
+    thisControlPanel.append(thisButton);
+    $(thisControlPanel).css({
+        'float': 'left',
+        'width': '100%',
+        'height': '20%',
+        'vertical-align': 'middle',
+    });
+    $(thisButton).css({
+        'width': '75px',
+        'height': '100%',
+        'float': 'left',
+        'marginRight': "12px",
+    });
+    const thisCb = document.createElement('input');
+    thisCb.type = "checkbox";
+    thisCb.name = "forbiddenGroveCb";
+    thisCb.value = "value";
+    thisCb.id = location + 'Cb';
+    $(thisCb).addClass('friendsPage-friendRow-checkBox');
+    thisCb.checked = isChecked;
+    const thisCbLabel = document.createElement('label');
+    thisCbLabel.htmlFor = location + 'CbLabel';
+    thisCbLabel.appendChild(document.createTextNode('Remind'));
+    thisControlPanel.appendChild(thisCbLabel);
+    thisControlPanel.appendChild(thisCb);
+    $(thisCbLabel).css({
         'float': 'left',
         'fontSize': "14px",
-        'width': '45px',
-    })
-    $(toxicSpillCb).css({
+        'width': '50px',
+        'height': '100%',
+        'vertical-align': 'middle',
+    });
+    $(thisCb).css({
         'float': 'left',
-        'width': '20px'
-    })
-    //tinker button
-    var tinkerButton = document.createElement("div");
-    tinkerButton.classList.add("tinkerButton");
-    $(tinkerButton).text("Tinker");
-    toxicSpillControlPanel.appendChild(tinkerButton);
-    $(tinkerButton).css({
-        'width': '30px',
-        'float': 'right',
-        'padding': 3 + 'px',
-        'color': 'rgb(4, 44, 202)',
-        'marginRight': 5 + "px"
-    })
-    timerBox.append(toxicSpillControlPanel);
+        'width': '20px',
+        'margin': 0,
+        'vertical-align': 'middle',
+    });
+    if (location == 'toxicSpill') {
+        //tinker button
+        const tinkerButton = document.createElement("div");
+        tinkerButton.classList.add("tinkerButton");
+        $(tinkerButton).text("Tinker");
+        $(tinkerButton).attr('title', 'Tinker Menu');
+        $(tinkerButton).text("Tinker");
+        $(tinkerButton).css({
+            'width': '30px',
+            'float': 'right',
+            'padding': 3 + 'px',
+            'color': 'rgb(4, 44, 202)',
+            'marginRight': "5px",
+            'cursor': 'pointer',
+        });
+        thisControlPanel.appendChild(tinkerButton);
+    }
+    return thisControlPanel;
 }
 
-$('.tinkerButton').mouseover(function() {
-    $('.tinkerButton').attr('title', 'Tinker Menu');
-    $('.tinkerButton').css('cursor', 'pointer');
-});
 $(document).on('click', '.tinkerButton', function() {
-    var fg = $('.forbiddenGrove');
-    var bc = $('.balacksCove');
-    var sg = $('.seasonalGarden');
-    var ts = $('.toxicSpill');
-    var tp = $('.tinkerPanel');
+    const fg = $('.forbiddenGrove');
+    const bc = $('.balacksCove');
+    const sg = $('.seasonalGarden');
+    const ts = $('.toxicSpill');
+    const tp = $('.tinkerPanel');
     if (fg.hasClass("hide")) {
         //show
         fg.removeClass("hide");
@@ -348,38 +251,39 @@ $(document).on('click', '.tinkerButton', function() {
 });
 
 function buildTinkerPanel() {
-    var timerBox = $(".timerBox");
-    var tinkerPanel = document.createElement("div");
+    if ($(".tinkerPanel").length > 0) return;
+    const timerBox = $(".timerBox");
+    const tinkerPanel = document.createElement("div");
     tinkerPanel.classList.add("tinkerPanel");
     tinkerPanel.classList.add("hide");
     $(tinkerPanel).css({
-        'height': '70%',
+        'height': '95%',
         'width': '99%',
         'float': 'left',
         'padding': 2 + "px",
-        'background-image': "url('https://www.toptal.com/designers/subtlepatterns/patterns/interlaced.png')",
+        'background': 'linear-gradient(90deg, rgba(215,215,215,1) 2%, rgba(213,213,215,1) 71%, rgba(228,228,228,1) 100%)',
         'border': '1px solid black'
     });
     //FG Options
     const remindGrove = localStorage.getItem('RemindGrove');
-    var forbiddenGroveOptions = document.createElement("div");
+    const forbiddenGroveOptions = document.createElement("div");
     forbiddenGroveOptions.classList.add("forbiddenGroveOptions");
-    var forbiddenGroveOptionsLabel = document.createElement("div");
+    const forbiddenGroveOptionsLabel = document.createElement("div");
     forbiddenGroveOptionsLabel.classList.add("forbiddenGroveOptionsLabel");
-    var forbiddenGroveOptionsLabelText = document.createTextNode("Forbidden Grove");
+    const forbiddenGroveOptionsLabelText = document.createTextNode("Forbidden Grove");
     forbiddenGroveOptionsLabel.appendChild(forbiddenGroveOptionsLabelText);
     forbiddenGroveOptions.appendChild(forbiddenGroveOptionsLabel);
     $(forbiddenGroveOptions).css({
         'float': 'left',
         'width': '12%',
-    })
+    });
     $(forbiddenGroveOptionsLabel).css({
         'float': 'left',
         'width': '100%',
         'font-weight': 700,
         "marginRight": "5px"
-    })
-    var forbiddenGroveOpenCb = document.createElement('input');
+    });
+    const forbiddenGroveOpenCb = document.createElement('input');
     forbiddenGroveOpenCb.type = "checkbox";
     forbiddenGroveOpenCb.name = "forbiddenGroveOpenCb";
     forbiddenGroveOpenCb.value = "value";
@@ -389,22 +293,22 @@ function buildTinkerPanel() {
     } else {
         forbiddenGroveOpenCb.checked = "";
     }
-    var forbiddenGroveOpenCbLabel = document.createElement('label')
+    const forbiddenGroveOpenCbLabel = document.createElement('label');
     forbiddenGroveOpenCbLabel.htmlFor = "forbiddenGroveOpenCbLabel";
     forbiddenGroveOpenCbLabel.appendChild(document.createTextNode('Open'));
     $(forbiddenGroveOpenCbLabel).css({
         'float': 'left',
         'width': '30px',
         'padding': '1px'
-    })
+    });
     $(forbiddenGroveOpenCb).css({
         'float': 'left',
         'width': '20px'
-    })
+    });
     forbiddenGroveOptions.appendChild(forbiddenGroveOpenCbLabel);
     forbiddenGroveOptions.appendChild(forbiddenGroveOpenCb);
     //
-    var forbiddenGroveCloseCb = document.createElement('input');
+    const forbiddenGroveCloseCb = document.createElement('input');
     forbiddenGroveCloseCb.type = "checkbox";
     forbiddenGroveCloseCb.name = "forbiddenGroveCloseCb";
     forbiddenGroveCloseCb.value = "value";
@@ -414,40 +318,40 @@ function buildTinkerPanel() {
     } else {
         forbiddenGroveCloseCb.checked = "";
     }
-    var forbiddenGroveCloseCbLabel = document.createElement('label')
+    const forbiddenGroveCloseCbLabel = document.createElement('label');
     forbiddenGroveCloseCbLabel.htmlFor = "forbiddenGroveCloseCbLabel";
     forbiddenGroveCloseCbLabel.appendChild(document.createTextNode('Closed'));
     $(forbiddenGroveCloseCbLabel).css({
         'float': 'left',
         'width': '30px',
         'padding': '1px'
-    })
+    });
     $(forbiddenGroveCloseCb).css({
         'float': 'left',
         'width': '20px'
-    })
+    });
     forbiddenGroveOptions.appendChild(forbiddenGroveCloseCbLabel);
     forbiddenGroveOptions.appendChild(forbiddenGroveCloseCb);
     //BC Options
     const remindCove = localStorage.getItem('RemindCove');
-    var balacksCoveOptions = document.createElement("div");
+    const balacksCoveOptions = document.createElement("div");
     balacksCoveOptions.classList.add("balacksCoveOptions");
-    var balacksCoveOptionsLabel = document.createElement("div");
+    const balacksCoveOptionsLabel = document.createElement("div");
     balacksCoveOptionsLabel.classList.add("balacksCoveOptionsLabel");
-    var balacksCoveOptionsLabelText = document.createTextNode("Balack's Cove");
+    const balacksCoveOptionsLabelText = document.createTextNode("Balack's Cove");
     balacksCoveOptionsLabel.appendChild(balacksCoveOptionsLabelText);
     balacksCoveOptions.appendChild(balacksCoveOptionsLabel);
     $(balacksCoveOptions).css({
         'float': 'left',
         'width': '12%',
-    })
+    });
     $(balacksCoveOptionsLabel).css({
         'float': 'left',
         'width': '100%',
         'font-weight': 700,
         "marginRight": "5px"
-    })
-    var balacksCoveLowCb = document.createElement('input');
+    });
+    const balacksCoveLowCb = document.createElement('input');
     balacksCoveLowCb.type = "checkbox";
     balacksCoveLowCb.name = "balacksCoveLowCb";
     balacksCoveLowCb.value = "value";
@@ -457,22 +361,22 @@ function buildTinkerPanel() {
     } else {
         balacksCoveLowCb.checked = "";
     }
-    var balacksCoveLowCbLabel = document.createElement('label')
+    const balacksCoveLowCbLabel = document.createElement('label');
     balacksCoveLowCbLabel.htmlFor = "balacksCoveLowCbLabel";
     balacksCoveLowCbLabel.appendChild(document.createTextNode('Low'));
     $(balacksCoveLowCbLabel).css({
         'float': 'left',
         'width': '30px',
         'padding': '1px'
-    })
+    });
     $(balacksCoveLowCb).css({
         'float': 'left',
         'width': '20px'
-    })
+    });
     balacksCoveOptions.appendChild(balacksCoveLowCbLabel);
     balacksCoveOptions.appendChild(balacksCoveLowCb);
     //
-    var balacksCoveMidCb = document.createElement('input');
+    const balacksCoveMidCb = document.createElement('input');
     balacksCoveMidCb.type = "checkbox";
     balacksCoveMidCb.name = "balacksCoveMidCb";
     balacksCoveMidCb.value = "value";
@@ -482,22 +386,22 @@ function buildTinkerPanel() {
     } else {
         balacksCoveMidCb.checked = "";
     }
-    var balacksCoveMidCbLabel = document.createElement('label')
+    const balacksCoveMidCbLabel = document.createElement('label');
     balacksCoveMidCbLabel.htmlFor = "balacksCoveMidCbLabel";
     balacksCoveMidCbLabel.appendChild(document.createTextNode('Mid'));
     $(balacksCoveMidCbLabel).css({
         'float': 'left',
         'width': '30px',
         'padding': '1px'
-    })
+    });
     $(balacksCoveMidCb).css({
         'float': 'left',
         'width': '20px'
-    })
+    });
     balacksCoveOptions.appendChild(balacksCoveMidCbLabel);
     balacksCoveOptions.appendChild(balacksCoveMidCb);
     //
-    var balacksCoveHighCb = document.createElement('input');
+    const balacksCoveHighCb = document.createElement('input');
     balacksCoveHighCb.type = "checkbox";
     balacksCoveHighCb.name = "balacksCoveHighCb";
     balacksCoveHighCb.value = "value";
@@ -507,40 +411,40 @@ function buildTinkerPanel() {
     } else {
         balacksCoveHighCb.checked = "";
     }
-    var balacksCoveHighCbLabel = document.createElement('label')
+    const balacksCoveHighCbLabel = document.createElement('label');
     balacksCoveHighCbLabel.htmlFor = "balacksCoveHighCbLabel";
     balacksCoveHighCbLabel.appendChild(document.createTextNode('High'));
     $(balacksCoveHighCbLabel).css({
         'float': 'left',
         'width': '30px',
         'padding': '1px'
-    })
+    });
     $(balacksCoveHighCb).css({
         'float': 'left',
         'width': '20px'
-    })
+    });
     balacksCoveOptions.appendChild(balacksCoveHighCbLabel);
     balacksCoveOptions.appendChild(balacksCoveHighCb);
     //SG Options
     const remindGarden = localStorage.getItem('RemindGarden');
-    var seasonalGardenOptions = document.createElement("div");
+    const seasonalGardenOptions = document.createElement("div");
     seasonalGardenOptions.classList.add("seasonalGardenOptions");
-    var seasonalGardenOptionsLabel = document.createElement("div");
+    const seasonalGardenOptionsLabel = document.createElement("div");
     seasonalGardenOptionsLabel.classList.add("seasonalGardenOptionsLabel");
-    var seasonalGardenOptionsLabelText = document.createTextNode("Seasonal Garden");
+    const seasonalGardenOptionsLabelText = document.createTextNode("Seasonal Garden");
     seasonalGardenOptionsLabel.appendChild(seasonalGardenOptionsLabelText);
     seasonalGardenOptions.appendChild(seasonalGardenOptionsLabel);
     $(seasonalGardenOptions).css({
         'float': 'left',
         'width': '13%',
-    })
+    });
     $(seasonalGardenOptionsLabel).css({
         'float': 'left',
         'width': '100%',
         'font-weight': 700,
         "marginRight": "5px"
-    })
-    var seasonalGardenFallCb = document.createElement('input');
+    });
+    const seasonalGardenFallCb = document.createElement('input');
     seasonalGardenFallCb.type = "checkbox";
     seasonalGardenFallCb.name = "seasonalGardenFallCb";
     seasonalGardenFallCb.value = "value";
@@ -550,23 +454,23 @@ function buildTinkerPanel() {
     } else {
         seasonalGardenFallCb.checked = "";
     }
-    var seasonalGardenFallCbLabel = document.createElement('label')
+    const seasonalGardenFallCbLabel = document.createElement('label');
     seasonalGardenFallCbLabel.htmlFor = "seasonalGardenFallCbLabel";
     seasonalGardenFallCbLabel.appendChild(document.createTextNode('Fall'));
     $(seasonalGardenFallCbLabel).css({
         'float': 'left',
         'width': '40px',
         'padding': '1px',
-    })
+    });
     $(seasonalGardenFallCb).css({
         'float': 'left',
         'width': '20px',
         "marginRight": "25px"
-    })
+    });
     seasonalGardenOptions.appendChild(seasonalGardenFallCbLabel);
     seasonalGardenOptions.appendChild(seasonalGardenFallCb);
     //
-    var seasonalGardenWinterCb = document.createElement('input');
+    const seasonalGardenWinterCb = document.createElement('input');
     seasonalGardenWinterCb.type = "checkbox";
     seasonalGardenWinterCb.name = "seasonalGardenWinterCb";
     seasonalGardenWinterCb.value = "value";
@@ -576,23 +480,23 @@ function buildTinkerPanel() {
     } else {
         seasonalGardenWinterCb.checked = "";
     }
-    var seasonalGardenWinterCbLabel = document.createElement('label')
+    const seasonalGardenWinterCbLabel = document.createElement('label');
     seasonalGardenWinterCbLabel.htmlFor = "seasonalGardenWinterCbLabel";
     seasonalGardenWinterCbLabel.appendChild(document.createTextNode('Winter'));
     $(seasonalGardenWinterCbLabel).css({
         'float': 'left',
         'width': '40px',
         'padding': '1px'
-    })
+    });
     $(seasonalGardenWinterCb).css({
         'float': 'left',
         'width': '20px',
         "marginRight": "25px"
-    })
+    });
     seasonalGardenOptions.appendChild(seasonalGardenWinterCbLabel);
     seasonalGardenOptions.appendChild(seasonalGardenWinterCb);
     //
-    var seasonalGardenSpringCb = document.createElement('input');
+    const seasonalGardenSpringCb = document.createElement('input');
     seasonalGardenSpringCb.type = "checkbox";
     seasonalGardenSpringCb.name = "seasonalGardenSpringCb";
     seasonalGardenSpringCb.value = "value";
@@ -602,23 +506,23 @@ function buildTinkerPanel() {
     } else {
         seasonalGardenSpringCb.checked = "";
     }
-    var seasonalGardenSpringCbLabel = document.createElement('label')
+    const seasonalGardenSpringCbLabel = document.createElement('label');
     seasonalGardenSpringCbLabel.htmlFor = "seasonalGardenSpringCbLabel";
     seasonalGardenSpringCbLabel.appendChild(document.createTextNode('Spring'));
     $(seasonalGardenSpringCbLabel).css({
         'float': 'left',
         'width': '40px',
         'padding': '1px'
-    })
+    });
     $(seasonalGardenSpringCb).css({
         'float': 'left',
         'width': '20px',
         "marginRight": "25px"
-    })
+    });
     seasonalGardenOptions.appendChild(seasonalGardenSpringCbLabel);
     seasonalGardenOptions.appendChild(seasonalGardenSpringCb);
     //
-    var seasonalGardenSummerCb = document.createElement('input');
+    const seasonalGardenSummerCb = document.createElement('input');
     seasonalGardenSummerCb.type = "checkbox";
     seasonalGardenSummerCb.name = "seasonalGardenSummerCb";
     seasonalGardenSummerCb.value = "value";
@@ -628,41 +532,41 @@ function buildTinkerPanel() {
     } else {
         seasonalGardenSummerCb.checked = "";
     }
-    var seasonalGardenSummerCbLabel = document.createElement('label')
+    const seasonalGardenSummerCbLabel = document.createElement('label');
     seasonalGardenSummerCbLabel.htmlFor = "seasonalGardenSummerCbLabel";
     seasonalGardenSummerCbLabel.appendChild(document.createTextNode('Summer'));
     $(seasonalGardenSummerCbLabel).css({
         'float': 'left',
         'width': '40px',
         'padding': '1px'
-    })
+    });
     $(seasonalGardenSummerCb).css({
         'float': 'left',
         'width': '20px',
         "marginRight": "25px"
-    })
+    });
     seasonalGardenOptions.appendChild(seasonalGardenSummerCbLabel);
     seasonalGardenOptions.appendChild(seasonalGardenSummerCb);
     //TS Options
     const remindSpill = localStorage.getItem('RemindSpill');
-    var toxicSpillOptions = document.createElement("div");
+    const toxicSpillOptions = document.createElement("div");
     toxicSpillOptions.classList.add("toxicSpillOptions");
-    var toxicSpillOptionsLabel = document.createElement("div");
+    const toxicSpillOptionsLabel = document.createElement("div");
     toxicSpillOptionsLabel.classList.add("toxicSpillOptionsLabel");
-    var toxicSpillOptionsLabelText = document.createTextNode("Toxic Spill");
+    const toxicSpillOptionsLabelText = document.createTextNode("Toxic Spill");
     toxicSpillOptionsLabel.appendChild(toxicSpillOptionsLabelText);
     toxicSpillOptions.appendChild(toxicSpillOptionsLabel);
     $(toxicSpillOptions).css({
         'float': 'left',
         'width': '18%',
         'marginLeft': '10px',
-    })
+    });
     $(toxicSpillOptionsLabel).css({
         'float': 'left',
         'width': '100%',
         'font-weight': 700,
-    })
-    var toxicSpillHeroCb = document.createElement('input');
+    });
+    const toxicSpillHeroCb = document.createElement('input');
     toxicSpillHeroCb.type = "checkbox";
     toxicSpillHeroCb.name = "toxicSpillHeroCb";
     toxicSpillHeroCb.value = "value";
@@ -672,23 +576,23 @@ function buildTinkerPanel() {
     } else {
         toxicSpillHeroCb.checked = "";
     }
-    var toxicSpillHeroCbLabel = document.createElement('label')
+    const toxicSpillHeroCbLabel = document.createElement('label');
     toxicSpillHeroCbLabel.htmlFor = "toxicSpillHeroCbLabel";
     toxicSpillHeroCbLabel.appendChild(document.createTextNode('Hero'));
     $(toxicSpillHeroCbLabel).css({
         'float': 'left',
         'width': '35px',
         'padding': '1px',
-    })
+    });
     $(toxicSpillHeroCb).css({
         'float': 'left',
         'width': '20px',
         "marginRight": "5px"
-    })
+    });
     toxicSpillOptions.appendChild(toxicSpillHeroCbLabel);
     toxicSpillOptions.appendChild(toxicSpillHeroCb);
     //
-    var toxicSpillKnightCb = document.createElement('input');
+    const toxicSpillKnightCb = document.createElement('input');
     toxicSpillKnightCb.type = "checkbox";
     toxicSpillKnightCb.name = "toxicSpillKnightCb";
     toxicSpillKnightCb.value = "value";
@@ -698,23 +602,23 @@ function buildTinkerPanel() {
     } else {
         toxicSpillKnightCb.checked = "";
     }
-    var toxicSpillKnightCbLabel = document.createElement('label')
+    const toxicSpillKnightCbLabel = document.createElement('label');
     toxicSpillKnightCbLabel.htmlFor = "toxicSpillKnightCbLabel";
     toxicSpillKnightCbLabel.appendChild(document.createTextNode('Knight'));
     $(toxicSpillKnightCbLabel).css({
         'float': 'left',
         'width': '35px',
         'padding': '1px',
-    })
+    });
     $(toxicSpillKnightCb).css({
         'float': 'left',
         'width': '20px',
         "marginRight": "5px"
-    })
+    });
     toxicSpillOptions.appendChild(toxicSpillKnightCbLabel);
     toxicSpillOptions.appendChild(toxicSpillKnightCb);
     //
-    var toxicSpillLordCb = document.createElement('input');
+    const toxicSpillLordCb = document.createElement('input');
     toxicSpillLordCb.type = "checkbox";
     toxicSpillLordCb.name = "toxicSpillLordCb";
     toxicSpillLordCb.value = "value";
@@ -724,23 +628,23 @@ function buildTinkerPanel() {
     } else {
         toxicSpillLordCb.checked = "";
     }
-    var toxicSpillLordCbLabel = document.createElement('label')
+    const toxicSpillLordCbLabel = document.createElement('label');
     toxicSpillLordCbLabel.htmlFor = "toxicSpillLordCbLabel";
     toxicSpillLordCbLabel.appendChild(document.createTextNode('Lord'));
     $(toxicSpillLordCbLabel).css({
         'float': 'left',
         'width': '35px',
         'padding': '1px',
-    })
+    });
     $(toxicSpillLordCb).css({
         'float': 'left',
         'width': '20px',
         "marginRight": "5px"
-    })
+    });
     toxicSpillOptions.appendChild(toxicSpillLordCbLabel);
     toxicSpillOptions.appendChild(toxicSpillLordCb);
     //
-    var toxicSpillBaronCb = document.createElement('input');
+    const toxicSpillBaronCb = document.createElement('input');
     toxicSpillBaronCb.type = "checkbox";
     toxicSpillBaronCb.name = "toxicSpillBaronCb";
     toxicSpillBaronCb.value = "value";
@@ -750,23 +654,23 @@ function buildTinkerPanel() {
     } else {
         toxicSpillBaronCb.checked = "";
     }
-    var toxicSpillBaronCbLabel = document.createElement('label')
+    const toxicSpillBaronCbLabel = document.createElement('label');
     toxicSpillBaronCbLabel.htmlFor = "toxicSpillBaronCbLabel";
     toxicSpillBaronCbLabel.appendChild(document.createTextNode('Baron'));
     $(toxicSpillBaronCbLabel).css({
         'float': 'left',
         'width': '35px',
         'padding': '1px',
-    })
+    });
     $(toxicSpillBaronCb).css({
         'float': 'left',
         'width': '20px',
         "marginRight": "5px"
-    })
+    });
     toxicSpillOptions.appendChild(toxicSpillBaronCbLabel);
     toxicSpillOptions.appendChild(toxicSpillBaronCb);
     //
-    var toxicSpillCountCb = document.createElement('input');
+    const toxicSpillCountCb = document.createElement('input');
     toxicSpillCountCb.type = "checkbox";
     toxicSpillCountCb.name = "toxicSpillCountCb";
     toxicSpillCountCb.value = "value";
@@ -776,23 +680,23 @@ function buildTinkerPanel() {
     } else {
         toxicSpillCountCb.checked = "";
     }
-    var toxicSpillCountCbLabel = document.createElement('label')
+    const toxicSpillCountCbLabel = document.createElement('label');
     toxicSpillCountCbLabel.htmlFor = "toxicSpillCountCbLabel";
     toxicSpillCountCbLabel.appendChild(document.createTextNode('Count'));
     $(toxicSpillCountCbLabel).css({
         'float': 'left',
         'width': '35px',
         'padding': '1px',
-    })
+    });
     $(toxicSpillCountCb).css({
         'float': 'left',
         'width': '20px',
         "marginRight": "5px"
-    })
+    });
     toxicSpillOptions.appendChild(toxicSpillCountCbLabel);
     toxicSpillOptions.appendChild(toxicSpillCountCb);
     //
-    var toxicSpillDukeCb = document.createElement('input');
+    const toxicSpillDukeCb = document.createElement('input');
     toxicSpillDukeCb.type = "checkbox";
     toxicSpillDukeCb.name = "toxicSpillDukeCb";
     toxicSpillDukeCb.value = "value";
@@ -802,23 +706,23 @@ function buildTinkerPanel() {
     } else {
         toxicSpillDukeCb.checked = "";
     }
-    var toxicSpillDukeCbLabel = document.createElement('label')
+    const toxicSpillDukeCbLabel = document.createElement('label');
     toxicSpillDukeCbLabel.htmlFor = "toxicSpillDukeCbLabel";
     toxicSpillDukeCbLabel.appendChild(document.createTextNode('Duke'));
     $(toxicSpillDukeCbLabel).css({
         'float': 'left',
         'width': '35px',
         'padding': '1px',
-    })
+    });
     $(toxicSpillDukeCb).css({
         'float': 'left',
         'width': '20px',
         "marginRight": "5px"
-    })
+    });
     toxicSpillOptions.appendChild(toxicSpillDukeCbLabel);
     toxicSpillOptions.appendChild(toxicSpillDukeCb);
     //
-    var toxicSpillGrandDukeCb = document.createElement('input');
+    const toxicSpillGrandDukeCb = document.createElement('input');
     toxicSpillGrandDukeCb.type = "checkbox";
     toxicSpillGrandDukeCb.name = "toxicSpillGrandDukeCb";
     toxicSpillGrandDukeCb.value = "value";
@@ -828,23 +732,23 @@ function buildTinkerPanel() {
     } else {
         toxicSpillGrandDukeCb.checked = "";
     }
-    var toxicSpillGrandDukeCbLabel = document.createElement('label')
+    const toxicSpillGrandDukeCbLabel = document.createElement('label');
     toxicSpillGrandDukeCbLabel.htmlFor = "toxicSpillGrandDukeCbLabel";
     toxicSpillGrandDukeCbLabel.appendChild(document.createTextNode('GDuke'));
     $(toxicSpillGrandDukeCbLabel).css({
         'float': 'left',
         'width': '35px',
         'padding': '1px',
-    })
+    });
     $(toxicSpillGrandDukeCb).css({
         'float': 'left',
         'width': '20px',
         "marginRight": "5px"
-    })
+    });
     toxicSpillOptions.appendChild(toxicSpillGrandDukeCbLabel);
     toxicSpillOptions.appendChild(toxicSpillGrandDukeCb);
     //
-    var toxicSpillArchdukeCb = document.createElement('input');
+    const toxicSpillArchdukeCb = document.createElement('input');
     toxicSpillArchdukeCb.type = "checkbox";
     toxicSpillArchdukeCb.name = "toxicSpillArchdukeCb";
     toxicSpillArchdukeCb.value = "value";
@@ -854,62 +758,62 @@ function buildTinkerPanel() {
     } else {
         toxicSpillArchdukeCb.checked = "";
     }
-    var toxicSpillArchdukeCbLabel = document.createElement('label')
+    const toxicSpillArchdukeCbLabel = document.createElement('label');
     toxicSpillArchdukeCbLabel.htmlFor = "toxicSpillArchdukeCbLabel";
     toxicSpillArchdukeCbLabel.appendChild(document.createTextNode('ADuke'));
     $(toxicSpillArchdukeCbLabel).css({
         'float': 'left',
         'width': '35px',
         'padding': '1px',
-    })
+    });
     $(toxicSpillArchdukeCb).css({
         'float': 'left',
         'width': '20px',
         "marginRight": "5px"
-    })
+    });
     toxicSpillOptions.appendChild(toxicSpillArchdukeCbLabel);
     toxicSpillOptions.appendChild(toxicSpillArchdukeCb);
     //
     //Timer Options
-    var timerOptions = document.createElement("div");
+    const timerOptions = document.createElement("div");
     timerOptions.classList.add("timerOptions");
-    var timerOptionsLabel = document.createElement("div");
+    const timerOptionsLabel = document.createElement("div");
     timerOptionsLabel.classList.add("timerOptionsLabel");
-    var timerOptionsLabelText = document.createTextNode("Timer Options");
+    const timerOptionsLabelText = document.createTextNode("Timer Options");
     timerOptionsLabel.appendChild(timerOptionsLabelText);
     timerOptions.appendChild(timerOptionsLabel);
     $(timerOptions).css({
         'float': 'left',
         'width': '40%',
         'marginLeft': '25px',
-    })
+    });
     $(timerOptionsLabel).css({
         'float': 'left',
         'width': '100%',
         'font-weight': 700,
         "marginRight": "5px",
-    })
-    var timerOptionsUpdate = document.createElement("div");
+    });
+    const timerOptionsUpdate = document.createElement("div");
     timerOptionsUpdate.classList.add("timerOptionsUpdate");
-    var timerOptionsUpdateLabel = document.createElement("div");
+    const timerOptionsUpdateLabel = document.createElement("div");
     timerOptionsUpdateLabel.classList.add("timerOptionsUpdateLabel");
-    var timerOptionsUpdateLabelText = document.createTextNode('Update Interval (min)');
+    const timerOptionsUpdateLabelText = document.createTextNode('Update Interval (min)');
     $(timerOptionsUpdate).css({
         'float': 'left',
         'width': '100%',
         'vertical-align': 'middle',
         'margin-bottom': '3px'
-    })
+    });
     $(timerOptionsUpdateLabel).css({
         'float': 'left',
         'width': '40%',
         'vertical-align': 'middle',
-    })
+    });
     timerOptionsUpdateLabel.appendChild(timerOptionsUpdateLabelText);
-    timerOptionsUpdate.appendChild(timerOptionsUpdateLabel)
+    timerOptionsUpdate.appendChild(timerOptionsUpdateLabel);
     //Timer  Interval
-    var updateInterval = localStorage.getItem('UpdateInterval');
-    var timerOptionsUpdateRadioA = document.createElement('input');
+    const updateInterval = localStorage.getItem('UpdateInterval');
+    const timerOptionsUpdateRadioA = document.createElement('input');
     timerOptionsUpdateRadioA.type = "radio";
     timerOptionsUpdateRadioA.name = "timerOptionsUpdateRadioA";
     timerOptionsUpdateRadioA.value = "value";
@@ -917,23 +821,23 @@ function buildTinkerPanel() {
     if (updateInterval == 1) {
         timerOptionsUpdateRadioA.checked = true;
     }
-    var timerOptionsUpdateRadioALabel = document.createElement('label')
+    const timerOptionsUpdateRadioALabel = document.createElement('label');
     timerOptionsUpdateRadioALabel.htmlFor = "timerOptionsUpdateRadioLabel";
     timerOptionsUpdateRadioALabel.appendChild(document.createTextNode('1'));
     $(timerOptionsUpdateRadioALabel).css({
         'float': 'left',
         'width': '10px',
         'vertical-align': 'middle'
-    })
+    });
     $(timerOptionsUpdateRadioA).css({
         'float': 'left',
         'width': '15px',
         'vertical-align': 'middle'
-    })
+    });
     timerOptionsUpdate.appendChild(timerOptionsUpdateRadioA);
     timerOptionsUpdate.appendChild(timerOptionsUpdateRadioALabel);
     //
-    var timerOptionsUpdateRadioB = document.createElement('input');
+    const timerOptionsUpdateRadioB = document.createElement('input');
     timerOptionsUpdateRadioB.type = "radio";
     timerOptionsUpdateRadioB.name = "timerOptionsUpdateRadioB";
     timerOptionsUpdateRadioB.value = "value";
@@ -941,23 +845,23 @@ function buildTinkerPanel() {
     if ((updateInterval == null) || (updateInterval == 5)) {
         timerOptionsUpdateRadioB.checked = true;
     }
-    var timerOptionsUpdateRadioBLabel = document.createElement('label')
+    const timerOptionsUpdateRadioBLabel = document.createElement('label');
     timerOptionsUpdateRadioBLabel.htmlFor = "timerOptionsUpdateRadioBLabel";
     timerOptionsUpdateRadioBLabel.appendChild(document.createTextNode('5'));
     $(timerOptionsUpdateRadioBLabel).css({
         'float': 'left',
         'width': '10px',
         'vertical-align': 'middle'
-    })
+    });
     $(timerOptionsUpdateRadioB).css({
         'float': 'left',
         'width': '15px',
         'vertical-align': 'middle'
-    })
+    });
     timerOptionsUpdate.appendChild(timerOptionsUpdateRadioB);
     timerOptionsUpdate.appendChild(timerOptionsUpdateRadioBLabel);
     //
-    var timerOptionsUpdateRadioC = document.createElement('input');
+    const timerOptionsUpdateRadioC = document.createElement('input');
     timerOptionsUpdateRadioC.type = "radio";
     timerOptionsUpdateRadioC.name = "timerOptionsUpdateRadioC";
     timerOptionsUpdateRadioC.value = "value";
@@ -965,43 +869,43 @@ function buildTinkerPanel() {
     if (updateInterval == 15) {
         timerOptionsUpdateRadioC.checked = true;
     }
-    var timerOptionsUpdateRadioCLabel = document.createElement('label')
+    const timerOptionsUpdateRadioCLabel = document.createElement('label');
     timerOptionsUpdateRadioCLabel.htmlFor = "timerOptionsUpdateRadioCLabel";
     timerOptionsUpdateRadioCLabel.appendChild(document.createTextNode('15'));
     $(timerOptionsUpdateRadioCLabel).css({
         'float': 'left',
         'width': '10px',
         'vertical-align': 'middle'
-    })
+    });
     $(timerOptionsUpdateRadioC).css({
         'float': 'left',
         'width': '15px',
         'vertical-align': 'middle'
-    })
+    });
     timerOptionsUpdate.appendChild(timerOptionsUpdateRadioC);
     timerOptionsUpdate.appendChild(timerOptionsUpdateRadioCLabel);
     timerOptions.appendChild(timerOptionsUpdate);
     //Reminder Window
-    var remindInterval = localStorage.getItem('RemindInterval');
-    var timerOptionsWindow = document.createElement("div");
+    const remindInterval = localStorage.getItem('RemindInterval');
+    const timerOptionsWindow = document.createElement("div");
     timerOptionsWindow.classList.add("timerOptionsWindow");
-    var timerOptionsWindowLabel = document.createElement("div");
+    const timerOptionsWindowLabel = document.createElement("div");
     timerOptionsWindowLabel.classList.add("timerOptionsWindowLabel");
-    var timerOptionsWindowLabelText = document.createTextNode('Remind Me Within (min)');
+    const timerOptionsWindowLabelText = document.createTextNode('Remind Me Within (min)');
     $(timerOptionsWindow).css({
         'float': 'left',
         'width': '100%',
         'vertical-align': 'middle',
         'margin-bottom': '3px'
-    })
+    });
     $(timerOptionsWindowLabel).css({
         'float': 'left',
         'width': '40%',
         'vertical-align': 'middle'
-    })
+    });
     timerOptionsWindowLabel.appendChild(timerOptionsWindowLabelText);
     timerOptionsWindow.appendChild(timerOptionsWindowLabel);
-    var timerOptionsWindowRadioA = document.createElement('input');
+    const timerOptionsWindowRadioA = document.createElement('input');
     timerOptionsWindowRadioA.type = "radio";
     timerOptionsWindowRadioA.name = "timerOptionsWindowRadioA";
     timerOptionsWindowRadioA.value = "value";
@@ -1009,23 +913,23 @@ function buildTinkerPanel() {
     if (remindInterval == 5) {
         timerOptionsWindowRadioA.checked = true;
     }
-    var timerOptionsWindowRadioALabel = document.createElement('label')
+    const timerOptionsWindowRadioALabel = document.createElement('label');
     timerOptionsWindowRadioALabel.htmlFor = "timerOptionsWindowRadioALabel";
     timerOptionsWindowRadioALabel.appendChild(document.createTextNode('5'));
     $(timerOptionsWindowRadioALabel).css({
         'float': 'left',
         'width': '10px',
         'vertical-align': 'middle'
-    })
+    });
     $(timerOptionsWindowRadioA).css({
         'float': 'left',
         'width': '15px',
         'vertical-align': 'middle'
-    })
+    });
     timerOptionsWindow.appendChild(timerOptionsWindowRadioA);
     timerOptionsWindow.appendChild(timerOptionsWindowRadioALabel);
     //
-    var timerOptionsWindowRadioB = document.createElement('input');
+    const timerOptionsWindowRadioB = document.createElement('input');
     timerOptionsWindowRadioB.type = "radio";
     timerOptionsWindowRadioB.name = "timerOptionsWindowRadioB";
     timerOptionsWindowRadioB.value = "value";
@@ -1033,23 +937,23 @@ function buildTinkerPanel() {
     if ((remindInterval == null) || (remindInterval == 10)) {
         timerOptionsWindowRadioB.checked = true;
     }
-    var timerOptionsWindowRadioBLabel = document.createElement('label')
+    const timerOptionsWindowRadioBLabel = document.createElement('label');
     timerOptionsWindowRadioBLabel.htmlFor = "timerOptionsWindowRadioBLabel";
     timerOptionsWindowRadioBLabel.appendChild(document.createTextNode('10'));
     $(timerOptionsWindowRadioBLabel).css({
         'float': 'left',
         'width': '10px',
         'vertical-align': 'middle'
-    })
+    });
     $(timerOptionsWindowRadioB).css({
         'float': 'left',
         'width': '15px',
         'vertical-align': 'middle'
-    })
+    });
     timerOptionsWindow.appendChild(timerOptionsWindowRadioB);
     timerOptionsWindow.appendChild(timerOptionsWindowRadioBLabel);
     //
-    var timerOptionsWindowRadioC = document.createElement('input');
+    const timerOptionsWindowRadioC = document.createElement('input');
     timerOptionsWindowRadioC.type = "radio";
     timerOptionsWindowRadioC.name = "timerOptionsWindowRadioC";
     timerOptionsWindowRadioC.value = "value";
@@ -1057,25 +961,25 @@ function buildTinkerPanel() {
     if (remindInterval == 15) {
         timerOptionsWindowRadioC.checked = true;
     }
-    var timerOptionsWindowRadioCLabel = document.createElement('label')
+    const timerOptionsWindowRadioCLabel = document.createElement('label');
     timerOptionsWindowRadioCLabel.htmlFor = "timerOptionsWindowRadioCLabel";
     timerOptionsWindowRadioCLabel.appendChild(document.createTextNode('15'));
     $(timerOptionsWindowRadioCLabel).css({
         'float': 'left',
         'width': '10px',
         'vertical-align': 'middle'
-    })
+    });
     $(timerOptionsWindowRadioC).css({
         'float': 'left',
         'width': '15px',
         'vertical-align': 'middle'
-    })
+    });
     timerOptionsWindow.appendChild(timerOptionsWindowRadioC);
     timerOptionsWindow.appendChild(timerOptionsWindowRadioCLabel);
     timerOptions.appendChild(timerOptionsWindow);
     //Other Options
-    const killSwitch = localStorage.getItem('KillSwitch')
-    var killSwitchCB = document.createElement('input');
+    const killSwitch = localStorage.getItem('KillSwitch');
+    const killSwitchCB = document.createElement('input');
     killSwitchCB.type = "checkbox";
     killSwitchCB.name = "killSwitchCB";
     killSwitchCB.value = "value";
@@ -1085,24 +989,24 @@ function buildTinkerPanel() {
     } else {
         killSwitchCB.checked = "";
     }
-    var killSwitchCBLabel = document.createElement('label')
+    const killSwitchCBLabel = document.createElement('label');
     killSwitchCBLabel.htmlFor = "killSwitchCBLabel";
     killSwitchCBLabel.appendChild(document.createTextNode('Remind Me Only Once'));
     $(killSwitchCBLabel).css({
         'float': 'left',
         'width': '118px',
         'padding': '1px',
-    })
+    });
     $(killSwitchCB).css({
         'float': 'left',
         'width': '20px',
         "marginRight": "100px"
-    })
+    });
     timerOptions.appendChild(killSwitchCBLabel);
     timerOptions.appendChild(killSwitchCB);
     //
-    const disarm = localStorage.getItem('DAT')
-    var disarmCB = document.createElement('input');
+    const disarm = localStorage.getItem('DAT');
+    const disarmCB = document.createElement('input');
     disarmCB.type = "checkbox";
     disarmCB.name = "disarmCB";
     disarmCB.value = "value";
@@ -1112,32 +1016,50 @@ function buildTinkerPanel() {
     } else {
         disarmCB.checked = "";
     }
-    var disarmCBLabel = document.createElement('label')
+    const disarmCBLabel = document.createElement('label');
     disarmCBLabel.htmlFor = "disarmCBLabel";
     disarmCBLabel.appendChild(document.createTextNode('Disarm Bait After Travel'));
     $(disarmCBLabel).css({
         'float': 'left',
         'width': '118px',
         'padding': '1px',
-    })
+    });
     $(disarmCB).css({
         'float': 'left',
         'width': '20px',
         "marginRight": "5px"
-    })
+    });
     timerOptions.appendChild(disarmCBLabel);
     timerOptions.appendChild(disarmCB);
     //Panic Button
-    var panicButton = document.createElement("button");
+    const panicButton = document.createElement("button");
+    $(panicButton).addClass('mousehuntActionButton small');
     panicButton.id = "panicButton";
-    panicButton.innerText = "Travel Back";
+    const reverseTravelText = document.createElement('span');
+    $(reverseTravelText).addClass('reverseTravelText').text('Return Trip').css({
+        'font-size': '12px',
+    });
+    $(panicButton).append(reverseTravelText);
     timerOptions.appendChild(panicButton);
     $(panicButton).css({
         'width': '100px',
         'float': 'left',
         'marginRight': 5 + "px",
         'marginLeft': 35 + "px"
-    })
+    });
+    //tinker button
+    const tinkerButton = document.createElement("div");
+    tinkerButton.classList.add("tinkerButton");
+    $(tinkerButton).attr('title', 'Close');
+    $(tinkerButton).css({
+        'width': '30px',
+        'float': 'right',
+        'padding': 3 + 'px',
+        'color': 'rgb(4, 44, 202)',
+        'marginRight': "5px",
+        'cursor': 'pointer',
+    });
+    timerOptions.appendChild(tinkerButton);
     //
     tinkerPanel.appendChild(forbiddenGroveOptions);
     tinkerPanel.appendChild(balacksCoveOptions);
@@ -1145,56 +1067,56 @@ function buildTinkerPanel() {
     tinkerPanel.appendChild(toxicSpillOptions);
     tinkerPanel.appendChild(timerOptions);
     //Last
-    timerBox.prepend(tinkerPanel)
+    timerBox.prepend(tinkerPanel);
 }
 $(document).on('click', '#timerOptionsUpdateRadioA', function() {
     $('#timerOptionsUpdateRadioB').prop("checked", false);
     $('#timerOptionsUpdateRadioC').prop("checked", false);
-    localStorage.setItem('UpdateInterval', 1)
-})
+    localStorage.setItem('UpdateInterval', 1);
+});
 $(document).on('click', '#timerOptionsUpdateRadioB', function() {
     $('#timerOptionsUpdateRadioA').prop("checked", false);
     $('#timerOptionsUpdateRadioC').prop("checked", false);
-    localStorage.setItem('UpdateInterval', 5)
-})
+    localStorage.setItem('UpdateInterval', 5);
+});
 $(document).on('click', '#timerOptionsUpdateRadioC', function() {
     $('#timerOptionsUpdateRadioA').prop("checked", false);
     $('#timerOptionsUpdateRadioB').prop("checked", false);
-    localStorage.setItem('UpdateInterval', 15)
-})
+    localStorage.setItem('UpdateInterval', 15);
+});
 $(document).on('click', '#timerOptionsWindowRadioA', function() {
     $('#timerOptionsWindowRadioB').prop("checked", false);
     $('#timerOptionsWindowRadioC').prop("checked", false);
-    localStorage.setItem('RemindInterval', 5)
-})
+    localStorage.setItem('RemindInterval', 5);
+});
 $(document).on('click', '#timerOptionsWindowRadioB', function() {
     $('#timerOptionsWindowRadioA').prop("checked", false);
     $('#timerOptionsWindowRadioC').prop("checked", false);
-    localStorage.setItem('RemindInterval', 10)
-})
+    localStorage.setItem('RemindInterval', 10);
+});
 $(document).on('click', '#timerOptionsWindowRadioC', function() {
     $('#timerOptionsWindowRadioA').prop("checked", false);
     $('#timerOptionsWindowRadioB').prop("checked", false);
-    localStorage.setItem('RemindInterval', 15)
-})
+    localStorage.setItem('RemindInterval', 15);
+});
 $(document).on('change', '#killSwitchCB', function() {
     if (this.checked) {
         this.checked = "Yes";
-        localStorage.setItem('KillSwitch', 'Y')
+        localStorage.setItem('KillSwitch', 'Y');
     } else {
         this.checked = "";
-        localStorage.setItem('KillSwitch', 'N')
+        localStorage.setItem('KillSwitch', 'N');
     }
-})
+});
 $(document).on('change', '#disarmCB', function() {
     if (this.checked) {
         this.checked = "Yes";
-        localStorage.setItem('DAT', 'Y')
+        localStorage.setItem('DAT', 'Y');
     } else {
         this.checked = "";
-        localStorage.setItem('DAT', 'N')
+        localStorage.setItem('DAT', 'N');
     }
-})
+});
 
 
 //===================================== Timers ======================================
@@ -1204,7 +1126,7 @@ $(document).on('change', '#disarmCB', function() {
 function runTimers() {
     updateText();
     var myTimer = "";
-    const updateInterval = parseInt(localStorage.getItem('UpdateInterval'), 10)
+    const updateInterval = parseInt(localStorage.getItem('UpdateInterval'), 10);
     if (updateInterval == null) {
         myTimer = setInterval(updateText, 60000);
     } else {
@@ -1221,77 +1143,85 @@ function updateText() {
 //===================================== Forbidden Grove ======================================
 function buildForbiddenGrove() {
     if ($(".forbiddenGrove").length > 0) return;
-    var timerBox = $(".timerBox");
-    var forbiddenGrove = document.createElement("div");
+    const forbiddenGrove = document.createElement("div");
     forbiddenGrove.classList.add("forbiddenGrove");
     $(forbiddenGrove).css({
+        'float': 'left',
         'border': '1px solid black',
         'width': '21%',
-        'height': '70%',
+        'height': '95%',
         'padding': 2 + "px"
     });
+    const forbiddenGroveClockBox = document.createElement("div");
+    forbiddenGroveClockBox.classList.add("forbiddenGroveClockBox");
+    forbiddenGrove.append(forbiddenGroveClockBox);
+    $(forbiddenGroveClockBox).css({
+        'float': 'left',
+        'width': '100%',
+        'height': '80%',
+    });
     //Header
-    var forbiddenGroveHeader = document.createElement("div");
+    const forbiddenGroveHeader = document.createElement("div");
     forbiddenGroveHeader.classList.add("forbiddenGroveHeader");
-    var forbiddenGroveHeaderLabel = document.createElement("div");
+    const forbiddenGroveHeaderLabel = document.createElement("div");
     forbiddenGroveHeaderLabel.classList.add("forbiddenGroveHeaderLabel");
-    var forbiddenGroveHeaderLabelText = document.createTextNode("Forbidden Grove is:");
+    const forbiddenGroveHeaderLabelText = document.createTextNode("Forbidden Grove is:");
     forbiddenGroveHeaderLabel.appendChild(forbiddenGroveHeaderLabelText);
-    var forbiddenGroveHeaderValue = document.createElement("div");
+    const forbiddenGroveHeaderValue = document.createElement("div");
     forbiddenGroveHeaderValue.classList.add("forbiddenGroveHeaderValue");
-    var forbiddenGroveHeaderValueText = document.createTextNode("Open");
+    const forbiddenGroveHeaderValueText = document.createTextNode("Open");
     forbiddenGroveHeaderValue.appendChild(forbiddenGroveHeaderValueText);
     $(forbiddenGroveHeaderLabel).css({
         'float': 'left',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     $(forbiddenGroveHeaderValue).css({
         "marginLeft": "100px"
     });
     forbiddenGroveHeader.appendChild(forbiddenGroveHeaderLabel);
     forbiddenGroveHeader.appendChild(forbiddenGroveHeaderValue);
     //Close
-    var forbiddenGroveCloses = document.createElement("div");
+    const forbiddenGroveCloses = document.createElement("div");
     forbiddenGroveCloses.classList.add("forbiddenGroveCloses");
-    var forbiddenGroveClosesLabel = document.createElement("div");
+    const forbiddenGroveClosesLabel = document.createElement("div");
     forbiddenGroveClosesLabel.classList.add("forbiddenGroveClosesLabel");
-    var forbiddenGroveClosesLabelText = document.createTextNode("Closes in:");
+    const forbiddenGroveClosesLabelText = document.createTextNode("Closes in:");
     forbiddenGroveClosesLabel.appendChild(forbiddenGroveClosesLabelText);
-    var forbiddenGroveClosesValue = document.createElement("div");
+    const forbiddenGroveClosesValue = document.createElement("div");
     forbiddenGroveClosesValue.classList.add("forbiddenGroveClosesValue");
-    var forbiddenGroveClosesValueText = document.createTextNode("?");
+    const forbiddenGroveClosesValueText = document.createTextNode("?");
     forbiddenGroveClosesValue.appendChild(forbiddenGroveClosesValueText);
     $(forbiddenGroveClosesLabel).css({
         'float': 'left',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     forbiddenGroveCloses.appendChild(forbiddenGroveClosesLabel);
     forbiddenGroveCloses.appendChild(forbiddenGroveClosesValue);
     //Open
-    var forbiddenGroveOpens = document.createElement("div");
+    const forbiddenGroveOpens = document.createElement("div");
     forbiddenGroveOpens.classList.add("forbiddenGroveOpens");
-    var forbiddenGroveOpensLabel = document.createElement("div");
+    const forbiddenGroveOpensLabel = document.createElement("div");
     forbiddenGroveOpensLabel.classList.add("forbiddenGroveOpensLabel");
-    var forbiddenGroveOpensLabelText = document.createTextNode("Opens in:");
+    const forbiddenGroveOpensLabelText = document.createTextNode("Opens in:");
     forbiddenGroveOpensLabel.appendChild(forbiddenGroveOpensLabelText);
-    var forbiddenGroveOpensValue = document.createElement("div");
+    const forbiddenGroveOpensValue = document.createElement("div");
     forbiddenGroveOpensValue.classList.add("forbiddenGroveOpensValue");
-    var forbiddenGroveOpensValueText = document.createTextNode("??");
+    const forbiddenGroveOpensValueText = document.createTextNode("??");
     forbiddenGroveOpensValue.appendChild(forbiddenGroveOpensValueText);
     $(forbiddenGroveOpensLabel).css({
         'float': 'left',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     forbiddenGroveOpens.appendChild(forbiddenGroveOpensLabel);
     forbiddenGroveOpens.appendChild(forbiddenGroveOpensValue);
-
     //Append
-    forbiddenGrove.appendChild(forbiddenGroveHeader);
-    forbiddenGrove.appendChild(forbiddenGroveCloses);
-    forbiddenGrove.appendChild(forbiddenGroveOpens);
+    forbiddenGroveClockBox.appendChild(forbiddenGroveHeader);
+    forbiddenGroveClockBox.appendChild(forbiddenGroveCloses);
+    forbiddenGroveClockBox.appendChild(forbiddenGroveOpens);
+    forbiddenGrove.append(buildTravelButtons('forbiddenGrove'));
     return forbiddenGrove;
 }
 
@@ -1299,60 +1229,60 @@ function updateForbiddenGroveTimer() {
     if ($(".forbiddenGrove").length < 1) return;
     const remind = localStorage.getItem('RemindGrove');
     const remindInterval = parseInt(localStorage.getItem('RemindInterval'), 10);
-    var forbiddenGrove = $(".forbiddenGrove");
-    var firstGroveOpen = 1285704000;
-    var now = todayNow();
+    const forbiddenGrove = $('.forbiddenGroveClockBox');
+    const firstGroveOpen = 1285704000;
+    const now = todayNow();
     let timePassedHours = (now - firstGroveOpen) / 3600;
-    var rotaionLenght = 20;
-    var rotationsExact = timePassedHours / rotaionLenght;
-    var rotationsInteger = Math.trunc(rotationsExact);
-    var partialrotation = (rotationsExact - rotationsInteger) * rotaionLenght;
+    const rotaionLenght = 20;
+    const rotationsExact = timePassedHours / rotaionLenght;
+    const rotationsInteger = Math.trunc(rotationsExact);
+    const partialrotation = (rotationsExact - rotationsInteger) * rotaionLenght;
     if (partialrotation < 16) {
         //Open
         $(".forbiddenGroveHeaderValue").text(" OPEN");
         $(".forbiddenGroveHeaderValue").css({
             'color': 'green'
-        })
-        var timeCloses = (16 - partialrotation).toPrecision(4);
-        var closesHours = Math.trunc(timeCloses);
-        var closesMinutes = Math.ceil((timeCloses - closesHours) * 60);
+        });
+        const timeCloses = (16 - partialrotation).toPrecision(4);
+        const closesHours = Math.trunc(timeCloses);
+        const closesMinutes = Math.ceil((timeCloses - closesHours) * 60);
         $(".forbiddenGroveClosesValue").text(formatOutput(0, closesHours, closesMinutes));
         $(".forbiddenGroveClosesValue").css({
-                'float': 'right'
-            }),
-            $(".forbiddenGroveOpensLabel").text("Opens Again in:");
+            'float': 'right'
+        });
+        $(".forbiddenGroveOpensLabel").text("Opens Again in:");
         $(".forbiddenGroveOpensValue").text(formatOutput(0, (closesHours + 4), closesMinutes));
         $(".forbiddenGroveOpensValue").css({
-                'float': 'right'
-            }),
-            forbiddenGrove.append($(".forbiddenGroveOpens"))
+            'float': 'right'
+        });
+        forbiddenGrove.append($(".forbiddenGroveOpens"));
         if ((closesHours == 0) && (closesMinutes <= remindInterval) && (remind.search('C') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('grove','closing')
+            myConfirm('grove', 'closing');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#forbiddenGroveCb").click();
             }
         }
     } else {
         //Closed
-        $(".forbiddenGroveHeaderValue").text("CLOSED")
+        $(".forbiddenGroveHeaderValue").text("CLOSED");
         $(".forbiddenGroveHeaderValue").css({
             'color': 'red'
-        })
-        var timeOpens = (rotaionLenght - partialrotation).toPrecision(4);
-        var opensHours = Math.trunc(timeOpens);
-        var opensMinutes = Math.ceil((timeOpens - opensHours) * 60);
+        });
+        const timeOpens = (rotaionLenght - partialrotation).toPrecision(4);
+        const opensHours = Math.trunc(timeOpens);
+        const opensMinutes = Math.ceil((timeOpens - opensHours) * 60);
         $(".forbiddenGroveOpensValue").text(formatOutput(0, opensHours, opensMinutes));
         $(".forbiddenGroveOpensValue").css({
-                'float': 'right'
-            }),
-            $(".forbiddenGroveClosesLabel").text("Next Close in:");
+            'float': 'right'
+        });
+        $(".forbiddenGroveClosesLabel").text("Next Close in:");
         $(".forbiddenGroveClosesValue").text(formatOutput(0, (opensHours + 16), opensMinutes));
         $(".forbiddenGroveClosesValue").css({
-                'float': 'right'
-            }),
-            forbiddenGrove.append($(".forbiddenGroveCloses"))
+            'float': 'right'
+        });
+        forbiddenGrove.append($(".forbiddenGroveCloses"));
         if ((opensHours == 0) && (opensMinutes <= remindInterval) && (remind.search('O') >= 0) && (remind.search('N') < 0)) {
-            myAlert('The forbidden grove is opening soon')
+            myAlert('The forbidden grove is opening soon');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#forbiddenGroveCb").click();
             }
@@ -1366,7 +1296,7 @@ $(document).on('change', '#forbiddenGroveCb', function() {
         this.checked = "";
     }
     remindGrove(this.name, this.checked);
-})
+});
 
 $(document).on('change', '#forbiddenGroveOpenCb', function() {
     if (this.checked) {
@@ -1375,7 +1305,7 @@ $(document).on('change', '#forbiddenGroveOpenCb', function() {
         this.checked = "";
     }
     remindGrove(this.name, this.checked);
-})
+});
 
 $(document).on('change', '#forbiddenGroveCloseCb', function() {
     if (this.checked) {
@@ -1384,7 +1314,7 @@ $(document).on('change', '#forbiddenGroveCloseCb', function() {
         this.checked = "";
     }
     remindGrove(this.name, this.checked);
-})
+});
 
 //if master checked and no other - remind all
 //if master not checked - no reminder
@@ -1393,20 +1323,20 @@ $(document).on('change', '#forbiddenGroveCloseCb', function() {
 // O open
 // C closed
 function remindGrove(cb, checked) {
-    var main = $('#forbiddenGroveCb');
-    var open = $('#forbiddenGroveOpenCb');
-    var closed = $('#forbiddenGroveCloseCb');
+    const main = $('#forbiddenGroveCb');
+    const open = $('#forbiddenGroveOpenCb');
+    const closed = $('#forbiddenGroveCloseCb');
     const mName = main.prop("name");
     const oName = open.prop("name");
-    const cName = closed.prop("name");;
+    const cName = closed.prop("name");
     const mChecked = main.prop("checked");
     const oChecked = open.prop("checked");
     const cChecked = closed.prop("checked");
     //-----------------------------------------------------------------------
-    var remindGrove = localStorage.getItem('RemindGrove')
-    var remindNone = remindGrove.search("N");
-    var remindOpen = remindGrove.search("O");
-    var remindClosed = remindGrove.search("C");
+    let remindGrove = localStorage.getItem('RemindGrove');
+    let remindNone = remindGrove.search("N");
+    let remindOpen = remindGrove.search("O");
+    let remindClosed = remindGrove.search("C");
     //main was checked
     if ((cb == mName) && (checked == true)) {
         if ((oChecked == false) && (cChecked == false)) {
@@ -1486,104 +1416,115 @@ function remindGrove(cb, checked) {
             remindGrove = "CO";
         }
     }
-    localStorage.setItem('RemindGrove', remindGrove)
+    localStorage.setItem('RemindGrove', remindGrove);
 }
 
 //====================================== Balacks's Cove ======================================
 function buildBalacksCove() {
     if ($(".balacksCove").length > 0) return;
-    var timerBox = $(".timerBox");
-    var balacksCove = document.createElement("div");
-    balacksCove.classList.add("balacksCove");
+    const balacksCove = document.createElement("div");
+    balacksCove.classList.add('balacksCove');
     $(balacksCove).css({
+        'float': 'left',
+        'marginLeft': '1px',
         'border': '1px solid black',
         'width': '25%',
-        'height': '70%',
+        'height': '95%',
         'padding': 2 + "px"
     });
+    const balacksCoveClockBox = document.createElement("div");
+    balacksCoveClockBox.classList.add('balacksCoveClockBox');
+    balacksCove.append(balacksCoveClockBox);
+    $(balacksCoveClockBox).css({
+        'float': 'left',
+        'width': '100%',
+        'height': '80%',
+    });
     //Header
-    var balacksCoveHeader = document.createElement("div");
+    const balacksCoveHeader = document.createElement("div");
     balacksCoveHeader.classList.add("balacksCoveHeader");
-    var balacksCoveHeaderLabel = document.createElement("div");
+    const balacksCoveHeaderLabel = document.createElement("div");
     balacksCoveHeaderLabel.classList.add("balacksCoveHeaderLabel");
-    var balacksCoveHeaderLabelText = document.createTextNode("Balack's Cove Tide is:");
+    const balacksCoveHeaderLabelText = document.createTextNode("Balack's Cove Tide is:");
     balacksCoveHeaderLabel.appendChild(balacksCoveHeaderLabelText);
-    var balacksCoveHeaderValue = document.createElement("div");
+    const balacksCoveHeaderValue = document.createElement("div");
     balacksCoveHeaderValue.classList.add("balacksCoveHeaderValue");
-    var balacksCoveHeaderValueText = document.createTextNode("Low");
+    const balacksCoveHeaderValueText = document.createTextNode("Low");
     balacksCoveHeaderValue.appendChild(balacksCoveHeaderValueText);
     $(balacksCoveHeaderLabel).css({
         'float': 'left',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     $(balacksCoveHeaderValue).css({
         "marginLeft": "100px"
     });
     balacksCoveHeader.appendChild(balacksCoveHeaderLabel);
     balacksCoveHeader.appendChild(balacksCoveHeaderValue);
     //Low
-    var balacksCoveLow = document.createElement("div");
+    const balacksCoveLow = document.createElement("div");
     balacksCoveLow.classList.add("balacksCoveLow");
-    var balacksCoveLowLabel = document.createElement("div");
+    const balacksCoveLowLabel = document.createElement("div");
     balacksCoveLowLabel.classList.add("balacksCoveLowLabel");
-    var balacksCoveLowLabelText = document.createTextNode("Low Tide in:");
+    const balacksCoveLowLabelText = document.createTextNode("Low Tide in:");
     balacksCoveLowLabel.appendChild(balacksCoveLowLabelText);
-    var balacksCoveLowValue = document.createElement("div");
+    const balacksCoveLowValue = document.createElement("div");
     balacksCoveLowValue.classList.add("balacksCoveLowValue");
-    var balacksCoveLowValueText = document.createTextNode("?");
+    const balacksCoveLowValueText = document.createTextNode("?");
     balacksCoveLowValue.appendChild(balacksCoveLowValueText);
     $(balacksCoveLowLabel).css({
         'float': 'left',
         'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     balacksCoveLow.appendChild(balacksCoveLowLabel);
     balacksCoveLow.appendChild(balacksCoveLowValue);
     //Medium
-    var balacksCoveMid = document.createElement("div");
+    const balacksCoveMid = document.createElement("div");
     balacksCoveMid.classList.add("balacksCoveMid");
-    var balacksCoveMidLabel = document.createElement("div");
+    const balacksCoveMidLabel = document.createElement("div");
     balacksCoveMidLabel.classList.add("balacksCoveMidLabel");
-    var balacksCoveMidLabelText = document.createTextNode("Mid Tide in:");
+    const balacksCoveMidLabelText = document.createTextNode("Mid Tide in:");
     balacksCoveMidLabel.appendChild(balacksCoveMidLabelText);
-    var balacksCoveMidValue = document.createElement("div");
+    const balacksCoveMidValue = document.createElement("div");
     balacksCoveMidValue.classList.add("balacksCoveMidValue");
-    var balacksCoveMidValueText = document.createTextNode("??");
+    const balacksCoveMidValueText = document.createTextNode("??");
     balacksCoveMidValue.appendChild(balacksCoveMidValueText);
     $(balacksCoveMidLabel).css({
         'float': 'left',
         'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     balacksCoveMid.appendChild(balacksCoveMidLabel);
     balacksCoveMid.appendChild(balacksCoveMidValue);
     //High
-    var balacksCoveHigh = document.createElement("div");
+    const balacksCoveHigh = document.createElement("div");
     balacksCoveHigh.classList.add("balacksCoveHigh");
-    var balacksCoveHighLabel = document.createElement("div");
+    const balacksCoveHighLabel = document.createElement("div");
     balacksCoveHighLabel.classList.add("balacksCoveHighLabel");
-    var balacksCoveHighLabelText = document.createTextNode("High Tide in:");
+    const balacksCoveHighLabelText = document.createTextNode("High Tide in:");
     balacksCoveHighLabel.appendChild(balacksCoveHighLabelText);
-    var balacksCoveHighValue = document.createElement("div");
+    const balacksCoveHighValue = document.createElement("div");
     balacksCoveHighValue.classList.add("balacksCoveHighValue");
-    var balacksCoveHighValueText = document.createTextNode("??");
+    const balacksCoveHighValueText = document.createTextNode("??");
     balacksCoveHighValue.appendChild(balacksCoveHighValueText);
     $(balacksCoveHighLabel).css({
         'float': 'left',
         'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     balacksCoveHigh.appendChild(balacksCoveHighLabel);
     balacksCoveHigh.appendChild(balacksCoveHighValue);
+    //
     //Append
-    balacksCove.appendChild(balacksCoveHeader);
-    balacksCove.appendChild(balacksCoveLow);
-    balacksCove.appendChild(balacksCoveMid);
-    balacksCove.appendChild(balacksCoveHigh);
+    balacksCoveClockBox.appendChild(balacksCoveHeader);
+    balacksCoveClockBox.appendChild(balacksCoveLow);
+    balacksCoveClockBox.appendChild(balacksCoveMid);
+    balacksCoveClockBox.appendChild(balacksCoveHigh);
+    balacksCove.append(buildTravelButtons('balacksCove'));
     return balacksCove;
 }
 
@@ -1591,46 +1532,46 @@ function updateBalacksCoveTimer() {
     if ($(".balacksCove").length < 1) return;
     const remind = localStorage.getItem('RemindCove');
     const remindInterval = parseInt(localStorage.getItem('RemindInterval'), 10);
-    var balacksCove = $(".balacksCove");
-    var firstCoveLow = 1294680060;
-    var now = todayNow();
+    const balacksCove = $('.balacksCoveClockBox');
+    const firstCoveLow = 1294680060;
+    const now = todayNow();
     let timePassedHours = (now - firstCoveLow) / 3600;
-    var rotaionLenght = 18.6666666666666666666666666666666666666667;
-    var rotationsExact = timePassedHours / rotaionLenght;
-    var rotationsInteger = Math.trunc(rotationsExact);
-    var partialrotation = (rotationsExact - rotationsInteger) * rotaionLenght;
+    const rotaionLenght = 18.6666666666666666666666666666666666666667;
+    const rotationsExact = timePassedHours / rotaionLenght;
+    const rotationsInteger = Math.trunc(rotationsExact);
+    const partialrotation = (rotationsExact - rotationsInteger) * rotaionLenght;
     if (partialrotation < 16) {
         //Low
         $(".balacksCoveHeaderValue").text("LOW");
         $(".balacksCoveHeaderValue").css({
             'color': 'green'
-        })
-        var timeMid = (16 - partialrotation).toPrecision(4);
-        var midHours = Math.trunc(timeMid);
-        var midMinutes = Math.ceil((timeMid - midHours) * 60);
+        });
+        const timeMid = (16 - partialrotation).toPrecision(4);
+        const midHours = Math.trunc(timeMid);
+        const midMinutes = Math.ceil((timeMid - midHours) * 60);
         $(".balacksCoveMidValue").text(formatOutput(0, midHours, midMinutes));
-        $(".balacksCoveMidLabel").text("Mid-Flooding in:")
+        $(".balacksCoveMidLabel").text("Mid-Flooding in:");
         $(".balacksCoveHighValue").text(formatOutput(0, (midHours + 1), midMinutes));
         $(".balacksCoveLowLabel").text("Low Again in:");
         $(".balacksCoveMidValue").css({
             'float': 'right'
-        })
+        });
         $(".balacksCoveHighValue").css({
             'float': 'right'
-        })
+        });
         $(".balacksCoveLowValue").css({
             'float': 'right'
-        })
-        var lowHours = midHours + 2;
-        var lowMinutes = midMinutes + 40;
+        });
+        let lowHours = midHours + 2;
+        let lowMinutes = midMinutes + 40;
         if (lowMinutes >= 60) {
             lowMinutes = lowMinutes - 60;
             lowHours++;
         }
         $(".balacksCoveLowValue").text(formatOutput(0, lowHours, lowMinutes));
-        balacksCove.append($(".balacksCoveLow"))
+        balacksCove.append($(".balacksCoveLow"));
         if ((midHours == 0) && (midMinutes <= remindInterval) && (remind.search('M') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('cove','mid')
+            myConfirm('cove', 'mid');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#balacksCoveCb").click();
             }
@@ -1640,14 +1581,14 @@ function updateBalacksCoveTimer() {
         $(".balacksCoveHeaderValue").text("MID-Flooding");
         $(".balacksCoveHeaderValue").css({
             'color': 'orange'
-        })
-        var timeHigh = (17 - partialrotation).toPrecision(4);
-        var highHours = Math.trunc(timeHigh);
-        var highMinutes = Math.ceil((timeHigh - highHours) * 60);
+        });
+        const timeHigh = (17 - partialrotation).toPrecision(4);
+        const highHours = Math.trunc(timeHigh);
+        const highMinutes = Math.ceil((timeHigh - highHours) * 60);
         $(".balacksCoveHighValue").text(formatOutput(0, highHours, highMinutes));
-        $(".balacksCoveMidLabel").text("Mid-Ebbing in:")
-        var midHours = highHours;
-        var midMinutes = highMinutes + 40;
+        $(".balacksCoveMidLabel").text("Mid-Ebbing in:");
+        let midHours = highHours;
+        let midMinutes = highMinutes + 40;
         if (midMinutes >= 60) {
             midMinutes = midMinutes - 60;
             midHours++;
@@ -1657,17 +1598,17 @@ function updateBalacksCoveTimer() {
         $(".balacksCoveLowValue").text(formatOutput(0, (midHours + 1), midMinutes));
         $(".balacksCoveMidValue").css({
             'float': 'right'
-        })
+        });
         $(".balacksCoveHighValue").css({
             'float': 'right'
-        })
+        });
         $(".balacksCoveLowValue").css({
             'float': 'right'
-        })
-        balacksCove.append($(".balacksCoveMid"))
-        balacksCove.append($(".balacksCoveLow"))
+        });
+        balacksCove.append($(".balacksCoveMid"));
+        balacksCove.append($(".balacksCoveLow"));
         if ((highHours == 0) && (highMinutes <= remindInterval) && (remind.search('H') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('cove','high')
+            myConfirm('cove', 'high');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#balacksCoveCb").click();
             }
@@ -1677,24 +1618,24 @@ function updateBalacksCoveTimer() {
         $(".balacksCoveHeaderValue").text("HIGH");
         $(".balacksCoveHeaderValue").css({
             'color': 'red'
-        })
-        var timeMid = (17.6666666667 - partialrotation).toPrecision(4);
-        var midHours = Math.trunc(timeMid);
-        var midMinutes = Math.ceil((timeMid - midHours) * 60);
+        });
+        const timeMid = (17.6666666667 - partialrotation).toPrecision(4);
+        const midHours = Math.trunc(timeMid);
+        const midMinutes = Math.ceil((timeMid - midHours) * 60);
         $(".balacksCoveMidValue").text(formatOutput(0, midHours, midMinutes));
-        $(".balacksCoveMidLabel").text("Mid-Ebbing in:")
-        $(".balacksCoveLowLabel").text("Low Tide in:")
+        $(".balacksCoveMidLabel").text("Mid-Ebbing in:");
+        $(".balacksCoveLowLabel").text("Low Tide in:");
         $(".balacksCoveLowValue").text(formatOutput(0, (midHours + 1), midMinutes));
         $(".balacksCoveMidValue").css({
             'float': 'right'
-        })
+        });
         $(".balacksCoveLowValue").css({
             'float': 'right'
-        })
+        });
         $(".balacksCoveHigh").hide();
-        balacksCove.append($(".balacksCoveLow"))
+        balacksCove.append($(".balacksCoveLow"));
         if ((midHours == 0) && (midMinutes <= remindInterval) && (remind.search('M') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('cove','mid')
+            myConfirm('cove', 'mid');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#balacksCoveCb").click();
             }
@@ -1704,28 +1645,28 @@ function updateBalacksCoveTimer() {
         $(".balacksCoveHeaderValue").text("MID-Ebbing");
         $(".balacksCoveHeaderValue").css({
             'color': 'orange'
-        })
-        var timeLow = (rotaionLenght - partialrotation).toPrecision(4);
-        var lowHours = Math.trunc(timeLow);
-        var lowMinutes = Math.ceil((timeLow - lowHours) * 60);
-        $(".balacksCoveLowLabel").text("Low Tide in:")
+        });
+        const timeLow = (rotaionLenght - partialrotation).toPrecision(4);
+        const lowHours = Math.trunc(timeLow);
+        const lowMinutes = Math.ceil((timeLow - lowHours) * 60);
+        $(".balacksCoveLowLabel").text("Low Tide in:");
         $(".balacksCoveLowValue").text(formatOutput(0, lowHours, lowMinutes));
-        $(".balacksCoveMidLabel").text("Mid-Filling in:")
+        $(".balacksCoveMidLabel").text("Mid-Filling in:");
         $(".balacksCoveMidValue").text(formatOutput(0, lowHours + 16, lowMinutes));
         $(".balacksCoveHighLabel").text("High Tide in:");
         $(".balacksCoveHighValue").text(formatOutput(0, lowHours + 17, lowMinutes));
         $(".balacksCoveMidValue").css({
             'float': 'right'
-        })
+        });
         $(".balacksCoveHighValue").css({
             'float': 'right'
-        })
+        });
         $(".balacksCoveLowValue").css({
             'float': 'right'
-        })
-        balacksCove.append($(".balacksCoveHigh").show())
+        });
+        balacksCove.append($(".balacksCoveHigh").show());
         if ((lowHours == 0) && (lowMinutes <= remindInterval) && (remind.search('L') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('cove','low')
+            myConfirm('cove', 'low');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#balacksCoveCb").click();
             }
@@ -1739,7 +1680,7 @@ $(document).on('change', '#balacksCoveCb', function() {
         this.checked = "";
     }
     remindCove(this.name, this.checked);
-})
+});
 
 $(document).on('change', '#balacksCoveLowCb', function() {
     if (this.checked) {
@@ -1748,7 +1689,7 @@ $(document).on('change', '#balacksCoveLowCb', function() {
         this.checked = "";
     }
     remindCove(this.name, this.checked);
-})
+});
 
 $(document).on('change', '#balacksCoveMidCb', function() {
     if (this.checked) {
@@ -1757,7 +1698,7 @@ $(document).on('change', '#balacksCoveMidCb', function() {
         this.checked = "";
     }
     remindCove(this.name, this.checked);
-})
+});
 
 $(document).on('change', '#balacksCoveHighCb', function() {
     if (this.checked) {
@@ -1766,7 +1707,7 @@ $(document).on('change', '#balacksCoveHighCb', function() {
         this.checked = "";
     }
     remindCove(this.name, this.checked);
-})
+});
 //if master checked and no other - remind all
 //if master not checked - no reminder
 //if master checked and 1 or more checked - remind the ones checked.
@@ -1775,10 +1716,10 @@ $(document).on('change', '#balacksCoveHighCb', function() {
 // M mid
 // H high
 function remindCove(cb, checked) {
-    var main = $('#balacksCoveCb');
-    var low = $('#balacksCoveLowCb');
-    var mid = $('#balacksCoveMidCb');
-    var high = $('#balacksCoveHighCb');
+    const main = $('#balacksCoveCb');
+    const low = $('#balacksCoveLowCb');
+    const mid = $('#balacksCoveMidCb');
+    const high = $('#balacksCoveHighCb');
     const mainName = main.prop("name");
     const lName = low.prop("name");
     const mName = mid.prop("name");
@@ -1787,11 +1728,11 @@ function remindCove(cb, checked) {
     const lChecked = low.prop("checked");
     const mChecked = mid.prop("checked");
     const hChecked = high.prop("checked");
-    var remindCove = localStorage.getItem('RemindCove')
-    var remindNone = remindCove.search("N");
-    var remindLow = remindCove.search("L");
-    var remindMid = remindCove.search("M");
-    var remindHigh = remindCove.search("H");
+    let remindCove = localStorage.getItem('RemindCove');
+    const remindNone = remindCove.search("N");
+    const remindLow = remindCove.search("L");
+    const remindMid = remindCove.search("M");
+    const remindHigh = remindCove.search("H");
     //main was checked
     if ((cb == mainName) && (checked == true)) {
         if ((lChecked == false) && (mChecked == false) && (hChecked == false)) {
@@ -1927,165 +1868,175 @@ function remindCove(cb, checked) {
             remindCove = "LMH";
         }
     }
-    localStorage.setItem('RemindCove', remindCove)
+    localStorage.setItem('RemindCove', remindCove);
 }
 //====================================== Seasonal Garden ======================================
 function buildSeasonalGarden() {
     if ($(".seasonalGarden").length > 0) return;
-    var timerBox = $(".timerBox");
-    var seasonalGarden = document.createElement("div");
+    const seasonalGarden = document.createElement("div");
     seasonalGarden.classList.add("seasonalGarden");
     $(seasonalGarden).css({
+        'float': 'left',
+        'marginLeft': '1px',
         'border': '1px solid black',
         'width': '24%',
-        'height': '70%',
+        'height': '95%',
         'padding': 2 + "px"
     });
+    const seasonalGardenClockBox = document.createElement("div");
+    seasonalGardenClockBox.classList.add('seasonalGardenClockBox');
+    seasonalGarden.append(seasonalGardenClockBox);
+    $(seasonalGardenClockBox).css({
+        'float': 'left',
+        'width': '100%',
+        'height': '80%',
+    });
     //Header
-    var seasonalGardenHeader = document.createElement("div");
+    const seasonalGardenHeader = document.createElement("div");
     seasonalGardenHeader.classList.add("seasonalGardenHeader");
-    var seasonalGardenHeaderLabel = document.createElement("div");
+    const seasonalGardenHeaderLabel = document.createElement("div");
     seasonalGardenHeaderLabel.classList.add("seasonalGardenHeaderLabel");
-    var seasonalGardenHeaderLabelText = document.createTextNode("Current Garden Season:");
+    const seasonalGardenHeaderLabelText = document.createTextNode("Current Garden Season:");
     seasonalGardenHeaderLabel.appendChild(seasonalGardenHeaderLabelText);
-    var seasonalGardenHeaderValue = document.createElement("div");
+    const seasonalGardenHeaderValue = document.createElement("div");
     seasonalGardenHeaderValue.classList.add("seasonalGardenHeaderValue");
-    var seasonalGardenHeaderValueText = document.createTextNode("FALL");
+    const seasonalGardenHeaderValueText = document.createTextNode("FALL");
     seasonalGardenHeaderValue.appendChild(seasonalGardenHeaderValueText);
     $(seasonalGardenHeaderLabel).css({
         'float': 'left',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     $(seasonalGardenHeaderValue).css({
         "marginLeft": "100px"
     });
     seasonalGardenHeader.appendChild(seasonalGardenHeaderLabel);
     seasonalGardenHeader.appendChild(seasonalGardenHeaderValue);
     //Fall
-    var seasonalGardenFall = document.createElement("div");
+    const seasonalGardenFall = document.createElement("div");
     seasonalGardenFall.classList.add("seasonalGardenFall");
-    var seasonalGardenFallLabel = document.createElement("div");
+    const seasonalGardenFallLabel = document.createElement("div");
     seasonalGardenFallLabel.classList.add("seasonalGardenFallLabel");
-    var seasonalGardenFallLabelText = document.createTextNode("Fall in:");
+    const seasonalGardenFallLabelText = document.createTextNode("Fall in:");
     seasonalGardenFallLabel.appendChild(seasonalGardenFallLabelText);
-    var seasonalGardenFallValue = document.createElement("div");
+    const seasonalGardenFallValue = document.createElement("div");
     seasonalGardenFallValue.classList.add("seasonalGardenFallValue");
-    var seasonalGardenFallValueText = document.createTextNode("?");
+    const seasonalGardenFallValueText = document.createTextNode("?");
     seasonalGardenFallValue.appendChild(seasonalGardenFallValueText);
     $(seasonalGardenFallLabel).css({
         'float': 'left',
         'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     seasonalGardenFall.appendChild(seasonalGardenFallLabel);
     seasonalGardenFall.appendChild(seasonalGardenFallValue);
     //Winter
-    var seasonalGardenWinter = document.createElement("div");
+    const seasonalGardenWinter = document.createElement("div");
     seasonalGardenWinter.classList.add("seasonalGardenWinter");
-    var seasonalGardenWinterLabel = document.createElement("div");
+    const seasonalGardenWinterLabel = document.createElement("div");
     seasonalGardenWinterLabel.classList.add("seasonalGardenWinterLabel");
-    var seasonalGardenWinterLabelText = document.createTextNode("Winter in:");
+    const seasonalGardenWinterLabelText = document.createTextNode("Winter in:");
     seasonalGardenWinterLabel.appendChild(seasonalGardenWinterLabelText);
-    var seasonalGardenWinterValue = document.createElement("div");
+    const seasonalGardenWinterValue = document.createElement("div");
     seasonalGardenWinterValue.classList.add("seasonalGardenWinterValue");
-    var seasonalGardenWinterValueText = document.createTextNode("?");
+    const seasonalGardenWinterValueText = document.createTextNode("?");
     seasonalGardenWinterValue.appendChild(seasonalGardenWinterValueText);
     $(seasonalGardenWinterLabel).css({
         'float': 'left',
         'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     seasonalGardenWinter.appendChild(seasonalGardenWinterLabel);
     seasonalGardenWinter.appendChild(seasonalGardenWinterValue);
     //Spring
-    var seasonalGardenSpring = document.createElement("div");
+    const seasonalGardenSpring = document.createElement("div");
     seasonalGardenSpring.classList.add("seasonalGardenSpring");
-    var seasonalGardenSpringLabel = document.createElement("div");
+    const seasonalGardenSpringLabel = document.createElement("div");
     seasonalGardenSpringLabel.classList.add("seasonalGardenSpringLabel");
-    var seasonalGardenSpringLabelText = document.createTextNode("Spring in:");
+    const seasonalGardenSpringLabelText = document.createTextNode("Spring in:");
     seasonalGardenSpringLabel.appendChild(seasonalGardenSpringLabelText);
-    var seasonalGardenSpringValue = document.createElement("div");
+    const seasonalGardenSpringValue = document.createElement("div");
     seasonalGardenSpringValue.classList.add("seasonalGardenSpringValue");
-    var seasonalGardenSpringValueText = document.createTextNode("?");
+    const seasonalGardenSpringValueText = document.createTextNode("?");
     seasonalGardenSpringValue.appendChild(seasonalGardenSpringValueText);
     $(seasonalGardenSpringLabel).css({
         'float': 'left',
         'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     seasonalGardenSpring.appendChild(seasonalGardenSpringLabel);
     seasonalGardenSpring.appendChild(seasonalGardenSpringValue);
     //Summer
-    var seasonalGardenSummer = document.createElement("div");
+    const seasonalGardenSummer = document.createElement("div");
     seasonalGardenSummer.classList.add("seasonalGardenSummer");
-    var seasonalGardenSummerLabel = document.createElement("div");
+    const seasonalGardenSummerLabel = document.createElement("div");
     seasonalGardenSummerLabel.classList.add("seasonalGardenSummerLabel");
-    var seasonalGardenSummerLabelText = document.createTextNode("Summer in:");
+    const seasonalGardenSummerLabelText = document.createTextNode("Summer in:");
     seasonalGardenSummerLabel.appendChild(seasonalGardenSummerLabelText);
-    var seasonalGardenSummerValue = document.createElement("div");
+    const seasonalGardenSummerValue = document.createElement("div");
     seasonalGardenSummerValue.classList.add("seasonalGardenSummerValue");
-    var seasonalGardenSummerValueText = document.createTextNode("?");
+    const seasonalGardenSummerValueText = document.createTextNode("?");
     seasonalGardenSummerValue.appendChild(seasonalGardenSummerValueText);
     $(seasonalGardenSummerLabel).css({
         'float': 'left',
         'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     seasonalGardenSummer.appendChild(seasonalGardenSummerLabel);
     seasonalGardenSummer.appendChild(seasonalGardenSummerValue);
     //Append
-    seasonalGarden.appendChild(seasonalGardenHeader);
-    seasonalGarden.appendChild(seasonalGardenFall);
-    seasonalGarden.appendChild(seasonalGardenWinter);
-    seasonalGarden.appendChild(seasonalGardenSpring);
-    seasonalGarden.appendChild(seasonalGardenSummer);
+    seasonalGardenClockBox.appendChild(seasonalGardenHeader);
+    seasonalGardenClockBox.appendChild(seasonalGardenFall);
+    seasonalGardenClockBox.appendChild(seasonalGardenWinter);
+    seasonalGardenClockBox.appendChild(seasonalGardenSpring);
+    seasonalGardenClockBox.appendChild(seasonalGardenSummer);
+    seasonalGarden.append(buildTravelButtons('seasonalGarden'));
     return seasonalGarden;
 }
 
 function updateSeasonalGardenTimer() {
     if ($(".seasonalGarden").length < 1) return;
-    var seasonalGarden = $(".seasonalGarden");
+    const seasonalGarden = $('.seasonalGardenClockBox');
     const remind = localStorage.getItem('RemindGarden');
     const remindInterval = parseInt(localStorage.getItem('RemindInterval'), 10);
-    var firstFall = 288000;
-    var now = todayNow();
+    const firstFall = 288000;
+    const now = todayNow();
     let timePassedHours = (now - firstFall) / 3600;
-    var rotaionLenght = 320;
-    var rotationsExact = timePassedHours / rotaionLenght;
-    var rotationsInteger = Math.trunc(rotationsExact);
-    var partialrotation = (rotationsExact - rotationsInteger) * rotaionLenght;
-    var fallObj = new season(0, 0, 0);
-    var winterObj = new season(0, 0, 0);
-    var springObj = new season(0, 0, 0);
-    var summerObj = new season(0, 0, 0);
+    const rotaionLenght = 320;
+    const rotationsExact = timePassedHours / rotaionLenght;
+    const rotationsInteger = Math.trunc(rotationsExact);
+    const partialrotation = (rotationsExact - rotationsInteger) * rotaionLenght;
+    let fallObj = new season(0, 0, 0);
+    let winterObj = new season(0, 0, 0);
+    let springObj = new season(0, 0, 0);
+    let summerObj = new season(0, 0, 0);
     if (partialrotation < 80) {
         //Summer
         $(".seasonalGardenHeaderValue").text("SUMMER");
         $(".seasonalGardenHeaderValue").css({
             'color': 'red'
-        })
-        var timeFall = (80 - partialrotation).toPrecision(4);
+        });
+        const timeFall = (80 - partialrotation).toPrecision(4);
         fallObj.hours = Math.floor(timeFall);
         fallObj.minutes = Math.ceil((timeFall - fallObj.hours) * 60);
         fallObj = convertToDyHrMn(0, fallObj.hours, fallObj.minutes);
         winterObj = convertToDyHrMn(fallObj.days + 3, fallObj.hours + 8, fallObj.minutes);
-        springObj = convertToDyHrMn(winterObj.days + 3, winterObj.hours + 8, winterObj.minutes)
+        springObj = convertToDyHrMn(winterObj.days + 3, winterObj.hours + 8, winterObj.minutes);
         summerObj = convertToDyHrMn(springObj.days + 3, springObj.hours + 8, springObj.minutes);
-        $(".seasonalGardenFallLabel").text("Fall in:")
-        $(".seasonalGardenWinterLabel").text("Winter in:")
-        $(".seasonalGardenSpringLabel").text("Spring in:")
-        $(".seasonalGardenSummerLabel").text("Next Summer in:")
+        $(".seasonalGardenFallLabel").text("Fall in:");
+        $(".seasonalGardenWinterLabel").text("Winter in:");
+        $(".seasonalGardenSpringLabel").text("Spring in:");
+        $(".seasonalGardenSummerLabel").text("Next Summer in:");
         seasonalGarden.append($(".seasonalGardenFall"));
         seasonalGarden.append($(".seasonalGardenWinter"));
         seasonalGarden.append($(".seasonalGardenSpring"));
         seasonalGarden.append($(".seasonalGardenSummer"));
         if ((fallObj.hours == 0) && (fallObj.minutes <= remindInterval) && (remind.search('F') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('garden','fall')
+            myConfirm('garden', 'fall');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#seasonalGardenCb").click();
             }
@@ -2095,24 +2046,24 @@ function updateSeasonalGardenTimer() {
         $(".seasonalGardenHeaderValue").text("FALL");
         $(".seasonalGardenHeaderValue").css({
             'color': 'orange'
-        })
-        var timeWinter = (160 - partialrotation).toPrecision(4);
+        });
+        const timeWinter = (160 - partialrotation).toPrecision(4);
         winterObj.hours = Math.floor(timeWinter);
         winterObj.minutes = Math.ceil((timeWinter - winterObj.hours) * 60);
         winterObj = convertToDyHrMn(0, winterObj.hours, winterObj.minutes);
-        springObj = convertToDyHrMn(winterObj.days + 3, winterObj.hours + 8, winterObj.minutes)
-        summerObj = convertToDyHrMn(springObj.days + 3, springObj.hours + 8, springObj.minutes)
+        springObj = convertToDyHrMn(winterObj.days + 3, winterObj.hours + 8, winterObj.minutes);
+        summerObj = convertToDyHrMn(springObj.days + 3, springObj.hours + 8, springObj.minutes);
         fallObj = convertToDyHrMn(summerObj.days + 3, summerObj.hours + 8, summerObj.minutes);
-        $(".seasonalGardenFallLabel").text("Next Fall in:")
-        $(".seasonalGardenWinterLabel").text("Winter in:")
-        $(".seasonalGardenSpringLabel").text("Spring in:")
-        $(".seasonalGardenSummerLabel").text("Summer in:")
+        $(".seasonalGardenFallLabel").text("Next Fall in:");
+        $(".seasonalGardenWinterLabel").text("Winter in:");
+        $(".seasonalGardenSpringLabel").text("Spring in:");
+        $(".seasonalGardenSummerLabel").text("Summer in:");
         seasonalGarden.append($(".seasonalGardenWinter"));
         seasonalGarden.append($(".seasonalGardenSpring"));
         seasonalGarden.append($(".seasonalGardenSummer"));
         seasonalGarden.append($(".seasonalGardenFall"));
         if ((winterObj.hours == 0) && (winterObj.minutes <= remindInterval) && (remind.search('W') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('garden','winter')
+            myConfirm('garden', 'winter');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#seasonalGardenCb").click();
             }
@@ -2122,24 +2073,24 @@ function updateSeasonalGardenTimer() {
         $(".seasonalGardenHeaderValue").text("WINTER");
         $(".seasonalGardenHeaderValue").css({
             'color': 'blue'
-        })
-        var timeSpring = (240 - partialrotation).toPrecision(4);
+        });
+        const timeSpring = (240 - partialrotation).toPrecision(4);
         springObj.hours = Math.floor(timeSpring);
         springObj.minutes = Math.ceil((timeSpring - springObj.hours) * 60);
-        springObj = convertToDyHrMn(0, springObj.hours, springObj.minutes)
+        springObj = convertToDyHrMn(0, springObj.hours, springObj.minutes);
         summerObj = convertToDyHrMn(springObj.days + 3, springObj.hours + 8, springObj.minutes);
         fallObj = convertToDyHrMn(summerObj.days + 3, summerObj.hours + 8, summerObj.minutes);
         winterObj = convertToDyHrMn(fallObj.days + 3, fallObj.hours + 8, fallObj.minutes);
-        $(".seasonalGardenFallLabel").text("Fall in:")
-        $(".seasonalGardenWinterLabel").text("Next Winter in:")
-        $(".seasonalGardenSpringLabel").text("Spring in:")
-        $(".seasonalGardenSummerLabel").text("Summer in:")
+        $(".seasonalGardenFallLabel").text("Fall in:");
+        $(".seasonalGardenWinterLabel").text("Next Winter in:");
+        $(".seasonalGardenSpringLabel").text("Spring in:");
+        $(".seasonalGardenSummerLabel").text("Summer in:");
         seasonalGarden.append($(".seasonalGardenSpring"));
         seasonalGarden.append($(".seasonalGardenSummer"));
         seasonalGarden.append($(".seasonalGardenFall"));
         seasonalGarden.append($(".seasonalGardenWinter"));
         if ((springObj.hours == 0) && (springObj.minutes <= remindInterval) && (remind.search('S') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('garden','spring')
+            myConfirm('garden', 'spring');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#seasonalGardenCb").click();
             }
@@ -2149,24 +2100,24 @@ function updateSeasonalGardenTimer() {
         $(".seasonalGardenHeaderValue").text("SPRING");
         $(".seasonalGardenHeaderValue").css({
             'color': 'green'
-        })
-        var timeSummer = (320 - partialrotation).toPrecision(4);
+        });
+        const timeSummer = (320 - partialrotation).toPrecision(4);
         summerObj.hours = Math.floor(timeSummer);
         summerObj.minutes = Math.ceil((timeSummer - summerObj.hours) * 60);
-        summerObj = convertToDyHrMn(0, summerObj.hours, summerObj.minutes)
+        summerObj = convertToDyHrMn(0, summerObj.hours, summerObj.minutes);
         fallObj = convertToDyHrMn(summerObj.days + 3, summerObj.hours + 8, summerObj.minutes);
         winterObj = convertToDyHrMn(fallObj.days + 3, fallObj.hours + 8, fallObj.minutes);
         springObj = convertToDyHrMn(winterObj.days + 3, winterObj.hours + 8, winterObj.minutes);
-        $(".seasonalGardenFallLabel").text("Fall in:")
-        $(".seasonalGardenWinterLabel").text("Winter in:")
-        $(".seasonalGardenSpringLabel").text("Next Spring in:")
-        $(".seasonalGardenSummerLabel").text("Summer in:")
+        $(".seasonalGardenFallLabel").text("Fall in:");
+        $(".seasonalGardenWinterLabel").text("Winter in:");
+        $(".seasonalGardenSpringLabel").text("Next Spring in:");
+        $(".seasonalGardenSummerLabel").text("Summer in:");
         seasonalGarden.append($(".seasonalGardenSummer"));
         seasonalGarden.append($(".seasonalGardenFall"));
         seasonalGarden.append($(".seasonalGardenWinter"));
         seasonalGarden.append($(".seasonalGardenSpring"));
         if ((summerObj.hours == 0) && (summerObj.minutes <= remindInterval) && (remind.search('R') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('garden','summer')
+            myConfirm('garden', 'summer');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#seasonalGardenCb").click();
             }
@@ -2176,18 +2127,9 @@ function updateSeasonalGardenTimer() {
     $(".seasonalGardenWinterValue").text(formatOutput(winterObj.days, winterObj.hours, winterObj.minutes));
     $(".seasonalGardenSpringValue").text(formatOutput(springObj.days, springObj.hours, springObj.minutes));
     $(".seasonalGardenSummerValue").text(formatOutput(summerObj.days, summerObj.hours, summerObj.minutes));
-    $(".seasonalGardenFallValue").css({
+    $('.seasonalGardenFallValue,.seasonalGardenWinterValue,.seasonalGardenSpringValue,.seasonalGardenSummerValue').css({
         'float': 'right'
-    })
-    $(".seasonalGardenWinterValue").css({
-        'float': 'right'
-    })
-    $(".seasonalGardenSpringValue").css({
-        'float': 'right'
-    })
-    $(".seasonalGardenSummerValue").css({
-        'float': 'right'
-    })
+    });
 }
 
 function season(days, hours, minutes) {
@@ -2202,7 +2144,7 @@ $(document).on('change', '#seasonalGardenCb', function() {
         this.checked = "";
     }
     remindGarden(this.name, this.checked);
-})
+});
 
 $(document).on('change', '#seasonalGardenFallCb', function() {
     if (this.checked) {
@@ -2211,7 +2153,7 @@ $(document).on('change', '#seasonalGardenFallCb', function() {
         this.checked = "";
     }
     remindGarden(this.name, this.checked);
-})
+});
 
 $(document).on('change', '#seasonalGardenWinterCb', function() {
     if (this.checked) {
@@ -2220,7 +2162,7 @@ $(document).on('change', '#seasonalGardenWinterCb', function() {
         this.checked = "";
     }
     remindGarden(this.name, this.checked);
-})
+});
 
 $(document).on('change', '#seasonalGardenSpringCb', function() {
     if (this.checked) {
@@ -2229,7 +2171,7 @@ $(document).on('change', '#seasonalGardenSpringCb', function() {
         this.checked = "";
     }
     remindGarden(this.name, this.checked);
-})
+});
 $(document).on('change', '#seasonalGardenSummerCb', function() {
     if (this.checked) {
         this.checked = "Yes";
@@ -2237,7 +2179,7 @@ $(document).on('change', '#seasonalGardenSummerCb', function() {
         this.checked = "";
     }
     remindGarden(this.name, this.checked);
-})
+});
 //if master checked and no other - remind all
 //if master not checked - no reminder
 //if master checked and 1 or more checked - remind the ones checked.
@@ -2247,11 +2189,11 @@ $(document).on('change', '#seasonalGardenSummerCb', function() {
 // S Spring
 // R Summer
 function remindGarden(cb, checked) {
-    var main = $('#seasonalGardenCb');
-    var fall = $('#seasonalGardenFallCb');
-    var winter = $('#seasonalGardenWinterCb');
-    var spring = $('#seasonalGardenSpringCb');
-    var summer = $('#seasonalGardenSummerCb');
+    const main = $('#seasonalGardenCb');
+    const fall = $('#seasonalGardenFallCb');
+    const winter = $('#seasonalGardenWinterCb');
+    const spring = $('#seasonalGardenSpringCb');
+    const summer = $('#seasonalGardenSummerCb');
     const mainName = main.prop("name");
     const fName = fall.prop("name");
     const wName = winter.prop("name");
@@ -2262,12 +2204,12 @@ function remindGarden(cb, checked) {
     const wChecked = winter.prop("checked");
     const sChecked = spring.prop("checked");
     const rChecked = summer.prop("checked");
-    var remindGarden = localStorage.getItem('RemindGarden')
-    var remindNone = remindGarden.search("N");
-    var remindFall = remindGarden.search("F");
-    var remindWinter = remindGarden.search("W");
-    var remindSpring = remindGarden.search("S");
-    var remindSummer = remindGarden.search("R");
+    let remindGarden = localStorage.getItem('RemindGarden');
+    const remindNone = remindGarden.search("N");
+    const remindFall = remindGarden.search("F");
+    const remindWinter = remindGarden.search("W");
+    const remindSpring = remindGarden.search("S");
+    const remindSummer = remindGarden.search("R");
     //main was checked
     if ((cb == mainName) && (checked == true)) {
         if ((fChecked == false) && (wChecked == false) && (sChecked == false) && (rChecked == false)) {
@@ -2405,234 +2347,245 @@ function remindGarden(cb, checked) {
             }
         }
     }
-    localStorage.setItem('RemindGarden', remindGarden)
+    localStorage.setItem('RemindGarden', remindGarden);
 }
 //====================================== Toxic Spill ======================================
 function buildToxicSpill() {
     if ($(".toxicSpill").length > 0) return;
-    var timerBox = $(".timerBox");
-    var toxicSpill = document.createElement("div");
+    const toxicSpill = document.createElement("div");
     toxicSpill.classList.add("toxicSpill");
     $(toxicSpill).css({
+        'float': 'left',
+        'marginLeft': '1px',
         'border': '1px solid black',
         'width': '26%',
-        'height': '70%',
+        'height': '95%',
         'padding': 2 + "px"
     });
+    const toxicSpillClockBox = document.createElement("div");
+    toxicSpillClockBox.classList.add("toxicSpillClockBox");
+    toxicSpill.append(toxicSpillClockBox);
+    $(toxicSpillClockBox).css({
+        'float': 'left',
+        'width': '100%',
+        'height': '80%',
+    });
     //Header
-    var toxicSpillHeader = document.createElement("div");
+    const toxicSpillHeader = document.createElement("div");
     toxicSpillHeader.classList.add("toxicSpillHeader");
-    var toxicSpillHeaderLabel = document.createElement("div");
+    const toxicSpillHeaderLabel = document.createElement("div");
     toxicSpillHeaderLabel.classList.add("toxicSpillHeaderLabel");
-    var toxicSpillHeaderLabelText = document.createTextNode("Current Spill Level:");
+    const toxicSpillHeaderLabelText = document.createTextNode("Current Spill Level:");
     toxicSpillHeaderLabel.appendChild(toxicSpillHeaderLabelText);
-    var toxicSpillHeaderValue = document.createElement("div");
+    const toxicSpillHeaderValue = document.createElement("div");
     toxicSpillHeaderValue.classList.add("toxicSpillHeaderValue");
-    var toxicSpillHeaderValueText = document.createTextNode("Archduke");
+    const toxicSpillHeaderValueText = document.createTextNode("Archduke");
     toxicSpillHeaderValue.appendChild(toxicSpillHeaderValueText);
     $(toxicSpillHeaderLabel).css({
         'float': 'left',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     $(toxicSpillHeaderValue).css({
         "marginLeft": "100px"
     });
     toxicSpillHeader.appendChild(toxicSpillHeaderLabel);
     toxicSpillHeader.appendChild(toxicSpillHeaderValue);
     //Hero
-    var toxicSpillHero = document.createElement("div");
+    const toxicSpillHero = document.createElement("div");
     toxicSpillHero.classList.add("toxicSpillHero");
-    var toxicSpillHeroLabel = document.createElement("div");
+    const toxicSpillHeroLabel = document.createElement("div");
     toxicSpillHeroLabel.classList.add("toxicSpillHeroLabel");
-    var toxicSpillHeroLabelText = document.createTextNode("Hero in:");
+    const toxicSpillHeroLabelText = document.createTextNode("Hero in:");
     toxicSpillHeroLabel.appendChild(toxicSpillHeroLabelText);
-    var toxicSpillHeroValue = document.createElement("div");
+    const toxicSpillHeroValue = document.createElement("div");
     toxicSpillHeroValue.classList.add("toxicSpillHeroValue");
-    var toxicSpillHeroValueText = document.createTextNode("?");
+    const toxicSpillHeroValueText = document.createTextNode("?");
     toxicSpillHeroValue.appendChild(toxicSpillHeroValueText);
     $(toxicSpillHeroLabel).css({
         'float': 'left',
         'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     toxicSpillHero.appendChild(toxicSpillHeroLabel);
     toxicSpillHero.appendChild(toxicSpillHeroValue);
     //Knight
-    var toxicSpillKnight = document.createElement("div");
+    const toxicSpillKnight = document.createElement("div");
     toxicSpillKnight.classList.add("toxicSpillKnight");
-    var toxicSpillKnightLabel = document.createElement("div");
+    const toxicSpillKnightLabel = document.createElement("div");
     toxicSpillKnightLabel.classList.add("toxicSpillKnightLabel");
-    var toxicSpillKnightLabelText = document.createTextNode("Knight in:");
+    const toxicSpillKnightLabelText = document.createTextNode("Knight in:");
     toxicSpillKnightLabel.appendChild(toxicSpillKnightLabelText);
-    var toxicSpillKnightValue = document.createElement("div");
+    const toxicSpillKnightValue = document.createElement("div");
     toxicSpillKnightValue.classList.add("toxicSpillKnightValue");
-    var toxicSpillKnightValueText = document.createTextNode("?");
+    const toxicSpillKnightValueText = document.createTextNode("?");
     toxicSpillKnightValue.appendChild(toxicSpillKnightValueText);
     $(toxicSpillKnightLabel).css({
         'float': 'left',
         'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     toxicSpillKnight.appendChild(toxicSpillKnightLabel);
     toxicSpillKnight.appendChild(toxicSpillKnightValue);
     //Lord
-    var toxicSpillLord = document.createElement("div");
+    const toxicSpillLord = document.createElement("div");
     toxicSpillLord.classList.add("toxicSpillLord");
-    var toxicSpillLordLabel = document.createElement("div");
+    const toxicSpillLordLabel = document.createElement("div");
     toxicSpillLordLabel.classList.add("toxicSpillLordLabel");
-    var toxicSpillLordLabelText = document.createTextNode("Lord in:");
+    const toxicSpillLordLabelText = document.createTextNode("Lord in:");
     toxicSpillLordLabel.appendChild(toxicSpillLordLabelText);
-    var toxicSpillLordValue = document.createElement("div");
+    const toxicSpillLordValue = document.createElement("div");
     toxicSpillLordValue.classList.add("toxicSpillLordValue");
-    var toxicSpillLordValueText = document.createTextNode("?");
+    const toxicSpillLordValueText = document.createTextNode("?");
     toxicSpillLordValue.appendChild(toxicSpillLordValueText);
     $(toxicSpillLordLabel).css({
         'float': 'left',
         'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     toxicSpillLord.appendChild(toxicSpillLordLabel);
     toxicSpillLord.appendChild(toxicSpillLordValue);
     //Baron
-    var toxicSpillBaron = document.createElement("div");
+    const toxicSpillBaron = document.createElement("div");
     toxicSpillBaron.classList.add("toxicSpillBaron");
-    var toxicSpillBaronLabel = document.createElement("div");
+    const toxicSpillBaronLabel = document.createElement("div");
     toxicSpillBaronLabel.classList.add("toxicSpillBaronLabel");
-    var toxicSpillBaronLabelText = document.createTextNode("Baron in:");
+    const toxicSpillBaronLabelText = document.createTextNode("Baron in:");
     toxicSpillBaronLabel.appendChild(toxicSpillBaronLabelText);
-    var toxicSpillBaronValue = document.createElement("div");
+    const toxicSpillBaronValue = document.createElement("div");
     toxicSpillBaronValue.classList.add("toxicSpillBaronValue");
-    var toxicSpillBaronValueText = document.createTextNode("?");
+    const toxicSpillBaronValueText = document.createTextNode("?");
     toxicSpillBaronValue.appendChild(toxicSpillBaronValueText);
     $(toxicSpillBaronLabel).css({
         'float': 'left',
         'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     toxicSpillBaron.appendChild(toxicSpillBaronLabel);
     toxicSpillBaron.appendChild(toxicSpillBaronValue);
     //Count
-    var toxicSpillCount = document.createElement("div");
+    const toxicSpillCount = document.createElement("div");
     toxicSpillCount.classList.add("toxicSpillCount");
-    var toxicSpillCountLabel = document.createElement("div");
+    const toxicSpillCountLabel = document.createElement("div");
     toxicSpillCountLabel.classList.add("toxicSpillCountLabel");
-    var toxicSpillCountLabelText = document.createTextNode("Count in:");
+    const toxicSpillCountLabelText = document.createTextNode("Count in:");
     toxicSpillCountLabel.appendChild(toxicSpillCountLabelText);
-    var toxicSpillCountValue = document.createElement("div");
+    const toxicSpillCountValue = document.createElement("div");
     toxicSpillCountValue.classList.add("toxicSpillCountValue");
-    var toxicSpillCountValueText = document.createTextNode("?");
+    const toxicSpillCountValueText = document.createTextNode("?");
     toxicSpillCountValue.appendChild(toxicSpillCountValueText);
     $(toxicSpillCountLabel).css({
         'float': 'left',
         'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     toxicSpillCount.appendChild(toxicSpillCountLabel);
     toxicSpillCount.appendChild(toxicSpillCountValue);
     //Duke
-    var toxicSpillDuke = document.createElement("div");
+    const toxicSpillDuke = document.createElement("div");
     toxicSpillDuke.classList.add("toxicSpillDuke");
-    var toxicSpillDukeLabel = document.createElement("div");
+    const toxicSpillDukeLabel = document.createElement("div");
     toxicSpillDukeLabel.classList.add("toxicSpillDukeLabel");
-    var toxicSpillDukeLabelText = document.createTextNode("Duke in:");
+    const toxicSpillDukeLabelText = document.createTextNode("Duke in:");
     toxicSpillDukeLabel.appendChild(toxicSpillDukeLabelText);
-    var toxicSpillDukeValue = document.createElement("div");
+    const toxicSpillDukeValue = document.createElement("div");
     toxicSpillDukeValue.classList.add("toxicSpillDukeValue");
-    var toxicSpillDukeValueText = document.createTextNode("?");
+    const toxicSpillDukeValueText = document.createTextNode("?");
     toxicSpillDukeValue.appendChild(toxicSpillDukeValueText);
     $(toxicSpillDukeLabel).css({
         'float': 'left',
         'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     toxicSpillDuke.appendChild(toxicSpillDukeLabel);
     toxicSpillDuke.appendChild(toxicSpillDukeValue);
     //Grand Duke
-    var toxicSpillGrandDuke = document.createElement("div");
+    const toxicSpillGrandDuke = document.createElement("div");
     toxicSpillGrandDuke.classList.add("toxicSpillGrandDuke");
-    var toxicSpillGrandDukeLabel = document.createElement("div");
+    const toxicSpillGrandDukeLabel = document.createElement("div");
     toxicSpillGrandDukeLabel.classList.add("toxicSpillGrandDukeLabel");
-    var toxicSpillGrandDukeLabelText = document.createTextNode("Grand Duke in:");
+    const toxicSpillGrandDukeLabelText = document.createTextNode("Grand Duke in:");
     toxicSpillGrandDukeLabel.appendChild(toxicSpillGrandDukeLabelText);
-    var toxicSpillGrandDukeValue = document.createElement("div");
+    const toxicSpillGrandDukeValue = document.createElement("div");
     toxicSpillGrandDukeValue.classList.add("toxicSpillGrandDukeValue");
-    var toxicSpillGrandDukeValueText = document.createTextNode("?");
+    const toxicSpillGrandDukeValueText = document.createTextNode("?");
     toxicSpillGrandDukeValue.appendChild(toxicSpillGrandDukeValueText);
     $(toxicSpillGrandDukeLabel).css({
         'float': 'left',
         'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     toxicSpillGrandDuke.appendChild(toxicSpillGrandDukeLabel);
     toxicSpillGrandDuke.appendChild(toxicSpillGrandDukeValue);
     //Archduke
-    var toxicSpillArchduke = document.createElement("div");
+    const toxicSpillArchduke = document.createElement("div");
     toxicSpillArchduke.classList.add("toxicSpillArchduke");
-    var toxicSpillArchdukeLabel = document.createElement("div");
+    const toxicSpillArchdukeLabel = document.createElement("div");
     toxicSpillArchdukeLabel.classList.add("toxicSpillArchdukeLabel");
-    var toxicSpillArchdukeLabelText = document.createTextNode("Archduke in:");
+    const toxicSpillArchdukeLabelText = document.createTextNode("Archduke in:");
     toxicSpillArchdukeLabel.appendChild(toxicSpillArchdukeLabelText);
-    var toxicSpillArchdukeValue = document.createElement("div");
+    const toxicSpillArchdukeValue = document.createElement("div");
     toxicSpillArchdukeValue.classList.add("toxicSpillArchdukeValue");
-    var toxicSpillArchdukeValueText = document.createTextNode("?");
+    const toxicSpillArchdukeValueText = document.createTextNode("?");
     toxicSpillArchdukeValue.appendChild(toxicSpillArchdukeValueText);
     $(toxicSpillArchdukeLabel).css({
         'float': 'left',
         'width': '100px',
         'font-weight': 700,
         "marginRight": "5px"
-    })
+    });
     toxicSpillArchduke.appendChild(toxicSpillArchdukeLabel);
     toxicSpillArchduke.appendChild(toxicSpillArchdukeValue);
     //Append
-    toxicSpill.appendChild(toxicSpillHeader);
-    toxicSpill.appendChild(toxicSpillHero);
-    toxicSpill.appendChild(toxicSpillKnight);
-    toxicSpill.appendChild(toxicSpillLord);
-    toxicSpill.appendChild(toxicSpillBaron);
-    toxicSpill.appendChild(toxicSpillCount);
-    toxicSpill.appendChild(toxicSpillDuke);
-    toxicSpill.appendChild(toxicSpillGrandDuke);
-    toxicSpill.appendChild(toxicSpillArchduke);
+    toxicSpillClockBox.appendChild(toxicSpillHeader);
+    toxicSpillClockBox.appendChild(toxicSpillHeader);
+    toxicSpillClockBox.appendChild(toxicSpillHero);
+    toxicSpillClockBox.appendChild(toxicSpillKnight);
+    toxicSpillClockBox.appendChild(toxicSpillLord);
+    toxicSpillClockBox.appendChild(toxicSpillBaron);
+    toxicSpillClockBox.appendChild(toxicSpillCount);
+    toxicSpillClockBox.appendChild(toxicSpillDuke);
+    toxicSpillClockBox.appendChild(toxicSpillGrandDuke);
+    toxicSpillClockBox.appendChild(toxicSpillArchduke);
+    toxicSpill.append(buildTravelButtons('toxicSpill'));
     return toxicSpill;
 }
 
 function updateToxicSpillTimer() {
     if ($(".toxicSpill").length < 1) return;
-    var toxicSpill = $(".toxicSpill");
+    const toxicSpill = $('.toxicSpillClockBox');
     const remind = localStorage.getItem('RemindSpill');
     const remindInterval = parseInt(localStorage.getItem('RemindInterval'), 10);
     $(".toxicSpill").children().show();
-    var firstHero = 1503597600;
-    var now = todayNow();
+    const firstHero = 1503597600;
+    const now = todayNow();
     let timePassedHours = (now - firstHero) / 3600;
-    var rotaionLenght = 302;
-    var rotationsExact = timePassedHours / rotaionLenght;
-    var rotationsInteger = Math.floor(rotationsExact);
-    var partialrotation = (rotationsExact - rotationsInteger) * rotaionLenght;
-    var heroObj = new season(0, 0, 0);
-    var knightObj = new season(0, 0, 0);
-    var lordObj = new season(0, 0, 0);
-    var baronObj = new season(0, 0, 0);
-    var countObj = new season(0, 0, 0);
-    var dukeObj = new season(0, 0, 0);
-    var granddukeObj = new season(0, 0, 0);
-    var archdukeObj = new season(0, 0, 0);
+    const rotaionLenght = 302;
+    const rotationsExact = timePassedHours / rotaionLenght;
+    const rotationsInteger = Math.floor(rotationsExact);
+    const partialrotation = (rotationsExact - rotationsInteger) * rotaionLenght;
+    let heroObj = new season(0, 0, 0);
+    let knightObj = new season(0, 0, 0);
+    let lordObj = new season(0, 0, 0);
+    let baronObj = new season(0, 0, 0);
+    let countObj = new season(0, 0, 0);
+    let dukeObj = new season(0, 0, 0);
+    let granddukeObj = new season(0, 0, 0);
+    let archdukeObj = new season(0, 0, 0);
     if (partialrotation < 15) {
         //Hero Rising
         $(".toxicSpillHeaderValue").text("HERO-RISING");
         $(".toxicSpillHeaderValue").css({
             'color': 'red'
         });
-        var timeKnight = (15 - partialrotation).toPrecision(4);
+        const timeKnight = (15 - partialrotation).toPrecision(4);
         knightObj.hours = Math.floor(timeKnight);
         knightObj.minutes = Math.ceil((timeKnight - knightObj.hours) * 60);
         knightObj = convertToDyHrMn(0, knightObj.hours, knightObj.minutes);
@@ -2654,7 +2607,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
         if ((knightObj.hours == 0) && (knightObj.minutes <= remindInterval) && (remind.search('K') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('spill','knight');
+            myConfirm('spill', 'knight');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2665,7 +2618,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHeaderValue").css({
             'color': 'red'
         });
-        var timeLord = (31 - partialrotation).toPrecision(4);
+        const timeLord = (31 - partialrotation).toPrecision(4);
         lordObj.hours = Math.floor(timeLord);
         lordObj.minutes = Math.ceil((timeLord - lordObj.hours) * 60);
         lordObj = convertToDyHrMn(0, lordObj.hours, lordObj.minutes);
@@ -2687,7 +2640,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillKnight").hide();
         $(".toxicSpillArchduke").hide();
         if ((lordObj.hours == 0) && (lordObj.minutes <= remindInterval) && (remind.search('L') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('spill','lord');
+            myConfirm('spill', 'lord');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2698,7 +2651,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHeaderValue").css({
             'color': 'red'
         });
-        var timeBaron = (49 - partialrotation).toPrecision(4);
+        const timeBaron = (49 - partialrotation).toPrecision(4);
         baronObj.hours = Math.floor(timeBaron);
         baronObj.minutes = Math.ceil((timeBaron - baronObj.hours) * 60);
         baronObj = convertToDyHrMn(0, baronObj.hours, baronObj.minutes);
@@ -2720,7 +2673,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
         if ((baronObj.hours == 0) && (baronObj.minutes <= remindInterval) && (remind.search('B') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('spill','baron');
+            myConfirm('spill', 'baron');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2731,7 +2684,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHeaderValue").css({
             'color': 'red'
         });
-        var timeCount = (67 - partialrotation).toPrecision(4);
+        const timeCount = (67 - partialrotation).toPrecision(4);
         countObj.hours = Math.floor(timeCount);
         countObj.minutes = Math.ceil((timeCount - countObj.hours) * 60);
         countObj = convertToDyHrMn(0, countObj.hours, countObj.minutes);
@@ -2753,7 +2706,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
         if ((countObj.hours == 0) && (countObj.minutes <= remindInterval) && (remind.search('C') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('spill','count');
+            myConfirm('spill', 'count');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2764,7 +2717,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHeaderValue").css({
             'color': 'red'
         });
-        var timeDuke = (91 - partialrotation).toPrecision(4);
+        const timeDuke = (91 - partialrotation).toPrecision(4);
         dukeObj.hours = Math.floor(timeDuke);
         dukeObj.minutes = Math.ceil((timeDuke - dukeObj.hours) * 60);
         dukeObj = convertToDyHrMn(0, dukeObj.hours, dukeObj.minutes);
@@ -2786,7 +2739,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
         if ((dukeObj.hours == 0) && (dukeObj.minutes <= remindInterval) && (remind.search('D') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('spill','duke');
+            myConfirm('spill', 'duke');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2797,7 +2750,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHeaderValue").css({
             'color': 'red'
         });
-        var timeGrandDuke = (115 - partialrotation).toPrecision(4);
+        const timeGrandDuke = (115 - partialrotation).toPrecision(4);
         granddukeObj.hours = Math.floor(timeGrandDuke);
         granddukeObj.minutes = Math.ceil((timeGrandDuke - granddukeObj.hours) * 60);
         granddukeObj = convertToDyHrMn(0, granddukeObj.hours, granddukeObj.minutes);
@@ -2819,7 +2772,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
         if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= remindInterval) && (remind.search('G') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('spill','grand duke');
+            myConfirm('spill', 'grand duke');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2830,7 +2783,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHeaderValue").css({
             'color': 'red'
         });
-        var timeArchduke = (139 - partialrotation).toPrecision(4);
+        const timeArchduke = (139 - partialrotation).toPrecision(4);
         archdukeObj.hours = Math.floor(timeArchduke);
         archdukeObj.minutes = Math.ceil((timeArchduke - archdukeObj.hours) * 60);
         archdukeObj = convertToDyHrMn(0, archdukeObj.hours, archdukeObj.minutes);
@@ -2852,7 +2805,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillKnight").hide();
         $(".toxicSpillLord").hide();
         if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= remindInterval) && (remind.search('A') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('spill','archduke');
+            myConfirm('spill', 'archduke');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2863,7 +2816,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHeaderValue").css({
             'color': 'red'
         });
-        var timeArchduke = (151 - partialrotation).toPrecision(4);
+        const timeArchduke = (151 - partialrotation).toPrecision(4);
         archdukeObj.hours = Math.floor(timeArchduke);
         archdukeObj.minutes = Math.ceil((timeArchduke - archdukeObj.hours) * 60);
         archdukeObj = convertToDyHrMn(0, archdukeObj.hours, archdukeObj.minutes);
@@ -2890,7 +2843,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHeaderValue").css({
             'color': 'green'
         });
-        var timeGDuke = (163 - partialrotation).toPrecision(4);
+        const timeGDuke = (163 - partialrotation).toPrecision(4);
         granddukeObj.hours = Math.floor(timeGDuke);
         granddukeObj.minutes = Math.ceil((timeGDuke - granddukeObj.hours) * 60);
         granddukeObj = convertToDyHrMn(0, granddukeObj.hours, granddukeObj.minutes);
@@ -2912,7 +2865,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillKnight").hide();
         $(".toxicSpillArchduke").hide();
         if ((granddukeObj.hours == 0) && (granddukeObj.minutes <= remindInterval) && (remind.search('G') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('spill','grand duke');
+            myConfirm('spill', 'grand duke');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2923,7 +2876,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHeaderValue").css({
             'color': 'green'
         });
-        var timeDuke = (187 - partialrotation).toPrecision(4);
+        const timeDuke = (187 - partialrotation).toPrecision(4);
         dukeObj.hours = Math.floor(timeDuke);
         dukeObj.minutes = Math.ceil((timeDuke - dukeObj.hours) * 60);
         dukeObj = convertToDyHrMn(0, dukeObj.hours, dukeObj.minutes);
@@ -2945,7 +2898,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
         if ((dukeObj.hours == 0) && (dukeObj.minutes <= remindInterval) && (remind.search('D') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('spill','duke');
+            myConfirm('spill', 'duke');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2956,7 +2909,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHeaderValue").css({
             'color': 'green'
         });
-        var timeCount = (211 - partialrotation).toPrecision(4);
+        const timeCount = (211 - partialrotation).toPrecision(4);
         countObj.hours = Math.floor(timeCount);
         countObj.minutes = Math.ceil((timeCount - countObj.hours) * 60);
         countObj = convertToDyHrMn(0, countObj.hours, countObj.minutes);
@@ -2978,7 +2931,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
         if ((countObj.hours == 0) && (countObj.minutes <= remindInterval) && (remind.search('C') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('spill','count');
+            myConfirm('spill', 'count');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -2989,7 +2942,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHeaderValue").css({
             'color': 'green'
         });
-        var timeBaron = (235 - partialrotation).toPrecision(4);
+        const timeBaron = (235 - partialrotation).toPrecision(4);
         baronObj.hours = Math.floor(timeBaron);
         baronObj.minutes = Math.ceil((timeBaron - baronObj.hours) * 60);
         baronObj = convertToDyHrMn(0, baronObj.hours, baronObj.minutes);
@@ -3011,7 +2964,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
         if ((baronObj.hours == 0) && (baronObj.minutes <= remindInterval) && (remind.search('B') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('spill','baron');
+            myConfirm('spill', 'baron');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -3022,7 +2975,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHeaderValue").css({
             'color': 'green'
         });
-        var timeLord = (253 - partialrotation).toPrecision(4);
+        const timeLord = (253 - partialrotation).toPrecision(4);
         lordObj.hours = Math.floor(timeLord);
         lordObj.minutes = Math.ceil((timeLord - lordObj.hours) * 60);
         lordObj = convertToDyHrMn(0, lordObj.hours, lordObj.minutes);
@@ -3044,7 +2997,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
         if ((lordObj.hours == 0) && (lordObj.minutes <= remindInterval) && (remind.search('L') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('spill','lord');
+            myConfirm('spill', 'lord');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -3055,7 +3008,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHeaderValue").css({
             'color': 'green'
         });
-        var timeKnight = (271 - partialrotation).toPrecision(4);
+        const timeKnight = (271 - partialrotation).toPrecision(4);
         knightObj.hours = Math.floor(timeKnight);
         knightObj.minutes = Math.ceil((timeKnight - knightObj.hours) * 60);
         knightObj = convertToDyHrMn(0, knightObj.hours, knightObj.minutes);
@@ -3077,7 +3030,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
         if ((knightObj.hours == 0) && (knightObj.minutes <= remindInterval) && (remind.search('K') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('spill','knight');
+            myConfirm('spill', 'knight');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -3088,7 +3041,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHeaderValue").css({
             'color': 'green'
         });
-        var timeHero = (287 - partialrotation).toPrecision(4);
+        const timeHero = (287 - partialrotation).toPrecision(4);
         heroObj.hours = Math.floor(timeHero);
         heroObj.minutes = Math.ceil((timeHero - heroObj.hours) * 60);
         heroObj = convertToDyHrMn(0, heroObj.hours, heroObj.minutes);
@@ -3110,7 +3063,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillGrandDuke").hide();
         $(".toxicSpillArchduke").hide();
         if ((heroObj.hours == 0) && (heroObj.minutes <= remindInterval) && (remind.search('H') >= 0) && (remind.search('N') < 0)) {
-            myConfirm('spill','hero');
+            myConfirm('spill', 'hero');
             if (localStorage.getItem('KillSwitch') == 'Y') {
                 $("#toxicSpillCb").click();
             }
@@ -3121,7 +3074,7 @@ function updateToxicSpillTimer() {
         $(".toxicSpillHeaderValue").css({
             'color': 'green'
         });
-        var timeHero = (302 - partialrotation).toPrecision(4);
+        const timeHero = (302 - partialrotation).toPrecision(4);
         heroObj.hours = Math.floor(timeHero);
         heroObj.minutes = Math.ceil((timeHero - heroObj.hours) * 60);
         heroObj = convertToDyHrMn(0, heroObj.hours, heroObj.minutes);
@@ -3154,30 +3107,9 @@ function updateToxicSpillTimer() {
     $(".toxicSpillKnightValue").text(formatOutput(knightObj.days, knightObj.hours, knightObj.minutes));
     $(".toxicSpillHeroValue").text(formatOutput(heroObj.days, heroObj.hours, heroObj.minutes));
     //https://mhwiki.hitgrab.com/wiki/index.php/Toxic_Spill#Pollution_Levels
-    $(".toxicSpillArchdukeValue").css({
+    $('.toxicSpillArchdukeValue,.toxicSpillGrandDukeValue,.toxicSpillDukeValue,.toxicSpillCountValue,.toxicSpillBaronValue,.toxicSpillLordValue,.toxicSpillKnightValue,.toxicSpillHeroValue').css({
         'float': 'right'
-    })
-    $(".toxicSpillGrandDukeValue").css({
-        'float': 'right'
-    })
-    $(".toxicSpillDukeValue").css({
-        'float': 'right'
-    })
-    $(".toxicSpillCountValue").css({
-        'float': 'right'
-    })
-    $(".toxicSpillBaronValue").css({
-        'float': 'right'
-    })
-    $(".toxicSpillLordValue").css({
-        'float': 'right'
-    })
-    $(".toxicSpillKnightValue").css({
-        'float': 'right'
-    })
-    $(".toxicSpillHeroValue").css({
-        'float': 'right'
-    })
+    });
 }
 
 function spillLevel(days, hours, minutes) {
@@ -3192,7 +3124,7 @@ $(document).on('change', '#toxicSpillCb', function() {
         this.checked = "";
     }
     remindSpill(this.name, this.checked);
-})
+});
 
 $(document).on('change', '#toxicSpillHeroCb', function() {
     if (this.checked) {
@@ -3201,7 +3133,7 @@ $(document).on('change', '#toxicSpillHeroCb', function() {
         this.checked = "";
     }
     remindSpill(this.name, this.checked);
-})
+});
 
 $(document).on('change', '#toxicSpillKnightCb', function() {
     if (this.checked) {
@@ -3210,7 +3142,7 @@ $(document).on('change', '#toxicSpillKnightCb', function() {
         this.checked = "";
     }
     remindSpill(this.name, this.checked);
-})
+});
 
 $(document).on('change', '#toxicSpillLordCb', function() {
     if (this.checked) {
@@ -3219,7 +3151,7 @@ $(document).on('change', '#toxicSpillLordCb', function() {
         this.checked = "";
     }
     remindSpill(this.name, this.checked);
-})
+});
 $(document).on('change', '#toxicSpillBaronCb', function() {
     if (this.checked) {
         this.checked = "Yes";
@@ -3227,7 +3159,7 @@ $(document).on('change', '#toxicSpillBaronCb', function() {
         this.checked = "";
     }
     remindSpill(this.name, this.checked);
-})
+});
 $(document).on('change', '#toxicSpillCountCb', function() {
     if (this.checked) {
         this.checked = "Yes";
@@ -3235,7 +3167,7 @@ $(document).on('change', '#toxicSpillCountCb', function() {
         this.checked = "";
     }
     remindSpill(this.name, this.checked);
-})
+});
 $(document).on('change', '#toxicSpillDukeCb', function() {
     if (this.checked) {
         this.checked = "Yes";
@@ -3243,7 +3175,7 @@ $(document).on('change', '#toxicSpillDukeCb', function() {
         this.checked = "";
     }
     remindSpill(this.name, this.checked);
-})
+});
 $(document).on('change', '#toxicSpillGrandDukeCb', function() {
     if (this.checked) {
         this.checked = "Yes";
@@ -3251,7 +3183,7 @@ $(document).on('change', '#toxicSpillGrandDukeCb', function() {
         this.checked = "";
     }
     remindSpill(this.name, this.checked);
-})
+});
 $(document).on('change', '#toxicSpillArchdukeCb', function() {
     if (this.checked) {
         this.checked = "Yes";
@@ -3259,7 +3191,7 @@ $(document).on('change', '#toxicSpillArchdukeCb', function() {
         this.checked = "";
     }
     remindSpill(this.name, this.checked);
-})
+});
 //if master checked and no other - remind all
 //if master not checked - no reminder
 //if master checked and 1 or more checked - remind the ones checked.
@@ -3273,15 +3205,15 @@ $(document).on('change', '#toxicSpillArchdukeCb', function() {
 // G Grand Duke
 // A Archduke
 function remindSpill(cb, checked) {
-    var main = $('#toxicSpillCb');
-    var hero = $('#toxicSpillHeroCb');
-    var knight = $('#toxicSpillKnightCb');
-    var lord = $('#toxicSpillLordCb');
-    var baron = $('#toxicSpillBaronCb');
-    var count = $('#toxicSpillCountCb');
-    var duke = $('#toxicSpillDukeCb');
-    var gduke = $('#toxicSpillGrandDukeCb');
-    var aduke = $('#toxicSpillArchdukeCb');
+    const main = $('#toxicSpillCb');
+    const hero = $('#toxicSpillHeroCb');
+    const knight = $('#toxicSpillKnightCb');
+    const lord = $('#toxicSpillLordCb');
+    const baron = $('#toxicSpillBaronCb');
+    const count = $('#toxicSpillCountCb');
+    const duke = $('#toxicSpillDukeCb');
+    const gduke = $('#toxicSpillGrandDukeCb');
+    const aduke = $('#toxicSpillArchdukeCb');
     const mainName = main.prop("name");
     const hName = hero.prop("name");
     const kName = knight.prop("name");
@@ -3300,16 +3232,16 @@ function remindSpill(cb, checked) {
     const dChecked = duke.prop("checked");
     const gChecked = gduke.prop("checked");
     const aChecked = aduke.prop("checked");
-    var remindSpill = localStorage.getItem('RemindSpill')
-    var remindNone = remindSpill.search("N");
-    var remindHero = remindSpill.search("H");
-    var remindKnight = remindSpill.search("K");
-    var remindLord = remindSpill.search("L");
-    var remindBaron = remindSpill.search("B");
-    var remindCount = remindSpill.search("C");
-    var remindDuke = remindSpill.search("D");
-    var remindGduke = remindSpill.search("G");
-    var remindAduke = remindSpill.search("A");
+    let remindSpill = localStorage.getItem('RemindSpill');
+    const remindNone = remindSpill.search("N");
+    const remindHero = remindSpill.search("H");
+    const remindKnight = remindSpill.search("K");
+    const remindLord = remindSpill.search("L");
+    const remindBaron = remindSpill.search("B");
+    const remindCount = remindSpill.search("C");
+    const remindDuke = remindSpill.search("D");
+    const remindGduke = remindSpill.search("G");
+    const remindAduke = remindSpill.search("A");
     //main was checked
     if ((cb == mainName) && (checked == true)) {
         if ((hChecked == false) && (kChecked == false) && (lChecked == false) && (bChecked == false) && (cChecked == false) && (dChecked == false) && (gChecked == false) && (aChecked == false)) {
@@ -3567,13 +3499,13 @@ function remindSpill(cb, checked) {
             }
         }
     }
-    localStorage.setItem('RemindSpill', remindSpill)
+    localStorage.setItem('RemindSpill', remindSpill);
 }
 
 //============================================================================================
 function todayNow() {
-    var today = new Date();
-    var todayEpoch = today.getTime() / 1000.0;
+    const today = new Date();
+    const todayEpoch = today.getTime() / 1000.0;
     return todayEpoch;
 }
 
@@ -3583,9 +3515,9 @@ function convertToDyHrMn(days, hours, minutes) {
         minutes = 0;
     }
     if (hours >= 24) {
-        var daysExact = hours / 24;
-        var daysTrunc = Math.floor(daysExact);
-        var partialDays = daysExact - daysTrunc;
+        const daysExact = hours / 24;
+        const daysTrunc = Math.floor(daysExact);
+        const partialDays = daysExact - daysTrunc;
         hours = Math.round(partialDays * 24);
         days = daysTrunc + days;
     }
@@ -3593,13 +3525,13 @@ function convertToDyHrMn(days, hours, minutes) {
         days,
         hours,
         minutes
-    }
+    };
 }
 
 function formatOutput(days, hours, minutes) {
-    var dayStr = "";
-    var hourStr = "";
-    var minuteStr = "";
+    let dayStr = "";
+    let hourStr = "";
+    let minuteStr = "";
     if (days > 0) {
         dayStr = days + "d";
     }
@@ -3616,274 +3548,269 @@ function formatOutput(days, hours, minutes) {
 $(document).on('click', '#forbiddenGroveButton', function() {
     updateForbiddenGroveTimer();
     if ($(".forbiddenGroveHeaderValue").text() == "CLOSED") {
-        myAlert('The Forbiddengrove is closed now, you cannot travel there')
+        myAlert('The Forbiddengrove is closed now, you cannot travel there');
     } else {
-        myConfirm('grove','button');
+        myConfirm('grove', 'button');
     }
-})
+});
 
 function travelToGrove() {
     const disarm = localStorage.getItem('DAT');
-    var origin = $('#hudLocationContent').attr('class').replace("hudLocationContent ", "");
     if ($('#hudLocationContent').hasClass('hudLocationContent forbidden_grove') == true) {
         //Do nothing you are already there
     } else if ($(".forbiddenGroveHeaderValue").text() == "CLOSED") {
-        myAlert('The Forbiddengrove is closed now, you cannot travel there')
+        myAlert('The Forbiddengrove is closed now, you cannot travel there');
     } else {
-        localStorage.setItem('TravelOrigin', origin);
         app.pages.TravelPage.travel("forbidden_grove");
         if (disarm == "Y") {
-            hg.utils.TrapControl.disarmBait().go()
+            hg.utils.TrapControl.disarmBait().go();
         }
-    } 
+    }
 }
 //Balack's Cove
 $(document).on('click', '#balacksCoveButton', function() {
-    myConfirm('cove','button');
-})
+    myConfirm('cove', 'button');
+});
+
 function travelToCove() {
     const disarm = localStorage.getItem('DAT');
-    var origin = $('#hudLocationContent').attr('class').replace("hudLocationContent ", "");
     if ($('#hudLocationContent').hasClass('hudLocationContent balacks_cove') == true) {
         //Do nothing, you are already there
     } else {
-        localStorage.setItem('TravelOrigin', origin);
         app.pages.TravelPage.travel("balacks_cove");
         if (disarm == "Y") {
-            hg.utils.TrapControl.disarmBait().go()
+            hg.utils.TrapControl.disarmBait().go();
         }
-    } 
+    }
 }
 //Seasonal Garden
 $(document).on('click', '#seasonalGardenButton', function() {
-    myConfirm('garden','button');
-})
+    myConfirm('garden', 'button');
+});
+
 function travelToGarden() {
     const disarm = localStorage.getItem('DAT');
-    var origin = $('#hudLocationContent').attr('class').replace("hudLocationContent ", "");
     if ($('#hudLocationContent').hasClass('hudLocationContent seasonal_garden') == true) {
         //Do nothing, you are already there
     } else {
-        localStorage.setItem('TravelOrigin', origin);
         app.pages.TravelPage.travel("seasonal_garden");
         if (disarm == "Y") {
-            hg.utils.TrapControl.disarmBait().go()
+            hg.utils.TrapControl.disarmBait().go();
         }
     }
 }
 //Toxic Spill
 $(document).on('click', '#toxicSpillButton', function() {
-    myConfirm('spill','button');
-})
-function travelToSpill(skip) {
+    myConfirm('spill', 'button');
+});
+
+function travelToSpill() {
     const disarm = localStorage.getItem('DAT');
-    var origin = $('#hudLocationContent').attr('class').replace("hudLocationContent ", "");
     if ($('#hudLocationContent').hasClass('hudLocationContent pollution_outbreak') == true) {
         //Do nothing, you are already there
     } else {
-        localStorage.setItem('TravelOrigin', origin);
         app.pages.TravelPage.travel("pollution_outbreak");
         if (disarm == "Y") {
-            hg.utils.TrapControl.disarmBait().go()
+            hg.utils.TrapControl.disarmBait().go();
         }
-    } 
+    }
 }
 //Travel Back
 $(document).on('click', '#panicButton', function() {
-    var origin = localStorage.getItem('TravelOrigin');
-    myConfirm('back',origin);
-})
+    const prevLoc = localStorage.getItem('ws.mh.travel.plus.prevLocation');
+    myConfirm('back', prevLoc);
+});
+
 function travelBack() {
     const disarm = localStorage.getItem('DAT');
-    var origin = localStorage.getItem('TravelOrigin');
+    const origin = localStorage.getItem('ws.mh.travel.plus.prevLocation');
     if ($('#hudLocationContent').hasClass(origin) == true) {
         //Do nothing, you are already there
     } else {
         app.pages.TravelPage.travel(origin);
         if (disarm == "Y") {
-            hg.utils.TrapControl.disarmBait().go()
+            hg.utils.TrapControl.disarmBait().go();
         }
-    } 
+    }
 }
 
 //========== Modals ======================//
-function myConfirm(location,sub) {
-    var messageText = "";
-    var icon = "";
-    var travelFunction = "";
-    var title = "";
+function myConfirm(location, sub) {
+    let messageText = "";
+    let icon = "";
+    let travelFunction = "";
+    let title = "";
     if ((location == 'grove') && (sub == 'closing')) {
         icon = 'fas fa-dungeon';
         messageText = 'The Forbidden Grove is closing soon, travel there now?';
         travelFunction = travelToGrove;
         title = 'Timer Reminder';
-        } else if ((location == 'grove') && (sub == 'opening')) {
-            icon = 'fas fa-dungeon';
-            messageText = 'The Forbidden Grove is opening soon, travel there now?';
-            travelFunction = travelToGrove;
-            title = 'Timer Reminder';
-        } else if ((location == 'grove') && (sub == 'button')) {
-            icon = 'fas fa-dungeon';
-            messageText = 'Travel to the Forbidden Grove now?';
-            travelFunction = travelToGrove;
-            title = 'Quick Travel';
-        } else if ((location == 'cove') && (sub == 'low')) {
-            icon = 'fas fa-water';
-            messageText = 'Balacks Cove will be low tide soon, travel there now?';
-            travelFunction = travelToCove;
-            title = 'Timer Reminder';
-        } else if ((location == 'cove') && (sub == 'mid')) {
-            icon = 'fas fa-water';
-            messageText = 'Balacks Cove will be mid tide soon, travel there now?';
-            travelFunction = travelToCove;
-            title = 'Timer Reminder';
-        } else if ((location == 'cove') && (sub == 'high')) {
-            icon = 'fas fa-water';
-            messageText = 'Balacks Cove will be high tide soon, travel there now?';
-            travelFunction = travelToCove;
-            title = 'Timer Reminder';
-        } else if ((location == 'cove') && (sub == 'button')) {
-            icon = 'fas fa-water';
-            messageText = 'Travel to Balacks Cove now?';
-            travelFunction = travelToCove;
-            title = 'Quick Travel';
-        } else if ((location == 'garden') && (sub == 'fall')) {
+    } else if ((location == 'grove') && (sub == 'opening')) {
+        icon = 'fas fa-dungeon';
+        messageText = 'The Forbidden Grove is opening soon, travel there now?';
+        travelFunction = travelToGrove;
+        title = 'Timer Reminder';
+    } else if ((location == 'grove') && (sub == 'button')) {
+        icon = 'fas fa-dungeon';
+        messageText = 'Travel to the Forbidden Grove now?';
+        travelFunction = travelToGrove;
+        title = 'Quick Travel';
+    } else if ((location == 'cove') && (sub == 'low')) {
+        icon = 'fas fa-water';
+        messageText = 'Balacks Cove will be low tide soon, travel there now?';
+        travelFunction = travelToCove;
+        title = 'Timer Reminder';
+    } else if ((location == 'cove') && (sub == 'mid')) {
+        icon = 'fas fa-water';
+        messageText = 'Balacks Cove will be mid tide soon, travel there now?';
+        travelFunction = travelToCove;
+        title = 'Timer Reminder';
+    } else if ((location == 'cove') && (sub == 'high')) {
+        icon = 'fas fa-water';
+        messageText = 'Balacks Cove will be high tide soon, travel there now?';
+        travelFunction = travelToCove;
+        title = 'Timer Reminder';
+    } else if ((location == 'cove') && (sub == 'button')) {
+        icon = 'fas fa-water';
+        messageText = 'Travel to Balacks Cove now?';
+        travelFunction = travelToCove;
+        title = 'Quick Travel';
+    } else if ((location == 'garden') && (sub == 'fall')) {
+        icon = 'fab fa-canadian-maple-leaf';
+        messageText = 'The Seasonal Garden will be fall soon, travel there now?';
+        travelFunction = travelToGarden;
+        title = 'Timer Reminder';
+    } else if ((location == 'garden') && (sub == 'winter')) {
+        icon = 'fas fa-icicles';
+        messageText = 'The Seasonal Garden will be winter soon, travel there now?';
+        travelFunction = travelToGarden;
+        title = 'Timer Reminder';
+    } else if ((location == 'garden') && (sub == 'spring')) {
+        icon = 'fas fa-seedling';
+        messageText = 'The Seasonal Garden will be spring soon, travel there now?';
+        travelFunction = travelToGarden;
+        title = 'Timer Reminder';
+    } else if ((location == 'garden') && (sub == 'summer')) {
+        icon = 'fas fa-sun';
+        messageText = 'The Seasonal Garden will be summer soon, travel there now?';
+        travelFunction = travelToGarden;
+        title = 'Timer Reminder';
+    } else if ((location == 'garden') && (sub == 'button')) {
+        const season = $('.seasonalGardenHeaderValue').text();
+        if (season == 'FALL') {
             icon = 'fab fa-canadian-maple-leaf';
-            messageText = 'The Seasonal Garden will be fall soon, travel there now?';
-            travelFunction = travelToGarden;
-            title = 'Timer Reminder';
-        } else if ((location == 'garden') && (sub == 'winter')) {
+        } else if (season == 'WINTER') {
             icon = 'fas fa-icicles';
-            messageText = 'The Seasonal Garden will be winter soon, travel there now?';
-            travelFunction = travelToGarden;
-            title = 'Timer Reminder';
-        } else if ((location == 'garden') && (sub == 'spring')) {
-            icon = 'fas fa-seedling';
-            messageText = 'The Seasonal Garden will be spring soon, travel there now?';
-            travelFunction = travelToGarden;
-            title = 'Timer Reminder';
-        } else if ((location == 'garden') && (sub == 'summer')) {
+        } else if (season == 'SPRING') {
+            icon = 'fas fa-icicles';
+        } else {
             icon = 'fas fa-sun';
-            messageText = 'The Seasonal Garden will be summer soon, travel there now?';
-            travelFunction = travelToGarden;
-            title = 'Timer Reminder';
-        } else if ((location == 'garden') && (sub == 'button')) {
-            var season = $('.seasonalGardenHeaderValue').text();
-            if (season == 'FALL') {
-                icon = 'fab fa-canadian-maple-leaf';
-            } else if (season == 'WINTER') {
-                icon = 'fas fa-icicles';
-            } else if (season == 'SPRING') {
-                icon = 'fas fa-icicles';
-            } else {
-                icon = 'fas fa-sun';
-            }
-            messageText = 'Travel to the Seasonal Garden now?';
-            travelFunction = travelToGarden;
-            title = 'Quick Travel';
-        } else if ((location == 'spill') && (sub == 'hero')) {
-            icon = 'fas fa-biohazard';
-            messageText = 'The Toxic Spill will be '+sub+' rank soon, travel there now?';
-            travelFunction = travelToSpill;
-            title = 'Timer Reminder';
-        } else if ((location == 'spill') && (sub == 'knight')) {
-            icon = 'fas fa-biohazard';
-            messageText = 'The Toxic Spill will be '+sub+' rank soon, travel there now?';
-            travelFunction = travelToSpill;
-            title = 'Timer Reminder';
-        } else if ((location == 'spill') && (sub == 'lord')) {
-            icon = 'fas fa-biohazard';
-            messageText = 'The Toxic Spill will be '+sub+' rank soon, travel there now?';
-            travelFunction = travelToSpill;
-            title = 'Timer Reminder';
-        } else if ((location == 'spill') && (sub == 'baron')) {
-            icon = 'fas fa-biohazard';
-            messageText = 'The Toxic Spill will be '+sub+' rank soon, travel there now?';
-            travelFunction = travelToSpill;
-            title = 'Timer Reminder';
-        } else if ((location == 'spill') && (sub == 'count')) {
-            icon = 'fas fa-biohazard';
-            messageText = 'The Toxic Spill will be '+sub+' rank soon, travel there now?';
-            travelFunction = travelToSpill;
-            title = 'Timer Reminder';
-        } else if ((location == 'spill') && (sub == 'duke')) {
-            icon = 'fas fa-biohazard';
-            messageText = 'The Toxic Spill will be '+sub+' rank soon, travel there now?';
-            travelFunction = travelToSpill;
-            title = 'Timer Reminder';
-        } else if ((location == 'spill') && (sub == 'grand duke')) {
-            icon = 'fas fa-biohazard';
-            messageText = 'The Toxic Spill will be '+sub+' rank soon, travel there now?';
-            travelFunction = travelToSpill;
-            title = 'Timer Reminder';
-        } else if ((location == 'spill') && (sub == 'archduke')) {
-            icon = 'fas fa-biohazard';
-            messageText = 'The Toxic Spill will be '+sub+' rank soon, travel there now?';
-            travelFunction = travelToSpill;
-            title = 'Timer Reminder';
-        } else if ((location == 'spill') && (sub == 'button')) {
-            icon = 'fas fa-biohazard';
-            messageText = 'Travel to the Toxic Spill now?';
-            travelFunction = travelToSpill;
-            title = 'Quick Travel';
-        } else if (location == 'back') {
-            icon = 'fas fa-history';
-            messageText = 'Travel to the back to the '+sub+' now?';
-            travelFunction = travelBack;
-            title = 'Quick Travel';
         }
-   //
-   $.confirm({
-    autoClose: 'cancel|120000',
-    title: title,
-    content: messageText,
-    icon: icon,
-    type: 'dark',
-    typeAnimated: true,
-    boxWidth: '30%',
-    useBootstrap: false,
-    draggable: true,
-    escapeKey: 'cancel',
-    buttons: {
-        confirm: {
-            text: 'Yes',
-            keys: ['enter', 'space'],
-            btnClass: 'btn-green',
-            action: function() {
-                travelFunction("skip")
-            }
-        },
-        cancel: {
-            text: 'No',
-            btnClass: 'btn-red',
-            action: function(){
-            }
-        }
+        messageText = 'Travel to the Seasonal Garden now?';
+        travelFunction = travelToGarden;
+        title = 'Quick Travel';
+    } else if ((location == 'spill') && (sub == 'hero')) {
+        icon = 'fas fa-biohazard';
+        messageText = 'The Toxic Spill will be ' + sub + ' rank soon, travel there now?';
+        travelFunction = travelToSpill;
+        title = 'Timer Reminder';
+    } else if ((location == 'spill') && (sub == 'knight')) {
+        icon = 'fas fa-biohazard';
+        messageText = 'The Toxic Spill will be ' + sub + ' rank soon, travel there now?';
+        travelFunction = travelToSpill;
+        title = 'Timer Reminder';
+    } else if ((location == 'spill') && (sub == 'lord')) {
+        icon = 'fas fa-biohazard';
+        messageText = 'The Toxic Spill will be ' + sub + ' rank soon, travel there now?';
+        travelFunction = travelToSpill;
+        title = 'Timer Reminder';
+    } else if ((location == 'spill') && (sub == 'baron')) {
+        icon = 'fas fa-biohazard';
+        messageText = 'The Toxic Spill will be ' + sub + ' rank soon, travel there now?';
+        travelFunction = travelToSpill;
+        title = 'Timer Reminder';
+    } else if ((location == 'spill') && (sub == 'count')) {
+        icon = 'fas fa-biohazard';
+        messageText = 'The Toxic Spill will be ' + sub + ' rank soon, travel there now?';
+        travelFunction = travelToSpill;
+        title = 'Timer Reminder';
+    } else if ((location == 'spill') && (sub == 'duke')) {
+        icon = 'fas fa-biohazard';
+        messageText = 'The Toxic Spill will be ' + sub + ' rank soon, travel there now?';
+        travelFunction = travelToSpill;
+        title = 'Timer Reminder';
+    } else if ((location == 'spill') && (sub == 'grand duke')) {
+        icon = 'fas fa-biohazard';
+        messageText = 'The Toxic Spill will be ' + sub + ' rank soon, travel there now?';
+        travelFunction = travelToSpill;
+        title = 'Timer Reminder';
+    } else if ((location == 'spill') && (sub == 'archduke')) {
+        icon = 'fas fa-biohazard';
+        messageText = 'The Toxic Spill will be ' + sub + ' rank soon, travel there now?';
+        travelFunction = travelToSpill;
+        title = 'Timer Reminder';
+    } else if ((location == 'spill') && (sub == 'button')) {
+        icon = 'fas fa-biohazard';
+        messageText = 'Travel to the Toxic Spill now?';
+        travelFunction = travelToSpill;
+        title = 'Quick Travel';
+    } else if (location == 'back') {
+        icon = 'fas fa-history';
+        messageText = 'Travel to the back to the ' + sub + ' now?';
+        travelFunction = travelBack;
+        title = 'Quick Travel';
     }
-})
+    //
+    $.confirm({
+        autoClose: 'cancel|120000',
+        title: title,
+        content: messageText,
+        icon: icon,
+        type: 'dark',
+        typeAnimated: true,
+        boxWidth: '30%',
+        useBootstrap: false,
+        draggable: true,
+        escapeKey: 'cancel',
+        buttons: {
+            confirm: {
+                text: 'Yes',
+                keys: ['enter', 'space'],
+                btnClass: 'btn-green',
+                action: function() {
+                    travelFunction("skip");
+                }
+            },
+            cancel: {
+                text: 'No',
+                btnClass: 'btn-red',
+                action: function() {}
+            }
+        }
+    });
 }
+
 function myAlert(messageText) {
-    var icon = 'fas fa-exclamation-circle'
-    var title = "Attention!"
-   $.alert({
-    autoClose: 'acknowledge|60000',
-    title: title,
-    content: messageText,
-    icon: icon,
-    type: 'dark',
-    typeAnimated: true,
-    boxWidth: '30%',
-    useBootstrap: false,
-    draggable: true,
-    escapeKey: 'aknowledge',
-    buttons: {
-        acknowledge: {
-            text: 'Ok',
-            keys: ['enter', 'space'],
-            btnClass: 'btn-blue',
-            action: function() {
-            }
-        },
-    }
-})
+    const icon = 'fas fa-exclamation-circle';
+    const title = "Attention!";
+    $.alert({
+        autoClose: 'acknowledge|60000',
+        title: title,
+        content: messageText,
+        icon: icon,
+        type: 'dark',
+        typeAnimated: true,
+        boxWidth: '30%',
+        useBootstrap: false,
+        draggable: true,
+        escapeKey: 'aknowledge',
+        buttons: {
+            acknowledge: {
+                text: 'Ok',
+                keys: ['enter', 'space'],
+                btnClass: 'btn-blue',
+                action: function() {}
+            },
+        }
+    });
 }
