@@ -619,7 +619,11 @@ function populatePowerCrowns(mouse){
     const mouseName = $(mouse).find('.mouseCrownsView-group-mouse-name').text();
     let powerType = getMousePowerType(mouseName);
     let icon = 'https://www.mousehuntgame.com/images/powertypes/parental.png'
-    if(powerType == 'normal') {
+    if ( ! powerType || powerType === 'event' ) {
+        return;
+    }
+
+    if ( powerType == 'normal') {
         powerType = 'multi';
     } else {
         icon = 'https://www.mousehuntgame.com/images/powertypes/'+powerType+'.png';
