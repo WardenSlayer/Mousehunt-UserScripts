@@ -152,7 +152,7 @@ function flexEggMaster() {
         $(eggMasterIcon).attr('title', 'Is an Egg Master')
         $(eggMasterIcon).css({
             'background-size': '25px 25px',
-            'background-image': "url('https://i.ibb.co/qj01CGk/image-removebg-preview-35.png')",
+            'background-image': "url('https://www.mousehuntgame.com/images/items/convertibles/transparent_thumb/3ada6ff18f89d020908e35fee2de7a45.png')",
             'width': '25px',
             'height': '25px',
             'float': 'right',
