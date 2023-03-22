@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.26
+// @version      1.27
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
@@ -20,6 +20,13 @@ $(document).ready(function() {
     };
     localStorage.setItem('ws.pfp.sortUorD','down');
     loadFunction();
+
+    addStyles(`#tipButton {
+        position: absolute;
+        top: 3px;
+        right: 150px;
+        float: right;
+    }`);
 });
 
 function loadFunction(){
@@ -47,6 +54,22 @@ $(document).ajaxComplete(function(event,xhr,options){
         loadFunction();
     }
 });
+
+function addStyles(css) {
+    // Check to see if the existing element exists.
+    const existingStyles = document.getElementById('ws-profile-plus-styles');
+
+    // If so, append our new styles to the existing element.
+    if (existingStyles) {
+        existingStyles.innerHTML += css;
+        return;
+    }
+
+    const style = document.createElement('style');
+    style.id = 'ws-profile-plus-styles';
+    style.innerHTML = css;
+    document.head.appendChild(style);
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Profile TAB
@@ -98,23 +121,16 @@ function generateProfile() {
         if ($('#tipButton').get(0)) {
             return false;
         } else {
-            $('.friendsPage-friendRow-content').css({
-                'padding-top': '0px',
-            });
             const tipButton = document.createElement("button");
             tipButton.id = "tipButton";
-            $(tipButton).attr('title', 'Tip this hunter 10 SB+');
-            $(tipButton).text('Tip 10 SB+');
+            tipButton.title = "Tip this hunter 10 SB+";
+            tipButton.classList.add('mousehuntActionButton', 'tiny');
+
+            const tipButtonText = document.createElement("span");
+            tipButtonText.innerHTML = "Tip 10 SB+";
+
+            tipButton.appendChild(tipButtonText);
             yourFriendsProfile.prepend(tipButton);
-            $(tipButton).css({
-                'background-image': "url('https://www.toptal.com/designers/subtlepatterns/patterns/interlaced.png')",
-                'background-repeat': 'no-repeat',
-                'background-size': 'contain',
-                'position': 'relative',
-                'left': '37px',
-                'width': '85px',
-                'height': '20px',
-            });
         }
 
     } else if ($('.friendsProfileView-selfStats').get(0)) {
@@ -136,7 +152,7 @@ function flexEggMaster() {
         $(eggMasterIcon).attr('title', 'Is an Egg Master')
         $(eggMasterIcon).css({
             'background-size': '25px 25px',
-            'background-image': "url('https://i.ibb.co/qj01CGk/image-removebg-preview-35.png')",
+            'background-image': "url('https://www.mousehuntgame.com/images/items/convertibles/transparent_thumb/3ada6ff18f89d020908e35fee2de7a45.png')",
             'width': '25px',
             'height': '25px',
             'float': 'right',
@@ -603,7 +619,11 @@ function populatePowerCrowns(mouse){
     const mouseName = $(mouse).find('.mouseCrownsView-group-mouse-name').text();
     let powerType = getMousePowerType(mouseName);
     let icon = 'https://www.mousehuntgame.com/images/powertypes/parental.png'
-    if(powerType == 'normal') {
+    if ( ! powerType || powerType === 'event' ) {
+        return;
+    }
+
+    if ( powerType == 'normal') {
         powerType = 'multi';
     } else {
         icon = 'https://www.mousehuntgame.com/images/powertypes/'+powerType+'.png';
