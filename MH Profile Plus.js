@@ -20,6 +20,13 @@ $(document).ready(function() {
     };
     localStorage.setItem('ws.pfp.sortUorD','down');
     loadFunction();
+
+    addStyles(`#tipButton {
+        position: absolute;
+        top: 3px;
+        right: 150px;
+        float: right;
+    }`);
 });
 
 function loadFunction(){
@@ -47,6 +54,22 @@ $(document).ajaxComplete(function(event,xhr,options){
         loadFunction();
     }
 });
+
+function addStyles(css) {
+    // Check to see if the existing element exists.
+    const existingStyles = document.getElementById('ws-profile-plus-styles');
+
+    // If so, append our new styles to the existing element.
+    if (existingStyles) {
+        existingStyles.innerHTML += css;
+        return;
+    }
+
+    const style = document.createElement('style');
+    style.id = 'ws-profile-plus-styles';
+    style.innerHTML = css;
+    document.head.appendChild(style);
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Profile TAB
@@ -98,23 +121,16 @@ function generateProfile() {
         if ($('#tipButton').get(0)) {
             return false;
         } else {
-            $('.friendsPage-friendRow-content').css({
-                'padding-top': '0px',
-            });
             const tipButton = document.createElement("button");
             tipButton.id = "tipButton";
-            $(tipButton).attr('title', 'Tip this hunter 10 SB+');
-            $(tipButton).text('Tip 10 SB+');
+            tipButton.title = "Tip this hunter 10 SB+";
+            tipButton.classList.add('mousehuntActionButton', 'tiny');
+
+            const tipButtonText = document.createElement("span");
+            tipButtonText.innerHTML = "Tip 10 SB+";
+
+            tipButton.appendChild(tipButtonText);
             yourFriendsProfile.prepend(tipButton);
-            $(tipButton).css({
-                'background-image': "url('https://www.toptal.com/designers/subtlepatterns/patterns/interlaced.png')",
-                'background-repeat': 'no-repeat',
-                'background-size': 'contain',
-                'position': 'relative',
-                'left': '37px',
-                'width': '85px',
-                'height': '20px',
-            });
         }
 
     } else if ($('.friendsProfileView-selfStats').get(0)) {
