@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.27
+// @version      1.28
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
@@ -526,7 +526,6 @@ function showCommunityRanks() {
     const communityCrownHeader = $('.mouseCrownsView-group-header').first().clone();
     communityCrownHeader.addClass('community');
     communityCrownHeader.css({
-        'height': '65px',
         'padding': '3px',
         'margin-bottom': '10px',
     });
@@ -561,7 +560,6 @@ function showCommunityRanks() {
     const rankSummary = $("<div class='rank summary'</div>");
     rankSummary.css({
         'font-size': '11.75px',
-        'float': 'left',
     });
     communityCrownHeader.append(rankSummary);
     const uncrownedText = document.createTextNode("Uncrowned: " + uncrowned + " (" + ((uncrowned / totalMice) * 100).toFixed(2) + "%) | ");
@@ -614,24 +612,25 @@ $(document).on("change", "#powerCrowns", function() {
     }
 })
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function populatePowerCrowns(mouse){
     const mouseName = $(mouse).find('.mouseCrownsView-group-mouse-name').text();
     let powerType = getMousePowerType(mouseName);
     let icon = 'https://www.mousehuntgame.com/images/powertypes/parental.png'
-    if ( ! powerType || powerType === 'event' ) {
-        return;
-    }
-
-    if ( powerType == 'normal') {
+    let iconClass = "";
+    if(powerType == 'normal') {
         powerType = 'multi';
+        iconClass = 'pt '+powerType;
+    } else if (powerType == 'event') {
+        iconClass = 'pt event';
+        icon = 'https://www.mousehuntgame.com/images/items/skins/73c91f2016a313406553794587625e24.jpg';
     } else {
         icon = 'https://www.mousehuntgame.com/images/powertypes/'+powerType+'.png';
+        iconClass = 'pt '+powerType;
     }
     const label = $(mouse).find('.mouseCrownsView-group-mouse-label');
     if($(label).find('img').length >0) {
     } else {
-        $(label).append($('<img>',{class:'pt '+powerType,src:icon}));
+        $(label).append($('<img>',{class:iconClass,src:icon}));
         $(label).find('img').css({'width': '17.5px','height':'17.5px','margin-left':'1px',})
     }
 }
@@ -675,7 +674,6 @@ function showPowerCrowns() {
             'width':'50%',
         });
         $(thisBtn).css({
-            //'border-right': 'none',
             'background-color': '#008CBA',
             'border-radius':'4px',
             'font-size':'14px',
@@ -719,7 +717,6 @@ function getPowerTypeTotals(type) {
                        'tactical':104,
                        'multi':128};
     const num = $('.mouseCrownsView-group:not(.favourite):not(.none):not(.bronze)').find('.pt.'+type).length;
-
     const percent = ((num/totalMice[type])*100).toFixed(2);
     return num+' ('+percent+'%)'
 }
@@ -1869,7 +1866,6 @@ function hidePowerCrowns() {
         $('.mouseCrownsView-group:not(.favorite)').find('.pt').remove();
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /********** Copy Crowns **********/
 function copyMyCrowns() {
