@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.28
+// @version      1.29
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
@@ -526,6 +526,7 @@ function showCommunityRanks() {
     const communityCrownHeader = $('.mouseCrownsView-group-header').first().clone();
     communityCrownHeader.addClass('community');
     communityCrownHeader.css({
+        //'height': '65px',
         'padding': '3px',
         'margin-bottom': '10px',
     });
@@ -707,10 +708,10 @@ function showPowerCrowns() {
 function getPowerTypeTotals(type) {
     if (type =='parental') {type = 'multi'}
     const totalMice = {'arcane':65,
-                       'draconic':36,
+                       'draconic':37,
                        'forgotten':87,
                        'hydro':189,
-                       'law':66,
+                       'law':67,
                        'physical':45,
                        'rift':142,
                        'shadow':78,
