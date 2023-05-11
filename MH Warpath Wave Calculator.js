@@ -50,10 +50,10 @@ function updateWave() {
             console.log('Wave 4: Script Stopped');
         }
         return
-    };
+    }
     if (debug == true) {
         console.log('Wave Retreat@',waveRetreat);
-    };
+    }
     waveMice.each(function(i) {
         const thisRemaning = parseInt($(this).find('.warpathHUD-wave-mouse-population').text(), 10);
         let thisStreaked = 0;
@@ -69,7 +69,7 @@ function updateWave() {
     });
     if (debug == true) {
         console.log('Mouse Breakdown:',remainingWaveMice);
-    };
+    }
     const panicMeter = $('.warpathHUD-moraleBar.mousehuntTooltipParent');
     if (totalRemaining > waveRetreat) {
         const retreatingIn = totalRemaining - waveRetreat;
@@ -103,12 +103,12 @@ function updateWave() {
         console.log('Hover Text:',resultString);
     }
     return resultString
-};
+}
 
 function mouseClass(remaining,streaked) {
     this.remaining = remaining;
     this.streaked = streaked;
-};
+}
 
 $('.warpathHUD-moraleBar.mousehuntTooltipParent').mouseover(function() {
     const title = updateWave();
