@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.23
+// @version      1.30
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
@@ -20,6 +20,13 @@ $(document).ready(function() {
     };
     localStorage.setItem('ws.pfp.sortUorD','down');
     loadFunction();
+
+    addStyles(`#tipButton {
+        position: absolute;
+        top: 3px;
+        right: 150px;
+        float: right;
+    }`);
 });
 
 function loadFunction(){
@@ -47,6 +54,22 @@ $(document).ajaxComplete(function(event,xhr,options){
         loadFunction();
     }
 });
+
+function addStyles(css) {
+    // Check to see if the existing element exists.
+    const existingStyles = document.getElementById('ws-profile-plus-styles');
+
+    // If so, append our new styles to the existing element.
+    if (existingStyles) {
+        existingStyles.innerHTML += css;
+        return;
+    }
+
+    const style = document.createElement('style');
+    style.id = 'ws-profile-plus-styles';
+    style.innerHTML = css;
+    document.head.appendChild(style);
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Profile TAB
@@ -98,23 +121,16 @@ function generateProfile() {
         if ($('#tipButton').get(0)) {
             return false;
         } else {
-            $('.friendsPage-friendRow-content').css({
-                'padding-top': '0px',
-            });
             const tipButton = document.createElement("button");
             tipButton.id = "tipButton";
-            $(tipButton).attr('title', 'Tip this hunter 10 SB+');
-            $(tipButton).text('Tip 10 SB+');
+            tipButton.title = "Tip this hunter 10 SB+";
+            tipButton.classList.add('mousehuntActionButton', 'tiny');
+
+            const tipButtonText = document.createElement("span");
+            tipButtonText.innerHTML = "Tip 10 SB+";
+
+            tipButton.appendChild(tipButtonText);
             yourFriendsProfile.prepend(tipButton);
-            $(tipButton).css({
-                'background-image': "url('https://www.toptal.com/designers/subtlepatterns/patterns/interlaced.png')",
-                'background-repeat': 'no-repeat',
-                'background-size': 'contain',
-                'position': 'relative',
-                'left': '37px',
-                'width': '85px',
-                'height': '20px',
-            });
         }
 
     } else if ($('.friendsProfileView-selfStats').get(0)) {
@@ -136,7 +152,7 @@ function flexEggMaster() {
         $(eggMasterIcon).attr('title', 'Is an Egg Master')
         $(eggMasterIcon).css({
             'background-size': '25px 25px',
-            'background-image': "url('https://i.ibb.co/qj01CGk/image-removebg-preview-35.png')",
+            'background-image': "url('https://www.mousehuntgame.com/images/items/convertibles/transparent_thumb/3ada6ff18f89d020908e35fee2de7a45.png')",
             'width': '25px',
             'height': '25px',
             'float': 'right',
@@ -186,14 +202,13 @@ $(document).on('click', '.hunterInfoView-idCardBlock-secondaryHeader', function(
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function generateMice() {
-    const debug = localStorage.getItem('ws.debug');
     const allMice = $('.mouseListView-categoryContent-subgroup-mouse.stats:not(.header)');
     const statsHeader = $('.mouseListView-categoryContent-subgroup-mouse.stats.header');
     allMice.each(function(i) {
         const thisThumb = $(this).find('.mouseListView-categoryContent-subgroup-mouse-thumb');
         const thisCatches = parseInt($(this).find('.catches').text().replace(",", ""),10);
         const thisMisses = parseInt($(this).find('.misses').text().replace(",", ""),10);
-        setCrownBorder(thisThumb,thisCatches);
+        const thisCrown = setCrownBorder(thisThumb,thisCatches);
     });
     $(statsHeader).css({
         'cursor': 'pointer',
@@ -229,21 +244,27 @@ function SortMice(sortBy) {
 function setCrownBorder(thumb,catches) {
     let top = "";
     let bottom = "";
-    if ((catches >= 10) && (catches < 100)) {
-        top = '#f0c693';
-        bottom = '#8d4823';
-    } else if ((catches >= 100) && (catches < 500)) {
-        top = '#d1d7e9';
-        bottom = '#66718b';
-    } else if ((catches >= 500) && (catches < 1000)) {
-        top = '#ffe589';
-        bottom = '#b67800';
-    } else if ((catches >= 1000) && (catches < 2500)) {
-        top = '#9191ff';
-        bottom = '#1d1781';
-    } else if (catches >= 2500) {
+    let crown = "n";
+    if (catches >= 2500) {
         top = '#c4eae6';
         bottom = '#63b9cf';
+        crown = 'd';
+    } else if (catches >= 1000) {
+        top = '#9191ff';
+        bottom = '#1d1781';
+        crown = 'p';
+    } else if (catches >= 500) {
+        top = '#ffe589';
+        bottom = '#b67800';
+        crown = 'g';
+    } else if (catches >= 100) {
+        top = '#d1d7e9';
+        bottom = '#66718b';
+        crown = 's';
+    } else if (catches >= 10) {
+        top = '#f0c693';
+        bottom = '#8d4823';
+        crown = 'b';
     } else {
         //no crown
         top = '#ab9f92';
@@ -258,6 +279,7 @@ function setCrownBorder(thumb,catches) {
         'border-bottom-color': bottom,
         'border-right-color': bottom,
     });
+    return crown;
 }
 
 function sortMiceBy(key,UD) {
@@ -277,8 +299,8 @@ function sortMiceBy(key,UD) {
             a = $(a).find(key).text();
             b = $(b).find(key).text();
         } else if ((key == '.catches') || (key == '.misses')) {
-            a = parseInt($(a).find(key).text(),10);
-            b = parseInt($(b).find(key).text(),10);
+            a = parseInt($(a).find(key).text().replace(",",""),10);
+            b = parseInt($(b).find(key).text().replace(",",""),10);
         } else if ((key == '.average_weight') || (key == '.heaviest_catch')) {
             a = parseUntits($(a).find(key).text());
             b = parseUntits($(b).find(key).text());
@@ -306,7 +328,6 @@ function parseUntits(unitString) {
     return oz
 }
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Crowns TAB
 //
@@ -324,15 +345,17 @@ function generateCrowns() {
         lockFavorites();
     }
     if (localStorage.getItem("ShowCommunityRanks") == "Y") {
-        localStorage.setItem('ws.mh.pfp.numMice',"");
         hg.utils.MouseUtil.getMouseNames(function (data) {
             const numMice = Object.keys($(data)[0]).length-2;
             localStorage.setItem('ws.mh.pfp.numMice',numMice);
             if (debug == true) {
                 console.log('Total Mice',numMice);
             };
+            showCommunityRanks();
         })
-        setTimeout(showCommunityRanks, 1000)
+    }
+    if(localStorage.getItem("ShowPowerCrowns") == "Y") {
+        showPowerCrowns();
     }
 }
 
@@ -372,15 +395,32 @@ function buildToolbar() {
     } else {
         communityRanks.checked = "";
     }
-
     const communityRanksLabel = document.createElement("label");
     communityRanksLabel.htmlFor = "communityRanksLabel";
     communityRanksLabel.appendChild(
-        document.createTextNode("Show King's Crown Summary  ")
+        document.createTextNode("Show Crown Summary  ")
     );
     toolBar.appendChild(communityRanks);
     toolBar.appendChild(communityRanksLabel);
-
+    // Power Crowns CB
+    const powerCrowns = document.createElement("input");
+    powerCrowns.type = "checkbox";
+    powerCrowns.name = "powerCrowns";
+    powerCrowns.value = "";
+    powerCrowns.id = "powerCrowns";
+    powerCrowns.checked = "";
+    if (localStorage.getItem("ShowPowerCrowns") == "Y") {
+        powerCrowns.checked = "Yes";
+    } else {
+        powerCrowns.checked = "";
+    }
+    const powerCrownsLabel = document.createElement("label");
+    powerCrownsLabel.htmlFor = "powerCrownsLabel";
+    powerCrownsLabel.appendChild(
+        document.createTextNode("Show Power Crowns  ")
+    );
+    toolBar.appendChild(powerCrowns);
+    toolBar.appendChild(powerCrownsLabel);
     //Copy Crown Button
     const copyCrownsButton = document.createElement("button");
     copyCrownsButton.id = "copyCrownsButton";
@@ -399,7 +439,7 @@ function buildToolbar() {
         'height': '25px',
     });
     // Last
-    let crownBreak = $('.mouseCrownsView-group.favourite');
+    let crownBreak = $('.mouseCrownsView-group.favourite').css({'margin-bottom':'32px'});
     crownBreak.append(toolBar);
     $(".toolBar").css({
         'float': "right",
@@ -436,10 +476,6 @@ function lockFavorites() {
     }
     const allMice = $(".mouseCrownsView-group-mouse").find('.mouseCrownsView-group-mouse-favouriteButton');
     allMice.css("pointer-events", "none");
-    $(".mouseCrownsView-crown.favourite").css(
-        "background",
-        "url('https://image.flaticon.com/icons/svg/204/204310.svg') no-repeat left top"
-    );
 }
 
 function unlockFavorites() {
@@ -483,17 +519,25 @@ $(document).on("change", "#communityRanks", function() {
 function showCommunityRanks() {
     const debug = localStorage.getItem('ws.debug');
     const totalMice = localStorage.getItem('ws.mh.pfp.numMice');
-    if ($(".crownheader.crownheadercommunity").length > 0) {
+    if ($('.mouseCrownsView-group-header.community').length > 0) {
         return;
     }
     const crownBreak = $(".mouseCrownsView-group.favourite");
-    const communityCrownHeader = $(
-        "<div class='crownheader crownheadercommunity'>King's Crown Summary</div>"
-    );
+    const communityCrownHeader = $('.mouseCrownsView-group-header').first().clone();
+    communityCrownHeader.addClass('community');
     communityCrownHeader.css({
+        //'height': '65px',
+        'padding': '3px',
+        'margin-bottom': '10px',
+    });
+    communityCrownHeader.find('.mouseCrownsView-crown').removeClass('favourite').addClass('community').css({
         'background-image': "url('https://icon-library.com/images/138339.png')",
         'background-repeat': 'no-repeat',
-        'background-size': '25px 25px',
+        'background-size': '40px 40px',
+    });
+    communityCrownHeader.find('.mouseCrownsView-group-header-subtitle')
+    communityCrownHeader.find('.mouseCrownsView-group-header-name').text('Crown Summary').css({
+        "font-weight": "bold",
     });
     communityCrownHeader.insertAfter(crownBreak);
     const allUncrowned = $(".mouseCrownsView-group.none").find(".mouseCrownsView-group-mouse");
@@ -516,10 +560,9 @@ function showCommunityRanks() {
     const goldLink = 'https://docs.google.com/spreadsheets/d/10OGD5OYkGIEAbiez7v92qU5Fdul0ZtCRgEjlECkwZJE/pubhtml?gid=478731024&single=true&fbclid=IwAR28w7IQyMp91I62CR3GOILpbeLwgKaydIoQimMNm7j3S0DL8Mj_IsRpGD4'
     const rankSummary = $("<div class='rank summary'</div>");
     rankSummary.css({
-        'font-size': '12px',
-        'margin-bottom': '10px',
+        'font-size': '11.75px',
     });
-    rankSummary.insertAfter(communityCrownHeader);
+    communityCrownHeader.append(rankSummary);
     const uncrownedText = document.createTextNode("Uncrowned: " + uncrowned + " (" + ((uncrowned / totalMice) * 100).toFixed(2) + "%) | ");
     $(rankSummary).attr('title', 'Mobster and Leprechaun excluded from counts');
     const bronzeText = document.createTextNode("Bronze: " + bronzeCrowns + " (" + ((bronzeCrowns / totalMice) * 100).toFixed(2) + "%) | ");
@@ -529,15 +572,11 @@ function showCommunityRanks() {
     const diamondText = document.createTextNode("Diamond: " + diamondCrowns + " (" + ((diamondCrowns / totalMice) * 100).toFixed(2) + "%)");
     const aBronze = document.createElement('a');
     aBronze.appendChild(bronzeText);
-    //const bronzeRank = getRankBronze(allBronze.length)
-    //aBronze.title = "90% Crowned Scoreboard: " + bronzeRank;
     aBronze.title = "90% Crowned Scoreboard";
     aBronze.href = bronzeLink;
     $(aBronze).attr("target", "_blank");
     const aSilver = document.createElement('a');
     aSilver.appendChild(silverText);
-    //const silverRank = getRankSilver(allSilver.length)
-    //aSilver.title = "MHCC Scoreboard: " + silverRank;
     aSilver.title = "MHCC Scoreboard";
     aSilver.href = silverLink;
     $(aSilver).attr("target", "_blank");
@@ -549,78 +588,1321 @@ function showCommunityRanks() {
     $(rankSummary).append(uncrownedText).append(aBronze).append(aSilver).append(aGold).append(platText).append(diamondText);
 }
 
-function getRankBronze(crowns) {
-    const totalMice = localStorage.getItem('ws.mh.pfp.numMice');
-    let rank = "";
-    if (crowns >= totalMice) {
-        rank = "Hepatizon";
-    } else if (crowns >= 1057) {
-        rank = "Electrum";
-    } else if (crowns >= 1046) {
-        rank = "Palladium";
-    } else if (crowns >= 1014) {
-        rank = "Cobalt";
-    } else if (crowns >= 961) {
-        rank = "Bronze (full)";
-    } else if (crowns >= 907) {
-        rank = "Titanium";
-    } else if (crowns >= 854) {
-        rank = "Pewter";
-    } else if (crowns >= 801) {
-        rank = "Brass";
-    } else if (crowns >= 747) {
-        rank = "Copper";
-    } else if (crowns >= 694) {
-        rank = "Tin";
-    } else {
-        rank = "Rust";
-    }
-
-    return rank;
-}
-
-function getRankSilver(crowns) {
-    const totalMice = localStorage.getItem('ws.mh.pfp.numMice');
-    let rank = "";
-    if (crowns >= 960) {
-        rank = "Super Secret Squirrel";
-    } else if (crowns >= 906) {
-        rank = "Grizzled Squirrel";
-    } else if (crowns >= 853) {
-        rank = "Flying Squirrel";
-    } else if (crowns >= 800) {
-        rank = "Chinchilla";
-    } else if (crowns >= 746) {
-        rank = "Meerkat";
-    } else if (crowns >= 693) {
-        rank = "Ferret";
-    } else if (crowns >= 640) {
-        rank = "Prairie Dog";
-    } else if (crowns >= 586) {
-        rank = "Marmot";
-    } else if (crowns >= 533) {
-        rank = "Woodchuck";
-    } else if (crowns >= 480) {
-        rank = "Wombat";
-    } else if (crowns >= 426) {
-        rank = "Pine Marten";
-    } else if (crowns >= 373) {
-        rank = "Chipmunk";
-    } else if (crowns >= 320) {
-        rank = "Bandicoot";
-    } else {
-        rank = "Weasel";
-    }
-    return rank;
-}
-
 function hideCommunityRanks() {
-    if ($(".crownheader.crownheadercommunity").length > 0) {
-        $(".crownheader.crownheadercommunity").remove();
-        $(".rank.summary").remove();
+    if ($('.mouseCrownsView-group-header.community').length > 0) {
+        $('.mouseCrownsView-group-header.community').remove();
     }
 }
 
+/********** Power Crowns **********/
+$(document).on("change", "#powerCrowns", function() {
+    if (
+        window.location.href.includes("profile.php") &&
+        $(".mousehuntHud-page-tabHeader.kings_crowns").hasClass("active")
+    ) {
+        if (this.checked) {
+            localStorage.setItem("ShowPowerCrowns", "Y");
+            powerCrowns.checked = "Yes";
+            decorate();
+            showPowerCrowns();
+        } else {
+            localStorage.setItem("ShowPowerCrowns", "N");
+            powerCrowns.checked = "";
+            hidePowerCrowns();
+        }
+    }
+})
+
+function populatePowerCrowns(mouse){
+    const mouseName = $(mouse).find('.mouseCrownsView-group-mouse-name').text();
+    let powerType = getMousePowerType(mouseName);
+    let icon = 'https://www.mousehuntgame.com/images/powertypes/parental.png'
+    let iconClass = "";
+    if(powerType == 'normal') {
+        powerType = 'multi';
+        iconClass = 'pt '+powerType;
+    } else if (powerType == 'event') {
+        iconClass = 'pt event';
+        icon = 'https://www.mousehuntgame.com/images/items/skins/73c91f2016a313406553794587625e24.jpg';
+    } else {
+        icon = 'https://www.mousehuntgame.com/images/powertypes/'+powerType+'.png';
+        iconClass = 'pt '+powerType;
+    }
+    const label = $(mouse).find('.mouseCrownsView-group-mouse-label');
+    if($(label).find('img').length >0) {
+    } else {
+        $(label).append($('<img>',{class:iconClass,src:icon}));
+        $(label).find('img').css({'width': '17.5px','height':'17.5px','margin-left':'1px',})
+    }
+}
+
+function showPowerCrowns() {
+    const debug = localStorage.getItem('ws.debug');
+    localStorage.setItem('ws.mh.pfp.ptProps',JSON.stringify({}));
+    if ($('.mouseCrownsView-group-header.powerCrown').length > 0) {
+        return;
+    }
+    let crownBreak = $(".mouseCrownsView-group.favourite");
+    if ($(".mouseCrownsView-group-header.community").length > 0) {
+        crownBreak = $(".mouseCrownsView-group-header.community");
+    }
+    const powerCrownHeader = $('.mouseCrownsView-group-header').first().clone();
+    powerCrownHeader.addClass('powerCrown');
+    powerCrownHeader.find('.mouseCrownsView-crown').removeClass('favourite').addClass('powerCrown').css({
+        'background-image': "url('https://icon-library.com/images/off-icon/off-icon-12.jpg')",
+        'background-repeat': 'no-repeat',
+        'background-size': '40px 40px',
+    });
+    powerCrownHeader.find('.mouseCrownsView-group-header-subtitle')
+    powerCrownHeader.find('.mouseCrownsView-group-header-name').text('Power Crowns').css({
+        "font-weight": "bold",
+    });
+    powerCrownHeader.insertAfter(crownBreak);
+    const ptBtnGroup = $("<div class='btn-group' id='powerTypeBtns'></div>");
+    const powerTypes = ['arcane','draconic','forgotten','hydro','law','physical','rift','shadow','tactical','parental'];
+    powerTypes.forEach(function(type, index) {
+        const thisBtn = document.createElement("button");
+        if(type == 'parental') {
+            $(thisBtn).addClass('ptbtn multi');
+        } else {
+            $(thisBtn).addClass('ptbtn '+type);
+        }
+        $(thisBtn).text(getPowerTypeTotals(type));
+        const icon = 'https://www.mousehuntgame.com/images/powertypes/'+type+'.png';
+        $(thisBtn).append($('<img>',{src:icon}));
+        $(thisBtn).find('img').css({
+            'height': '50%',
+            'width':'50%',
+        });
+        $(thisBtn).css({
+            'background-color': '#008CBA',
+            'border-radius':'4px',
+            'font-size':'14px',
+            'padding': '7.5px 2.5px',
+            'text-align': 'bottom',
+            'width': '10%'
+        });
+        $(thisBtn).on('click',function() {
+            let ptProps = JSON.parse(localStorage.getItem('ws.mh.pfp.ptProps'));
+            const type = $(this).attr('class').replace('ptbtn ',"");
+            let allMice = $('.mouseCrownsView-group:not(.favourite)').find('.pt');
+            $(allMice).parent().parent().parent().show();
+            if(ptProps[type] == 'Show') {
+                Object.keys(ptProps).forEach(e => ptProps[e] = 'Show')
+                ptBtnGroup.find('button').css({'border-color': 'black',});
+                ptProps[type] = 'All';
+            } else {
+                Object.keys(ptProps).forEach(e => ptProps[e] = 'Hide')
+                ptBtnGroup.find('button').not(this).css({'border-color': 'black',});
+                $(this).css({'border-color': '#f44336',})
+                ptProps[type] = 'Show';
+                $(allMice).not('.pt.'+type).parent().parent().parent().hide();
+            }
+            localStorage.setItem('ws.mh.pfp.ptProps',JSON.stringify(ptProps));
+        })
+        $(ptBtnGroup).append(thisBtn);
+    })
+    powerCrownHeader.append(ptBtnGroup);
+}
+
+function getPowerTypeTotals(type) {
+    if (type =='parental') {type = 'multi'}
+    const totalMice = {'arcane':65,
+                       'draconic':37,
+                       'forgotten':87,
+                       'hydro':189,
+                       'law':67,
+                       'physical':78,
+                       'rift':142,
+                       'shadow':78,
+                       'tactical':104,
+                       'multi':128};
+    const num = $('.mouseCrownsView-group:not(.favourite):not(.none):not(.bronze)').find('.pt.'+type).length;
+    const percent = ((num/totalMice[type])*100).toFixed(2);
+    return num+' ('+percent+'%)'
+}
+
+$(document).on('click', '.mouseCrownsView-group-header.powerCrown', function(e) {
+    const eventTarget = $(e.target).attr('class');
+    const btnGroup = $(this).find('.btn-group');
+    if(e.target === e.currentTarget) {
+        btnGroup.toggle();
+    } else if (eventTarget === 'mouseCrownsView-crown powerCrown') {
+        btnGroup.toggle();
+    } else if (eventTarget === 'mouseCrownsView-group-header-name') {
+        btnGroup.toggle();
+    }
+})
+
+function getMousePowerType(mouseName) {
+    const miceMap = {
+        'Abominable Snow':'normal',
+        'Absolute Acolyte':'rift',
+        'Acolyte':'forgotten',
+        'Admiral Arrrgh':'event',
+        'Admiral Cloudbeard':'normal',
+        'Aether':'tactical',
+        'Aged':'physical',
+        'Agent M':'law',
+        'Agitated Gentle Giant':'rift',
+        'Alchemist':'hydro',
+        'Alnilam':'tactical',
+        'Alnitak':'hydro',
+        'Alpha Weremouse':'shadow',
+        'Amplified Brown':'rift',
+        'Amplified Grey':'rift',
+        'Amplified White':'rift',
+        'Ancient of the Deep':'hydro',
+        'Ancient Scribe':'forgotten',
+        'Angelfish':'hydro',
+        'Angler':'hydro',
+        'Angry Aphid':'tactical',
+        'Angry Train Staff':'law',
+        'Aquos':'shadow',
+        'Arcane Summoner':'arcane',
+        'Arch Champion Necromancer':'rift',
+        'Archer':'tactical',
+        'Architeuthulhu of the Abyss':'hydro',
+        'Aristo-Cat Burglar':'law',
+        'Armored Archer':'rift',
+        'Artillery Commander':'arcane',
+        'Ascended Elder':'rift',
+        'Ash Golem':'forgotten',
+        'Assassin':'tactical',
+        'Assassin Beast':'rift',
+        'Astrological Astronomer':'shadow',
+        'Automated Sentry':'rift',
+        'Automated Stone Sentry':'forgotten',
+        'Automorat':'law',
+        'Baba Gaga':'event',
+        'Balack the Banished':'forgotten',
+        'Bandit':'physical',
+        'Bark':'hydro',
+        'Barkshell':'hydro',
+        'Barmy Gunner':'hydro',
+        'Barnacle Beautician':'hydro',
+        'Barracuda':'hydro',
+        'Bartender':'law',
+        'Bat':'shadow',
+        'Battering Ram':'normal',
+        'Battle Cleric':'forgotten',
+        'Beachcomber':'hydro',
+        'Bear':'tactical',
+        'Bearded Elder':'draconic',
+        'Beast Tamer':'tactical',
+        'Berserker':'tactical',
+        'Berzerker':'rift',
+        'Betta':'hydro',
+        'Big Bad Behemoth Burroughs':'rift',
+        'Big Bad Burroughs':'normal',
+        'Bilged Boatswain':'hydro',
+        'Biohazard':'hydro',
+        'Bionic':'normal',
+        'Birthday':'event',
+        'Bitter Grammarian':'forgotten',
+        'Bitter Root':'normal',
+        'Black Diamond Racer':'event',
+        'Black Mage':'shadow',
+        'Black Powder Thief':'law',
+        'Black Widow':'normal',
+        'Blacksmith':'normal',
+        'Bloomed Sylvan':'rift',
+        'Bog Beast':'hydro',
+        'Bonbon Gummy Globlin':'event',
+        'Bookborn':'tactical',
+        'Borean Commander':'event',
+        'Bottled':'hydro',
+        'Bottom Feeder':'hydro',
+        'Boulder Biter':'rift',
+        'Bounty Hunter':'law',
+        'Brawny':'rift',
+        'Breakdancer':'event',
+        'Breeze Borrower':'normal',
+        'Briegull':'hydro',
+        'Brimstone':'shadow',
+        'Brothers Grimmaus':'forgotten',
+        'Brown':'normal',
+        'Bruticle':'hydro',
+        'Bruticus, the Blazing':'draconic',
+        'Buccaneer':'hydro',
+        'Buckethead':'event',
+        'Builder':'event',
+        'Bulwark of Ascent':'rift',
+        'Burglar':'law',
+        'Burly Bruiser':'draconic',
+        'Cabin Boy':'hydro',
+        'Calalilly':'hydro',
+        'Calligraphy':'event',
+        'Camoflower':'hydro',
+        'Camofusion':'hydro',
+        'Candy Cane':'event',
+        'Candy Cat':'event',
+        'Candy Goblin':'event',
+        'Cannonball':'law',
+        'Captain':'hydro',
+        'Captain Cannonball':'event',
+        'Captain Cloudkicker':'tactical',
+        'Captain Croissant':'normal',
+        'Caravan Guard':'normal',
+        'Cardshark':'law',
+        'Carefree Cook':'event',
+        'Careless Catfish':'hydro',
+        'Caretaker':'tactical',
+        'Carmine the Apothecary':'hydro',
+        'Carnivore':'hydro',
+        'Carrion Medium':'rift',
+        'Cavalier':'tactical',
+        'Cavern Crumbler':'forgotten',
+        'Centaur':'tactical',
+        'Centaur Ranger':'rift',
+        'Chamber Cleaver':'rift',
+        'Chameleon':'tactical',
+        'Champion':'hydro',
+        'Champion Danseuse':'rift',
+        'Champion Thief':'rift',
+        'Charming Chimer':'arcane',
+        'Cheesy Party':'event',
+        'Cherry':'tactical',
+        'Cherry Sprite':'rift',
+        'Chess Master':'tactical',
+        'Chip Chiseler':'shadow',
+        'Chipper':'hydro',
+        'Chitinous':'shadow',
+        'Chocolate Gold Foil':'event',
+        'Chocolate Overload':'event',
+        'Christmas Tree':'event',
+        'Chrono':'forgotten',
+        'Chronomaster':'rift',
+        'Cinderstorm':'draconic',
+        'Circuit Judge':'law',
+        'City Noble':'hydro',
+        'City Worker':'hydro',
+        'Clockwork Samurai':'normal',
+        'Clockwork Timespinner':'rift',
+        'Cloud Collector':'normal',
+        'Cloud Miner':'normal',
+        'Cloud Strider':'hydro',
+        'Clownfish':'hydro',
+        'Clump':'rift',
+        'Clumsy Carrier':'hydro',
+        'Clumsy Chemist':'normal',
+        'Coal Shoveller':'law',
+        'Cobweb':'event',
+        'Coco Commander':'event',
+        'Coffin Zombie':'shadow',
+        'Confused Courier':'event',
+        'Conjurer':'tactical',
+        'Conqueror':'tactical',
+        'Consumed Charm Tinkerer':'normal',
+        'Cook':'hydro',
+        'Coral':'hydro',
+        'Coral Cuddler':'hydro',
+        'Coral Dragon':'hydro',
+        'Coral Gardener':'hydro',
+        'Coral Guard':'hydro',
+        'Coral Harvester':'hydro',
+        'Coral Queen':'hydro',
+        'Core Sample':'normal',
+        'Cork Defender':'draconic',
+        'Corkataur':'draconic',
+        'Corky, the Collector':'draconic',
+        'Corridor Bruiser':'forgotten',
+        'Corrupt':'arcane',
+        'Corrupt Commodore':'hydro',
+        'Costumed Dog':'event',
+        'Costumed Dragon':'event',
+        'Costumed Horse':'event',
+        'Costumed Monkey':'event',
+        'Costumed Ox':'event',
+        'Costumed Pig':'event',
+        'Costumed Rabbit':'event',
+        'Costumed Rat':'event',
+        'Costumed Rooster':'event',
+        'Costumed Sheep':'event',
+        'Costumed Snake':'event',
+        'Costumed Tiger':'event',
+        'Count Vampire':'rift',
+        'Covetous Coastguard':'hydro',
+        'Cowardly':'normal',
+        'Cowbell':'tactical',
+        'Crabolia':'hydro',
+        'Crag Elder':'forgotten',
+        'Craggy Ore':'normal',
+        'Cranky Caterpillar':'rift',
+        'Crate Camo':'law',
+        'Crazed Cultivator':'tactical',
+        'Crazed Goblin':'rift',
+        'Creepy Marionette':'event',
+        'Crimson Commander':'normal',
+        'Crimson Ranger':'physical',
+        'Crimson Titan':'physical',
+        'Crimson Watch':'physical',
+        'Croquet Crusher':'law',
+        'Crown Collector':'normal',
+        'Crystal Behemoth':'forgotten',
+        'Crystal Cave Worm':'forgotten',
+        'Crystal Controller':'forgotten',
+        'Crystal Golem':'forgotten',
+        'Crystal Lurker':'forgotten',
+        'Crystal Observer':'forgotten',
+        'Crystal Queen':'forgotten',
+        'Crystalback':'forgotten',
+        'Crystalline Slasher':'forgotten',
+        'Cumulost':'forgotten',
+        'Cupcake Camo':'event',
+        'Cupcake Candle Thief':'event',
+        'Cupcake Cutie':'event',
+        'Cupcake Runner':'event',
+        'Cupid':'event',
+        'Curious Chemist':'tactical',
+        'Cursed':'arcane',
+        'Cursed Crusader':'rift',
+        'Cursed Enchanter':'arcane',
+        'Cursed Engineer':'arcane',
+        'Cursed Librarian':'arcane',
+        'Cursed Taskmaster':'arcane',
+        'Cursed Thief':'arcane',
+        'Cute Cloud Conjurer':'hydro',
+        'Cute Crate Carrier':'law',
+        'Cutpurse':'rift',
+        'Cutthroat Cannoneer':'normal',
+        'Cutthroat Pirate':'normal',
+        'Cuttle':'hydro',
+        'Cyber Miner':'rift',
+        'Cybernetic Specialist':'rift',
+        'Cyborg':'rift',
+        'Cycloness':'arcane',
+        'Cyclops':'tactical',
+        'Cyclops Barbarian':'rift',
+        'Dance Party':'event',
+        'Dancer':'tactical',
+        'Dancing Assassin':'rift',
+        'Dangerous Duo':'law',
+        'Dark Magi':'arcane',
+        'Dark Templar':'forgotten',
+        'Dashing Buccaneer':'hydro',
+        'Davy Jones':'shadow',
+        'Dawn Guardian':'arcane',
+        'Daydreamer':'normal',
+        'Decrepit Tentacle Terror':'normal',
+        'Deep':'hydro',
+        'Deep Sea Diver':'hydro',
+        'Defender':'tactical',
+        'Dehydrated':'hydro',
+        'Demolitions':'normal',
+        'Deranged Deckhand':'hydro',
+        'Derpicorn':'physical',
+        'Derpshark':'hydro',
+        'Derr Chieftain':'physical',
+        'Derr Lich':'forgotten',
+        'Desert Archer':'physical',
+        'Desert Architect':'normal',
+        'Desert Nomad':'normal',
+        'Desert Soldier':'physical',
+        'Desperado':'law',
+        'Destructoy':'event',
+        'Devious Gentleman':'law',
+        'Diamond':'normal',
+        'Diamondhide':'forgotten',
+        'Dinosuit':'event',
+        'Dire Lycan':'event',
+        'Dirt Thing':'forgotten',
+        'Dojo Sensei':'tactical',
+        'Doktor':'rift',
+        'Double Black Diamond Racer':'event',
+        'Draconic Warden':'draconic',
+        'Dragon':'draconic',
+        'Dragonbreather':'draconic',
+        'Dragoon':'draconic',
+        'Dread Knight':'rift',
+        'Dread Pirate Mousert':'hydro',
+        'Dream Drifter':'rift',
+        'Drudge':'forgotten',
+        'Drummer':'tactical',
+        'Dumpling Chef':'tactical',
+        'Dumpling Delivery':'rift',
+        'Dunehopper':'shadow',
+        'Dwarf':'normal',
+        'Eagle Owl':'tactical',
+        'Eclipse':'forgotten',
+        'Eel':'hydro',
+        'Effervescent':'tactical',
+        'Egg Painter':'event',
+        'Egg Scrambler':'event',
+        'Eggscavator':'event',
+        'Eggsplosive Scientist':'event',
+        'Eggsquisite Entertainer':'event',
+        'El Flamenco':'event',
+        'Elder':'hydro',
+        'Elf':'event',
+        'Elite Guardian':'hydro',
+        'Elixir Maker':'rift',
+        'Elub Chieftain':'hydro',
+        'Elub Lich':'forgotten',
+        'Elven Princess':'tactical',
+        'Emberstone Scaled':'draconic',
+        'Empyrean Appraiser':'normal',
+        'Empyrean Empress':'normal',
+        'Empyrean Geologist':'normal',
+        'Empyrean Javelineer':'draconic',
+        'Enginseer':'hydro',
+        'Enlightened Labourer':'rift',
+        'Enslaved Spirit':'shadow',
+        'Epoch Golem':'rift',
+        'Escape Artist':'physical',
+        'Essence Collector':'arcane',
+        'Essence Guardian':'arcane',
+        'Ethereal Enchanter':'arcane',
+        'Ethereal Engineer':'arcane',
+        'Ethereal Guardian':'forgotten',
+        'Ethereal Librarian':'arcane',
+        'Ethereal Thief':'arcane',
+        'Evil Scientist':'rift',
+        'Excitable Electric':'rift',
+        'Exo-Tech':'forgotten',
+        'Explorator':'physical',
+        'Extreme Everysports':'normal',
+        'Factory Technician':'event',
+        'Fairy':'tactical',
+        'Fall Familiar':'shadow',
+        'Fallen Champion Footman':'rift',
+        'Falling Carpet':'normal',
+        'Farmhand':'normal',
+        'Farrier':'law',
+        'Fencer':'tactical',
+        'Fete Fromager':'event',
+        'Fetid Swamp':'shadow',
+        'Fibbocchio':'forgotten',
+        'Fiddler':'tactical',
+        'Field':'normal',
+        'Fiend':'hydro',
+        'Fiery Crusher':'shadow',
+        'Finder':'tactical',
+        'Firebreather':'tactical',
+        'Firefly':'tactical',
+        'Flamboyant Flautist':'forgotten',
+        'Flame Archer':'physical',
+        'Flame Ordnance':'arcane',
+        'Flame Warrior':'physical',
+        'Floating Spore':'normal',
+        'Flutterby':'tactical',
+        'Fluttering Flutist':'arcane',
+        'Flying':'normal',
+        'Fog':'normal',
+        'Force Fighter Blue':'event',
+        'Force Fighter Green':'event',
+        'Force Fighter Pink':'event',
+        'Force Fighter Red':'event',
+        'Force Fighter Yellow':'event',
+        'Forever Alone':'event',
+        'Forgotten Elder':'forgotten',
+        'Fortuitous Fool':'normal',
+        'Foxy':'tactical',
+        'Free Skiing':'event',
+        'Frightened Flying Fireworks':'event',
+        'Frigid Foreman':'event',
+        'Frog':'tactical',
+        'Frost King':'event',
+        'Frostbite':'hydro',
+        'Frostlance Guard':'hydro',
+        'Frostwing Commander':'hydro',
+        'Frosty Snow':'normal',
+        'Frozen':'normal',
+        'Fuel':'law',
+        "Ful'Mina, The Mountain Queen":'draconic',
+        'Fungal Frog':'rift',
+        'Fungal Spore':'hydro',
+        'Fungal Technomorph':'forgotten',
+        'Funglore':'normal',
+        'Fuzzy Drake':'draconic',
+        'Gargantuamouse':'draconic',
+        'Gargoyle':'arcane',
+        'Gate Guardian':'arcane',
+        'Gelatinous Octahedron':'hydro',
+        'Gemorpher':'forgotten',
+        'Gemstone Worshipper':'forgotten',
+        'General Drheller':'hydro',
+        'Gentleman Caller':'event',
+        'Ghost':'shadow',
+        'Ghost Pirate Queen':'event',
+        'Giant Snail':'shadow',
+        'Gilded Leaf':'rift',
+        'Gingerbread':'event',
+        'Glacia Ice Fist':'event',
+        'Gladiator':'physical',
+        'Glamorous Gladiator':'physical',
+        'Glass Blower':'normal',
+        'Glazy':'event',
+        'Glitchpaw':'event',
+        'Gluttonous Zombie':'shadow',
+        'Goblin':'shadow',
+        'Gold':'normal',
+        'Goldleaf':'tactical',
+        'Golem':'arcane',
+        'Goliath Field':'rift',
+        'Gorgon':'arcane',
+        'Gourd Ghoul':'event',
+        'Gourdborg':'event',
+        'Grampa Golem':'shadow',
+        'Grand Master of the Dojo':'rift',
+        'Grandfather':'tactical',
+        'Granite':'normal',
+        'Granny Spice':'arcane',
+        'Grave Robber':'event',
+        'Great Giftnapper':'event',
+        'Great Winter Hunt Impostor':'event',
+        'Greedy Al':'event',
+        'Greenbeard':'forgotten',
+        'Grey':'normal',
+        'Grey Recluse':'event',
+        'Greyrun':'rift',
+        'Grit Grifter':'tactical',
+        'Grizzled Silth':'rift',
+        'Ground Gavaleer':'physical',
+        'Grubling':'shadow',
+        'Grubling Herder':'shadow',
+        'Grunt':'physical',
+        'Guardian':'physical',
+        'Guppy':'hydro',
+        'Guqin Player':'tactical',
+        'Gyrologer':'tactical',
+        'Hans Cheesetian Squeakersen':'forgotten',
+        'Hapless':'tactical',
+        'Hapless Marionette':'normal',
+        'Harbinger of Death':'rift',
+        'Hardboiled':'event',
+        'Hardworking Hauler':'law',
+        'Hare Razer':'event',
+        'Harpy':'shadow',
+        'Harvest Harrier':'shadow',
+        'Harvester':'shadow',
+        'Hazmat':'hydro',
+        'Healer':'physical',
+        'Heart of the Meteor':'arcane',
+        'Heavy Blaster':'hydro',
+        'Herc':'physical',
+        'High Roller':'event',
+        'Hired Eidolon':'forgotten',
+        'Hoarder':'event',
+        'Hollowed':'event',
+        'Hollowed Minion':'event',
+        'Hollowhead':'event',
+        'Homeopathic Apothecary':'normal',
+        'Hookshot':'law',
+        'Hope':'event',
+        'Horned Cork Hoarder':'draconic',
+        'Hot Head':'tactical',
+        'Humphrey Dumphrey':'forgotten',
+        'Huntereater':'forgotten',
+        'Hurdle':'normal',
+        'Hydra':'normal',
+        'Hydrologist':'hydro',
+        'Hydrophobe':'physical',
+        'Hypnotized Gunslinger':'arcane',
+        'Ice Regent':'forgotten',
+        'Iceberg Sculptor':'event',
+        'Iceblade':'hydro',
+        'Iceblock':'hydro',
+        'Icebreaker':'hydro',
+        'Icewing':'hydro',
+        'Icicle':'hydro',
+        'Ignatia':'draconic',
+        'Ignis':'shadow',
+        'Impersonator':'physical',
+        'Incompetent Ice Climber':'hydro',
+        'Industrious Digger':'normal',
+        'Inferna, The Engulfed':'arcane',
+        'Inferno Mage':'hydro',
+        'Infiltrator':'tactical',
+        'Itty Bitty Rifty Burroughs':'rift',
+        'Itty-Bitty Burroughs':'normal',
+        'Jellyfish':'hydro',
+        'Joy':'event',
+        'Juliyes':'event',
+        'Jurassic':'shadow',
+        "Kalor'ignis of the Geyser":'draconic',
+        'Karmachameleon':'rift',
+        'Keeper':'arcane',
+        "Keeper's Assistant":'arcane',
+        'King Grub':'shadow',
+        'King Scarab':'shadow',
+        'Kite Flyer':'normal',
+        'Knight':'tactical',
+        'Koimaid':'hydro',
+        'Kung Fu':'tactical',
+        'Lab Technician':'hydro',
+        'Lady Coldsnap':'hydro',
+        'Lambent':'rift',
+        'Lambent Crystal':'normal',
+        'Lancer Guard':'draconic',
+        'Land Loafer':'tactical',
+        'Lasso Cowgirl':'law',
+        'Launchpad Labourer':'normal',
+        'Lawbender':'law',
+        'Leprechaun':'event',
+        'Leviathan':'hydro',
+        'Lich':'arcane',
+        'Lightning Rod':'normal',
+        'Limestone Miner':'normal',
+        'Little Bo Squeak':'forgotten',
+        'Little Miss Fluffet':'forgotten',
+        'Living Ice':'hydro',
+        'Living Salt':'hydro',
+        'Loathsome Locust':'tactical',
+        'Lockpick':'physical',
+        'Longtail':'normal',
+        'Lord Splodington':'hydro',
+        'Lost':'forgotten',
+        'Lost Legionnaire':'forgotten',
+        'Lovely Sports':'event',
+        'Lucky':'event',
+        'Lumahead':'normal',
+        'Lumberjack':'normal',
+        'Lumi-lancer':'rift',
+        'Lunar Red Candle Maker':'event',
+        'Lycan':'shadow',
+        'Lycanoid':'rift',
+        'M400':'normal',
+        'Mad Elf':'event',
+        "Madame d'Ormouse":'forgotten',
+        'Mage Weaver':'normal',
+        'Magic':'normal',
+        'Magic Champion':'rift',
+        'Magma Carrier':'shadow',
+        'Magmarage':'hydro',
+        'Magmatic Crystal Thief':'law',
+        'Magmatic Golem':'law',
+        'Mairitime Pirate':'normal',
+        'Maize Harvester':'event',
+        'Mammoth':'hydro',
+        'Manaforge Smith':'forgotten',
+        'Manatee':'hydro',
+        'Market Guard':'normal',
+        'Market Thief':'law',
+        'Martial':'rift',
+        'Masked Pikeman':'forgotten',
+        'Master Burglar':'law',
+        'Master Exploder':'rift',
+        'Master of the Cheese Belt':'tactical',
+        'Master of the Cheese Claw':'tactical',
+        'Master of the Cheese Fang':'tactical',
+        'Master of the Chi Belt':'rift',
+        'Master of the Chi Claw':'rift',
+        'Master of the Chi Fang':'rift',
+        'Master of the Dojo':'tactical',
+        'Matriarch Gander':'forgotten',
+        'Matron of Machinery':'forgotten',
+        'Matron of Wealth':'forgotten',
+        'Mecha Tail':'rift',
+        'Medicine':'rift',
+        'Melodramatic Minnow':'hydro',
+        'Menace of the Rift':'rift',
+        'Mermouse':'hydro',
+        'Mermousette':'hydro',
+        'Mershark':'hydro',
+        'Meteorite Golem':'arcane',
+        'Meteorite Miner':'law',
+        'Meteorite Mover':'law',
+        'Meteorite Mystic':'arcane',
+        'Meteorite Snacker':'law',
+        'Micro':'rift',
+        'Mighty Mite':'tactical',
+        'Mighty Mole':'rift',
+        'Mild Spicekin':'draconic',
+        'Militant Samurai':'rift',
+        'Mimic':'forgotten',
+        'Mind Tearer':'forgotten',
+        'Miner':'normal',
+        'Mining Materials Manager':'law',
+        'Mintaka':'physical',
+        'Mischievous Meteorite Miner':'law',
+        'Mischievous Wereminer':'shadow',
+        'Miser':'event',
+        'Missile Toe':'event',
+        'Mist Maker':'hydro',
+        'Mlounder Flounder':'hydro',
+        'Mobster':'event',
+        'Mole':'normal',
+        'Molten Midas':'forgotten',
+        'Monarch':'tactical',
+        'Monk':'tactical',
+        'Monsoon Maker':'shadow',
+        'Monster':'normal',
+        'Monster of the Meteor':'arcane',
+        'Monster Tail':'hydro',
+        'Monstrous Abomination':'rift',
+        'Monstrous Black Widow':'rift',
+        'Monstrous Midge':'tactical',
+        'Moosker':'tactical',
+        'Mossy Moosker':'rift',
+        'Mouldy Mole':'normal',
+        'Mountain':'normal',
+        'Mousataur Priestess':'event',
+        'Mouse of Elements':'rift',
+        'Mouse of Winter Future':'event',
+        'Mouse of Winter Past':'event',
+        'Mouse of Winter Present':'event',
+        'Mouse With No Name':'law',
+        'Mousevina von Vermin':'shadow',
+        'Moussile':'event',
+        'Mummy':'shadow',
+        'Mush':'normal',
+        'Mush Monster':'forgotten',
+        'Mushroom Harvester':'forgotten',
+        'Mushroom Sprite':'normal',
+        'Mutant Mongrel':'hydro',
+        'Mutant Ninja':'hydro',
+        'Mutated Behemoth':'hydro',
+        'Mutated Brown':'normal',
+        'Mutated Grey':'normal',
+        'Mutated Mole':'normal',
+        'Mutated Siblings':'hydro',
+        'Mutated White':'normal',
+        'Mysterious Traveller':'law',
+        'Mystic':'hydro',
+        'Mystic Bishop':'tactical',
+        'Mystic Guardian':'forgotten',
+        'Mystic Herald':'forgotten',
+        'Mystic King':'tactical',
+        'Mystic Knight':'tactical',
+        'Mystic Pawn':'tactical',
+        'Mystic Queen':'tactical',
+        'Mystic Rook':'tactical',
+        'Mystic Scholar':'forgotten',
+        'Mythweaver':'forgotten',
+        'Nachore Golem':'shadow',
+        'Nachous, The Molten':'shadow',
+        'Narrator':'tactical',
+        'Naturalist':'rift',
+        'Naughty Nougat':'event',
+        'Necromancer':'hydro',
+        'Nefarious Nautilus':'hydro',
+        'Nerg Chieftain':'tactical',
+        'Nerg Lich':'forgotten',
+        "New Year's":'event',
+        'Nibbler':'normal',
+        'Nice Knitting':'event',
+        'Night Shift Materials Manager':'shadow',
+        'Night Watcher':'arcane',
+        'Nightfire':'arcane',
+        'Nightmancer':'shadow',
+        'Nightshade Flower Girl':'normal',
+        'Nightshade Fungalmancer':'forgotten',
+        'Nightshade Maiden':'normal',
+        'Nightshade Masquerade':'normal',
+        'Nightshade Nanny':'forgotten',
+        'Nimbomancer':'hydro',
+        'Ninja':'tactical',
+        'Nitro Racer':'event',
+        'Nomad':'tactical',
+        'Nomadic Warrior':'rift',
+        'Nugget':'normal',
+        'Nutcracker':'event',
+        'Octomermaid':'hydro',
+        "Ol' King Coal":'event',
+        'Old One':'hydro',
+        'Old Spice Collector':'arcane',
+        'One-Mouse Band':'rift',
+        'Onion Chopper':'event',
+        'Ooze':'arcane',
+        'Ore Chipper':'shadow',
+        'Ornament':'event',
+        'Outbreak Assassin':'hydro',
+        'Outlaw':'law',
+        'Over-Prepared':'hydro',
+        'Overcaster':'shadow',
+        'Oxygen Baron':'hydro',
+        'Pack':'hydro',
+        'Page':'tactical',
+        'Paladin':'arcane',
+        'Paladin Weapon Master':'forgotten',
+        'Pan Slammer':'event',
+        'Para Para Dancer':'event',
+        'Paragon of Arcane':'arcane',
+        'Paragon of Dragons':'draconic',
+        'Paragon of Forgotten':'forgotten',
+        'Paragon of Shadow':'shadow',
+        'Paragon of Strength':'physical',
+        'Paragon of Tactics':'tactical',
+        'Paragon of the Lawless':'law',
+        'Paragon of Water':'hydro',
+        'Parlour Player':'law',
+        'Party Head':'event',
+        'Passenger':'law',
+        'Pathfinder':'tactical',
+        'Pearl':'hydro',
+        'Pearl Diver':'hydro',
+        'Pebble':'normal',
+        'Peggy the Plunderer':'normal',
+        'Penguin':'hydro',
+        'Phalanx':'tactical',
+        'Phase Zombie':'rift',
+        'Photographer':'law',
+        'Pie Thief':'law',
+        'Pinchy':'hydro',
+        'Pinkielina':'forgotten',
+        'Pintail':'event',
+        'Pirate':'hydro',
+        'Pirate Anchor':'hydro',
+        'Plague Hag':'hydro',
+        'Plutonium Tentacle':'rift',
+        'Pneumatic Dirt Displacement':'rift',
+        'Pocketwatch':'physical',
+        'Polar Bear':'hydro',
+        'Pompous Perch':'hydro',
+        'Portable Generator':'rift',
+        'Portal Paladin':'rift',
+        'Portal Plunderer':'rift',
+        'Portal Pursuer':'rift',
+        'Possessed Armaments':'rift',
+        'Praetorian Champion':'rift',
+        'Present':'event',
+        'Prestigious Adventurer':'rift',
+        'Primal':'shadow',
+        'Princess and the Olive':'forgotten',
+        'Princess Fist':'hydro',
+        'Prospector':'law',
+        'Protector':'hydro',
+        'Prototype':'rift',
+        'Puddlemancer':'physical',
+        'Puffer':'hydro',
+        'Pugilist':'normal',
+        'Pump Raider':'law',
+        'Pumpkin Head':'shadow',
+        'Pumpkin Hoarder':'event',
+        'Puppet Champion':'rift',
+        'Puppet Master':'normal',
+        'Puppetto':'rift',
+        'Pygmy Wrangler':'shadow',
+        'Pyrehyde':'draconic',
+        'Pyrite':'law',
+        'Queen Quesada':'law',
+        'Queso Extractor':'law',
+        'Quesodillo':'shadow',
+        'Quillback':'normal',
+        'Radioactive Ooze':'rift',
+        'Rain Collector':'shadow',
+        'Rain Summoner':'shadow',
+        'Rain Wallower':'shadow',
+        'Rainbow Racer':'event',
+        'Rainmancer':'shadow',
+        'Rainwater Purifier':'normal',
+        'Rambunctious Rain Rumbler':'draconic',
+        'Rancid Bog Beast':'rift',
+        'Ravenous Zombie':'shadow',
+        'Raw Diamond':'rift',
+        'Reality Restitch':'event',
+        'Realm Ripper':'arcane',
+        'Reanimated Carver':'forgotten',
+        'Reaper':'arcane',
+        'Record Keeper':'rift',
+        "Record Keeper's Assistant":'rift',
+        'Red Coat Bear':'rift',
+        'Red Envelope':'event',
+        'Red-Eyed Watcher Owl':'rift',
+        'Regal Spearman':'draconic',
+        'Reinbo':'event',
+        'Relic Hunter':'normal',
+        'Renegade':'physical',
+        'Retired Minotaur':'forgotten',
+        'Reveling Lycanthrope':'shadow',
+        'Revenant':'rift',
+        'Ribbon':'event',
+        'Richard the Rich':'normal',
+        'Ridiculous Sweater':'event',
+        'Rift Bio Engineer':'rift',
+        'Rift Guardian':'rift',
+        'Rift Tiger':'rift',
+        'Rifterranian':'rift',
+        'Riftweaver':'rift',
+        'Riptide':'normal',
+        'Robat':'rift',
+        'Rock Muncher':'normal',
+        'Rocketeer':'tactical',
+        'Rockstar':'event',
+        'Rogue':'physical',
+        'Romeno':'event',
+        'Romeo':'event',
+        'Root Rummager':'tactical',
+        'RR-8':'forgotten',
+        'Rubble Rouser':'shadow',
+        'Rubble Rummager':'shadow',
+        'Ruffian':'law',
+        'S.N.O.W. Golem':'event',
+        'Saboteur':'hydro',
+        'Sacred Shrine':'arcane',
+        'Saloon Gal':'law',
+        'Salt Water Snapper':'hydro',
+        'Saltwater Axolotl':'hydro',
+        'Samurai':'tactical',
+        'Sand Cavalry':'tactical',
+        'Sand Colossus':'shadow',
+        'Sand Dollar Diver':'hydro',
+        'Sand Dollar Queen':'hydro',
+        'Sand Pilgrim':'shadow',
+        'Sand Sifter':'hydro',
+        'Sandmouse':'event',
+        'Sandwing Cavalry':'tactical',
+        'Sanguinarian':'forgotten',
+        'Sarcophamouse':'shadow',
+        'Scarab':'shadow',
+        'Scarecrow':'shadow',
+        'Scarlet Revenger':'normal',
+        'Scavenger':'arcane',
+        'School of Mish':'hydro',
+        'Scorned Pirate':'event',
+        'Scout':'hydro',
+        'Scrap Metal Monster':'hydro',
+        'Scribe':'physical',
+        'Scrooge':'event',
+        'Scruffy':'normal',
+        'Seadragon':'hydro',
+        'Seasoned Islandographer':'tactical',
+        'Seer':'physical',
+        'Sentient Slime':'rift',
+        'Sentinel':'physical',
+        'Serpent Monster':'hydro',
+        'Serpentine':'shadow',
+        'Shackled Servant':'rift',
+        'Shade of the Eclipse':'rift',
+        'Shadow Sage':'shadow',
+        'Shadow Stalker':'forgotten',
+        'Shaman':'tactical',
+        'Shaolin Kung Fu':'rift',
+        'Shard Centurion':'rift',
+        'Sharpshooter':'law',
+        'Shattered Carmine':'hydro',
+        'Shattered Obsidian':'forgotten',
+        'Shelder':'hydro',
+        'Shinobi':'rift',
+        'Shipwrecked':'hydro',
+        'Shopkeeper':'law',
+        'Shortcut':'event',
+        'Shorts-All-Year':'event',
+        'Shroom':'hydro',
+        'Silth':'hydro',
+        'Silvertail':'normal',
+        'Sinister Egg Painter':'event',
+        'Sinister Squid':'hydro',
+        'Sir Fleekio':'forgotten',
+        'Siren':'hydro',
+        'Sizzle Pup':'draconic',
+        'Skeletal Champion':'rift',
+        'Skeleton':'arcane',
+        'Sky Dancer':'arcane',
+        'Sky Glass Glazier':'arcane',
+        'Sky Glass Sorcerer':'arcane',
+        'Sky Glider':'arcane',
+        'Sky Greaser':'normal',
+        'Sky Highborne':'arcane',
+        'Sky Squire':'physical',
+        'Sky Surfer':'hydro',
+        'Sky Swordsman':'physical',
+        'Skydiver':'normal',
+        'Slay Ride':'event',
+        'Slayer':'tactical',
+        'Sleepwalker':'event',
+        'Sleepy Merchant':'law',
+        'Slimefist':'hydro',
+        'Slope Swimmer':'normal',
+        'Sludge':'hydro',
+        'Sludge Scientist':'normal',
+        'Sludge Soaker':'hydro',
+        'Sludge Swimmer':'hydro',
+        'Smoldersnap':'draconic',
+        'Snake Charmer':'normal',
+        'Snooty':'event',
+        'Snow Boulder':'event',
+        'Snow Bowler':'hydro',
+        'Snow Fort':'event',
+        'Snow Golem Architect':'event',
+        'Snow Golem Jockey':'event',
+        'Snow Scavenger':'event',
+        'Snow Slinger':'hydro',
+        'Snow Sniper':'hydro',
+        'Snow Soldier':'hydro',
+        'Snow Sorceress':'event',
+        'Snowball Hoarder':'event',
+        'Snowblind':'hydro',
+        'Snowblower':'event',
+        'Snowflake':'event',
+        'Snowglobe':'event',
+        'Sock Puppet Ghost':'normal',
+        'Soldier of the Shade':'rift',
+        'Solemn Soldier':'forgotten',
+        'Soothsayer':'hydro',
+        'Sorcerer':'arcane',
+        'Soul Binder':'forgotten',
+        'Space Party-Time Plumber':'event',
+        'Spear Fisher':'hydro',
+        'Spectral Butler':'event',
+        'Spectral Swashbuckler':'event',
+        'Spectre':'arcane',
+        'Speedy':'normal',
+        'Spellbinder':'physical',
+        'Spheric Diviner':'forgotten',
+        'Spice Farmer':'arcane',
+        'Spice Finder':'arcane',
+        'Spice Merchant':'normal',
+        'Spice Raider':'arcane',
+        'Spice Reaper':'arcane',
+        'Spice Seer':'arcane',
+        'Spice Sovereign':'arcane',
+        'Spider':'arcane',
+        'Spiked Burrower':'normal',
+        'Spiky Devil':'shadow',
+        'Spirit Fox':'rift',
+        'Spirit Light':'event',
+        'Spirit of Balance':'rift',
+        'Spiritual Steel':'rift',
+        'Splintered Stone Sentry':'forgotten',
+        'Spore':'hydro',
+        'Spore Muncher':'normal',
+        'Spore Salesman':'normal',
+        'Sporeticus':'normal',
+        'Sporty Ski Instructor':'event',
+        'Spotted':'normal',
+        'Spring Familiar':'physical',
+        'Spring Sprig':'event',
+        'Sprinkly Sweet Cupcake Cook':'event',
+        'Spry Sky Explorer':'forgotten',
+        'Spry Sky Seer':'forgotten',
+        'Spud':'normal',
+        'Squeaken':'hydro',
+        'Squeaker Bot':'normal',
+        'Squeaker Claws':'event',
+        'Stack of Thieves':'law',
+        'Stagecoach Driver':'law',
+        'Stalagmite':'forgotten',
+        'Stealth':'physical',
+        'Steam Grip':'physical',
+        'Steam Sailor':'draconic',
+        'Steel':'normal',
+        'Steel Horse Rider':'law',
+        'Stickybomber':'hydro',
+        'Stinger':'tactical',
+        'Stingray':'hydro',
+        'Stocking':'event',
+        'Stone Cutter':'normal',
+        'Stone Maiden':'forgotten',
+        'Stonework Warrior':'shadow',
+        'Stormsurge, the Vile Tempest':'draconic',
+        'Stoutgear':'law',
+        'Stowaway':'law',
+        'Stratocaster':'shadow',
+        'Strawberry Hotcakes':'hydro',
+        'Stuck Snowball':'event',
+        'Student of the Cheese Belt':'tactical',
+        'Student of the Cheese Claw':'tactical',
+        'Student of the Cheese Fang':'tactical',
+        'Student of the Chi Belt':'rift',
+        'Student of the Chi Claw':'rift',
+        'Student of the Chi Fang':'rift',
+        'Stuffy Banker':'law',
+        'Suave Pirate':'normal',
+        'Subterranean':'normal',
+        'Sugar Rush':'event',
+        'Summer Mage':'tactical',
+        'Summoning Scholar':'forgotten',
+        'Sunken Banshee':'hydro',
+        'Sunken Citizen':'hydro',
+        'Super FighterBot MegaSupreme':'event',
+        'Super Mega Mecha Ultra RoboGold':'rift',
+        'Supernatural':'rift',
+        'Supply Hoarder':'law',
+        'Supreme Sensei':'rift',
+        'Surgeon Bot':'rift',
+        'Swabbie':'hydro',
+        'Swamp Runner':'hydro',
+        'Swamp Thang':'event',
+        'Swarm of Pygmy Mice':'shadow',
+        'Swashblade':'hydro',
+        'Sylvan':'tactical',
+        'Tackle Tracker':'hydro',
+        'Tadpole':'hydro',
+        'Taleweaver':'hydro',
+        'Tanglefoot':'physical',
+        'Tech Golem':'forgotten',
+        'Tech Ravenous Zombie':'rift',
+        'Technic Bishop':'tactical',
+        'Technic King':'tactical',
+        'Technic Knight':'tactical',
+        'Technic Pawn':'tactical',
+        'Technic Queen':'tactical',
+        'Technic Rook':'tactical',
+        'Teenage Vampire':'event',
+        'Telekinetic Mutant':'hydro',
+        'Tentacle':'hydro',
+        'Terra':'shadow',
+        'Terrible Twos':'event',
+        'Terrified Adventurer':'rift',
+        'Terror Knight':'arcane',
+        'The Menace':'hydro',
+        'The Total Eclipse':'rift',
+        'Theurgy Warden':'physical',
+        'Thirsty':'hydro',
+        'Thistle':'hydro',
+        'Thorn':'hydro',
+        'Thunder Strike':'draconic',
+        'Thundering Watcher':'draconic',
+        '⚡Thunderlord⚡':'draconic',
+        'Tidal Fisher':'shadow',
+        'Tiger':'tactical',
+        'Time Punk':'event',
+        'Time Tailor':'event',
+        'Time Thief':'event',
+        'Timeless Lich':'rift',
+        'Timelost Thaumaturge':'rift',
+        'Timeslither Pythoness':'rift',
+        'Timid Explorer':'rift',
+        'Tiny':'normal',
+        'Tiny Dragonfly':'draconic',
+        'Tiny Saboteur':'law',
+        'Tiny Toppler':'shadow',
+        'Titanic Brain-Taker':'event',
+        'Toboggan Technician':'event',
+        'Tomb Exhumer':'event',
+        'Tome Sprite':'tactical',
+        'Tonic Salesman':'law',
+        'Totally Not Bitter':'event',
+        'Toxic Avenger':'rift',
+        'Toxic Warrior':'hydro',
+        'Toxikinetic':'rift',
+        'Toy':'event',
+        'Toy Sylvan':'normal',
+        'Toy Tinkerer':'event',
+        'Trailblazer':'physical',
+        'Train Conductor':'law',
+        'Train Engineer':'law',
+        'Trampoline':'normal',
+        'Travelling Barber':'law',
+        'Treant':'tactical',
+        'Treant Queen':'rift',
+        'Treasure Brawler':'forgotten',
+        'Treasure Hoarder':'hydro',
+        'Treasure Keeper':'hydro',
+        'Treasurer':'event',
+        'Treat':'event',
+        'Tree Troll':'rift',
+        'Tri-dra':'rift',
+        'Trick':'event',
+        'Tricky Witch':'event',
+        'Triple Lutz':'event',
+        'Tritus':'hydro',
+        'Troll':'shadow',
+        'Tumbleweed':'law',
+        'Tundra Huntress':'event',
+        'Turret Guard':'hydro',
+        'Twisted Carmine':'hydro',
+        'Twisted Fiend':'shadow',
+        'Twisted Hotcakes':'hydro',
+        'Twisted Lilly':'hydro',
+        'Twisted Treant':'rift',
+        'Undertaker':'law',
+        'Unwavering Adventurer':'rift',
+        'Upper Class Lady':'law',
+        'Urchin King':'hydro',
+        'Vampire':'shadow',
+        'Vanguard':'physical',
+        'Vanquisher':'hydro',
+        'Vaporior':'draconic',
+        'Vicious Vampire Squid':'hydro',
+        'Vigilant Ward':'rift',
+        'Vincent, The Magnificent':'event',
+        'Vinetail':'physical',
+        'Violet Stormchild':'draconic',
+        'Walker':'tactical',
+        'Wandering Monk':'rift',
+        'Warden of Fog':'normal',
+        'Warden of Frost':'normal',
+        'Warden of Rain':'normal',
+        'Warden of Wind':'normal',
+        'Warehouse Manager':'law',
+        'Warming Wyvern':'draconic',
+        'Warmonger':'physical',
+        'Water Nymph':'hydro',
+        'Water Sprite':'rift',
+        'Water Wielder':'hydro',
+        'Wave Racer':'normal',
+        'Wealth':'rift',
+        'Wealthy Werewarrior':'shadow',
+        'Werehauler':'shadow',
+        'Wereminer':'shadow',
+        'Whelpling':'draconic',
+        'Whirleygig':'shadow',
+        'White':'normal',
+        'White Mage':'arcane',
+        'Wicked Witch of Whisker Woods':'tactical',
+        'Wiggler':'tactical',
+        'Wight':'arcane',
+        'Wild Chainsaw':'event',
+        'Wily Weevil':'tactical',
+        'Wind Warrior':'arcane',
+        'Wind Watcher':'arcane',
+        'Windy Farmer':'normal',
+        'Winged Harpy':'rift',
+        'Winter Games':'normal',
+        'Winter Mage':'hydro',
+        'Withered Remains':'rift',
+        'Wolfskie':'hydro',
+        'Wordsmith':'physical',
+        'Worker':'tactical',
+        'Worried Wayfinder':'tactical',
+        'Wound Up White':'normal',
+        'Wreath Thief':'event',
+        'Yeti':'hydro',
+        'Young Prodigy Racer':'event',
+        'Zealous Academic':'shadow',
+        'Zephyr':'shadow',
+        'Zombie':'shadow',
+        'Zombot Unipire':'event',
+        'Zombot Unipire the Third':'rift',
+        'Zurreal the Eternal':'tactical',
+        'Budrich Thornborn':'physical',
+        'Leafton Beanwell':'physical',
+        'Vinneus Stalkhome':'physical',
+        'Peaceful Prisoner':'physical',
+        'Diminutive Detainee':'physical',
+        'Smug Smuggler':'physical',
+        'Cell Sweeper':'physical',
+        'Jovial Jailor':'physical',
+        'Lethargic Guard':'physical',
+        'Gate Keeper':'physical',
+        'Key Master':'physical',
+        'Wrathful Warden':'physical',
+        'Dungeon Master':'physical',
+        'Whimsical Waltzer':'physical',
+        'Sassy Salsa Dancer Mouse':'physical',
+        'Baroque Dancer Mouse':'physical',
+        'Violent Violinist Mouse':'physical',
+        'Obstinate Oboist Mouse':'physical',
+        'Peevish Piccoloist':'physical',
+        'Sultry Saxophonist Mouse':'physical',
+        'Chafed Cellist Mouse':'physical',
+        'Treacherous Tubaist Mouse':'physical',
+        'Malevolent Maestro':'physical',
+        'Clumsy Cupbearer Mouse':'physical',
+        'Plotting Page Mouse':'physical',
+        'Scheming Squire Mouse':'physical',
+        'Vindictive Viscount Mouse':'physical',
+        'Baroness Von Bean':'physical',
+        'Cagey Countess Mouse':'physical',
+        'Dastardly Duchess Mouse':'physical',
+        'Malicious Marquis Mouse':'physical',
+        'Pernicious Prince Mouse':'physical',
+        'Mythical Giant King':'physical',
+    };
+    if(miceMap[mouseName] == undefined){console.log('Mouse not found',mouseName,miceMap[mouseName])}
+    return miceMap[mouseName];
+}
+function hidePowerCrowns() {
+    if ($('.mouseCrownsView-group-header.powerCrown').length > 0) {
+        $('.mouseCrownsView-group-header.powerCrown').remove();
+        $('.mouseCrownsView-group:not(.favorite)').find('.pt').remove();
+    }
+}
+
+/********** Copy Crowns **********/
 function copyMyCrowns() {
     const debug = localStorage.getItem('ws.debug');
     hg.utils.MouseUtil.getHuntingStats(function(data) {
@@ -707,9 +1989,15 @@ function correctMouseName(mouseName) {
 }
 
 function decorate() {
+    let collapseProps = JSON.parse(localStorage.getItem('ws.mh.pfp.collapseProps'));
+    if (collapseProps) {
+    } else {
+        collapseProps = {'none':'E','bronze':'E','silver':'E','gold':'E','platinum':'E','diamond':'E','favourite':'E'};
+        localStorage.setItem('ws.mh.pfp.collapseProps',JSON.stringify(collapseProps))
+    }
     let uncrowned = $('.mouseCrownsView-group.none').find('.mouseCrownsView-crown.none');
     $(uncrowned).css({
-        'background-image': "url('https://image.flaticon.com/icons/png/512/1604/1604467.png')",
+        'background-image': "url('https://cdn-icons-png.flaticon.com/512/3281/3281316.png')",
         'background-repeat': 'no-repeat',
         'background-size': 'contain'
     });
@@ -718,8 +2006,42 @@ function decorate() {
         const image = $(this).find('.mouseCrownsView-group-mouse-image');
         const catches = parseInt($(this).find('.mouseCrownsView-group-mouse-catches').text().replace(",", ""),10);
         setCrownBorder(image,catches);
+        if(localStorage.getItem("ShowPowerCrowns") == "Y") {
+            populatePowerCrowns(this);
+        }
+    });
+    $(".mouseCrownsView-group").each(function( index ) {
+        const thisCrown = $(this).attr('class').replace('mouseCrownsView-group ',"");
+        if (collapseProps[thisCrown] == 'E') {
+            $(this).find('.mouseCrownsView-group-mice').removeClass("hidden");
+        } else {
+            $(this).find('.mouseCrownsView-group-mice').addClass("hidden");
+        }
+        const header = $(this).find('.mouseCrownsView-group-header');
+        let catches = header.find('.mouseCrownsView-group-header-subtitle').text();
+        catches = parseInt(catches.replace('Earned at ',"").replace(' catches',"").replace(',',""),10);
+        setCrownBorder(header,catches)
     });
 }
+
+
+$(document).on('click', '.mouseCrownsView-group-header:not(.community):not(.powerCrown)', function(e) {
+    showHideCrowns($(this).parent());
+})
+
+function showHideCrowns(thisGroup) {
+    let collapseProps = JSON.parse(localStorage.getItem('ws.mh.pfp.collapseProps'));
+    const thisCrown = $(thisGroup).attr('class').replace('mouseCrownsView-group ',"");
+    const theseMice = $(thisGroup).find(".mouseCrownsView-group-mice");
+    if (theseMice.hasClass("hidden")) {
+        collapseProps[thisCrown] = "E";
+    } else {
+        collapseProps[thisCrown] = "C";
+    }
+    theseMice.toggle();
+    localStorage.setItem('ws.mh.pfp.collapseProps',JSON.stringify(collapseProps));
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //ITEMS TAB
 //
