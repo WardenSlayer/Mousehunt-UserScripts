@@ -37,7 +37,6 @@ $(document).ajaxComplete(function (event, xhr, options) {
   ) {
     updateProps("prevLocation", getTimerProps().currentLocation);
     loadFunction();
-  } else {
   }
 });
 
@@ -162,6 +161,7 @@ function buildTimerBox() {
     timerBox.classList.add("hide");
     $(accordionPrompt).text("Expand");
   } else {
+    //dont hide
   }
   $(timerBox).css({
     background:
@@ -332,12 +332,11 @@ function buildTravelButtons(location) {
 function runTimers() {
   debugLog("Timers Updating");
   updateText();
-  var myTimer = "";
   const updateInterval = parseInt(getTimerProps().updateInterval, 10);
   if (updateInterval == null) {
-    myTimer = setInterval(updateText, 60000);
+    setInterval(updateText, 60000);
   } else {
-    myTimer = setInterval(updateText, updateInterval * 60000);
+    setInterval(updateText, updateInterval * 60000);
   }
 }
 
@@ -390,11 +389,11 @@ function getGenericLocatonDetails(location) {
     keyTimes = { Closed: 16, Open: rotaionLenght };
   } else if (location == "bc") {
     first = 1294680060;
-    rotaionLenght = 18.6666666666666666666667;
+    rotaionLenght = 18.6667;
     keyTimes = {
       MidF: 16,
       High: 17,
-      MidE: 17.6666666666666666666667,
+      MidE: 17.6667,
       Low: rotaionLenght,
     };
   } else if (location == "sg") {
@@ -597,14 +596,18 @@ function genericTimerUpdate(selector, currentValue, diff, label) {
 function genericReminderCheck(timeObj, remindersObj, subLocation, interval) {
   let result = false;
   if (timeObj.days != 0 && timeObj.hours != 0) {
+    //Not time yet
   } else if (timeObj.minutes > interval) {
+    //Too soon to remind
   } else if (remindersObj.master != "Y") {
+    //I am not Y
   } else if (remindersObj.flags[subLocation] == "Y") {
     result = true;
   } else {
     let yesCount = 0;
     for (const [key, value] of Object.entries(remindersObj.flags)) {
       if (key == subLocation) {
+        //not myself
       } else if (value == "Y") {
         yesCount++;
       }
