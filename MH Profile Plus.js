@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.29
+// @version      1.30
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
@@ -712,7 +712,7 @@ function getPowerTypeTotals(type) {
                        'forgotten':87,
                        'hydro':189,
                        'law':67,
-                       'physical':45,
+                       'physical':78,
                        'rift':142,
                        'shadow':78,
                        'tactical':104,
@@ -1745,7 +1745,7 @@ function getMousePowerType(mouseName) {
         'Thorn':'hydro',
         'Thunder Strike':'draconic',
         'Thundering Watcher':'draconic',
-        'Thunderlord':'draconic',
+        '⚡Thunderlord⚡':'draconic',
         'Tidal Fisher':'shadow',
         'Tiger':'tactical',
         'Time Punk':'event',
@@ -1858,7 +1858,41 @@ function getMousePowerType(mouseName) {
         'Zombot Unipire':'event',
         'Zombot Unipire the Third':'rift',
         'Zurreal the Eternal':'tactical',
+        'Budrich Thornborn':'physical',
+        'Leafton Beanwell':'physical',
+        'Vinneus Stalkhome':'physical',
+        'Peaceful Prisoner':'physical',
+        'Diminutive Detainee':'physical',
+        'Smug Smuggler':'physical',
+        'Cell Sweeper':'physical',
+        'Jovial Jailor':'physical',
+        'Lethargic Guard':'physical',
+        'Gate Keeper':'physical',
+        'Key Master':'physical',
+        'Wrathful Warden':'physical',
+        'Dungeon Master':'physical',
+        'Whimsical Waltzer':'physical',
+        'Sassy Salsa Dancer Mouse':'physical',
+        'Baroque Dancer Mouse':'physical',
+        'Violent Violinist Mouse':'physical',
+        'Obstinate Oboist Mouse':'physical',
+        'Peevish Piccoloist':'physical',
+        'Sultry Saxophonist Mouse':'physical',
+        'Chafed Cellist Mouse':'physical',
+        'Treacherous Tubaist Mouse':'physical',
+        'Malevolent Maestro':'physical',
+        'Clumsy Cupbearer Mouse':'physical',
+        'Plotting Page Mouse':'physical',
+        'Scheming Squire Mouse':'physical',
+        'Vindictive Viscount Mouse':'physical',
+        'Baroness Von Bean':'physical',
+        'Cagey Countess Mouse':'physical',
+        'Dastardly Duchess Mouse':'physical',
+        'Malicious Marquis Mouse':'physical',
+        'Pernicious Prince Mouse':'physical',
+        'Mythical Giant King':'physical',
     };
+    if(miceMap[mouseName] == undefined){console.log('Mouse not found',mouseName,miceMap[mouseName])}
     return miceMap[mouseName];
 }
 function hidePowerCrowns() {
