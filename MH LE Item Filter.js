@@ -60,7 +60,7 @@ function callback(mutationList, observer) {
                 }
         }
     })
-};
+}
 $(document).on('click', "[data-filter='showAllItems']", function() {
     if (page == 1) {
         return false;
@@ -254,4 +254,4 @@ function buildHideLe(displayBox) {
     //=====
     displayBox.prepend(hideLe)
     return hideLe;
-};
+}
