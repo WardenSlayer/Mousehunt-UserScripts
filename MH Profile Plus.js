@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.30
+// @version      1.31
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
@@ -1872,24 +1872,24 @@ function getMousePowerType(mouseName) {
         'Wrathful Warden':'physical',
         'Dungeon Master':'physical',
         'Whimsical Waltzer':'physical',
-        'Sassy Salsa Dancer Mouse':'physical',
-        'Baroque Dancer Mouse':'physical',
-        'Violent Violinist Mouse':'physical',
-        'Obstinate Oboist Mouse':'physical',
+        'Sassy Salsa Dancer':'physical',
+        'Baroque Dancer':'physical',
+        'Violent Violinist':'physical',
+        'Obstinate Oboist':'physical',
         'Peevish Piccoloist':'physical',
-        'Sultry Saxophonist Mouse':'physical',
-        'Chafed Cellist Mouse':'physical',
-        'Treacherous Tubaist Mouse':'physical',
+        'Sultry Saxophonist':'physical',
+        'Chafed Cellist':'physical',
+        'Treacherous Tubaist':'physical',
         'Malevolent Maestro':'physical',
-        'Clumsy Cupbearer Mouse':'physical',
-        'Plotting Page Mouse':'physical',
-        'Scheming Squire Mouse':'physical',
-        'Vindictive Viscount Mouse':'physical',
+        'Clumsy Cupbearer':'physical',
+        'Plotting Page':'physical',
+        'Scheming Squire':'physical',
+        'Vindictive Viscount':'physical',
         'Baroness Von Bean':'physical',
-        'Cagey Countess Mouse':'physical',
-        'Dastardly Duchess Mouse':'physical',
-        'Malicious Marquis Mouse':'physical',
-        'Pernicious Prince Mouse':'physical',
+        'Cagey Countess':'physical',
+        'Dastardly Duchess':'physical',
+        'Malicious Marquis':'physical',
+        'Pernicious Prince':'physical',
         'Mythical Giant King':'physical',
     };
     if(miceMap[mouseName] == undefined){console.log('Mouse not found',mouseName,miceMap[mouseName])}
