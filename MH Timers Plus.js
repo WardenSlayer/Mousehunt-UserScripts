@@ -2,7 +2,7 @@
 // @name         MH Timers+
 // @author       Warden Slayer - Warden Slayer#2010
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      2.0
+// @version      2.0.1
 // @description  Handy script to keep track of the various MH location timers
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // @resource     YOUR_CSS https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css
@@ -15,7 +15,7 @@
 // @grant        GM_getResourceText
 // ==/UserScript==
 $(document).ready(function () {
-  debugLog("Timers+ Started");
+  debugLog("Timers+ Started!");
   const cssTxt = GM_getResourceText("YOUR_CSS");
   GM_addStyle(cssTxt);
   setInitialReminders();
@@ -203,7 +203,6 @@ function updateSummary() {
       "font-weight": "bold",
       "margin-left": "100px",
     });
-  console.log("[" + fg + "/" + bc + "/" + sg + "/" + ts + "]");
   $(".accordion").append(accordionSummary);
 }
 
@@ -2445,7 +2444,7 @@ function updateToxicSpillTimer() {
     });
   } else if (
     partialrotation >= keyTimes.HeroF &&
-    partialrotation < keyTimes.hero
+    partialrotation < keyTimes.Hero
   ) {
     //Hero Falling
     $(".toxicSpillHeaderValue").text("HERO-FALLING");
