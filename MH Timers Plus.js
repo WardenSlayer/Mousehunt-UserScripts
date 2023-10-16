@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MH Timers+
 // @author       Warden Slayer
-// @namespace    Warden Slayer
+// @namespace    https://greasyfork.org/en/users/227259-wardenslayer
 // @version      2.0.2
 // @description  Handy script to keep track of the various MH location timers
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js

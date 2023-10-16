@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MH: Profile+
 // @author       Warden Slayer
-// @namespace    Warden Slayer
+// @namespace    https://greasyfork.org/en/users/227259-wardenslayer
 // @version      1.34
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest

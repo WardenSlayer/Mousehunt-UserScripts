@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MH: Labyrinth Door Data Collector
 // @author       Warden Slayer
-// @namespace    Warden Slayer
+// @namespace    https://greasyfork.org/en/users/227259-wardenslayer
 // @version      1.2.8
 // @description  Mousehunt data collection tool for avilible labyrinth doors
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
