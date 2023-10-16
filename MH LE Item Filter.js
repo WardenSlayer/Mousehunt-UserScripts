@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MH: LE Item Filter
 // @author       Warden Slayer
-// @namespace    Warden Slayer
+// @namespace    https://greasyfork.org/en/users/227259-wardenslayer
 // @version      1.4.6
 // @description  Adds a checkbox that allows you to hide LE items on your profile
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js
