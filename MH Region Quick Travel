@@ -2,7 +2,7 @@
 // @name         MH Region Quick Travel
 // @author       Warden Slayer
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.6.5
+// @version      1.6.6
 // @description  Adds a travel toolbar to the HUD to make traveling between areas in the same region quicker and easier
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
 // @include      https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
@@ -139,7 +139,7 @@ function getRegionLocations(currentRegion) {
     } else if (currentRegion == 'Whisker Woods') {
         tags = ['calm_clearing','great_gnarled_tree','lagoon'];
     } else if (currentRegion == 'Burroughs') {
-        tags = ['laboratory','mousoleum','town_of_digby','bazaar','pollution_outbreak'];
+        tags = ['laboratory','mousoleum','town_of_digby','bazaar','pollution_outbreak','halloween_event_location'];
     } else if (currentRegion == 'Furoma') {
         tags = ['training_grounds','dojo','meditation_room','pinnacle_chamber'];
     } else if (currentRegion == 'Bristle Woods') {
@@ -238,6 +238,7 @@ function getLocationNames(tag) {
         'winter_hunt_grove': 'Cinnamon Hill',
         'winter_hunt_workshop': 'Golem Workshop',
         'winter_hunt_fortress': 'Ice Fortress',
+        'halloween_event_location':'Gloomy Greenwood'
     };
     return locNames[tag];
 }
