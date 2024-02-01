@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.35
+// @version      1.36
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
@@ -624,6 +624,9 @@ function populatePowerCrowns(mouse){
     } else if (powerType == 'event') {
         iconClass = 'pt event';
         icon = 'https://www.mousehuntgame.com/images/items/skins/73c91f2016a313406553794587625e24.jpg';
+    } else if (powerType == 'prize') {
+        iconClass = 'pt prize';
+        icon = 'https://www.mousehuntgame.com/images/items/convertibles/80cf614cbec2ec3d739502bd45c93ab3.gif?cv=2';
     } else {
         icon = 'https://www.mousehuntgame.com/images/powertypes/'+powerType+'.png';
         iconClass = 'pt '+powerType;
@@ -631,7 +634,7 @@ function populatePowerCrowns(mouse){
     const label = $(mouse).find('.mouseCrownsView-group-mouse-label');
     if($(label).find('img').length >0) {
     } else {
-        $(label).append($('<img>',{class:iconClass,src:icon}));
+        $(label).append($('<img>',{class:iconClass,src:icon,title:powerType}));
         $(label).find('img').css({'width': '17.5px','height':'17.5px','margin-left':'1px',})
     }
 }
@@ -659,17 +662,27 @@ function showPowerCrowns() {
     });
     powerCrownHeader.insertAfter(crownBreak);
     const ptBtnGroup = $("<div class='btn-group' id='powerTypeBtns'></div>");
-    const powerTypes = ['arcane','draconic','forgotten','hydro','law','physical','rift','shadow','tactical','parental'];
+    const powerTypes = ['arcane','draconic','forgotten','hydro','law','physical','rift','shadow','tactical','parental','event','prize'];
     powerTypes.forEach(function(type, index) {
         const thisBtn = document.createElement("button");
+        let icon = '';
+        let title = type;
         if(type == 'parental') {
             $(thisBtn).addClass('ptbtn multi');
+            icon = 'https://www.mousehuntgame.com/images/powertypes/'+type+'.png';
+            title = 'multi';
+        } else if (type == 'event') {
+            $(thisBtn).addClass('ptbtn '+type);
+            icon = 'https://www.mousehuntgame.com/images/items/skins/73c91f2016a313406553794587625e24.jpg';
+        } else if (type == 'prize') {
+            $(thisBtn).addClass('ptbtn '+type);
+            icon = 'https://www.mousehuntgame.com/images/items/convertibles/80cf614cbec2ec3d739502bd45c93ab3.gif?cv=2';
         } else {
             $(thisBtn).addClass('ptbtn '+type);
+            icon = 'https://www.mousehuntgame.com/images/powertypes/'+type+'.png';
         }
         $(thisBtn).text(getPowerTypeTotals(type));
-        const icon = 'https://www.mousehuntgame.com/images/powertypes/'+type+'.png';
-        $(thisBtn).append($('<img>',{src:icon}));
+        $(thisBtn).append($('<img>',{src:icon,title:title}));
         $(thisBtn).find('img').css({
             'height': '50%',
             'width':'50%',
@@ -680,7 +693,7 @@ function showPowerCrowns() {
             'font-size':'14px',
             'padding': '7.5px 2.5px',
             'text-align': 'bottom',
-            'width': '10%'
+            'width': '16.666666666666666666%'
         });
         $(thisBtn).on('click',function() {
             let ptProps = JSON.parse(localStorage.getItem('ws.mh.pfp.ptProps'));
@@ -716,7 +729,9 @@ function getPowerTypeTotals(type) {
                        'rift':142,
                        'shadow':78,
                        'tactical':104,
-                       'multi':128};
+                       'multi':128,
+                       'event':173,
+                       'prize':2};
     const num = $('.mouseCrownsView-group:not(.favourite):not(.none):not(.bronze)').find('.pt.'+type).length;
     const percent = ((num/totalMice[type])*100).toFixed(2);
     return num+' ('+percent+'%)'
@@ -1239,7 +1254,7 @@ function getMousePowerType(mouseName) {
         'Lasso Cowgirl':'law',
         'Launchpad Labourer':'normal',
         'Lawbender':'law',
-        'Leprechaun':'event',
+        'Leprechaun':'prize',
         'Leviathan':'hydro',
         'Lich':'arcane',
         'Lightning Rod':'normal',
@@ -1321,7 +1336,7 @@ function getMousePowerType(mouseName) {
         'Missile Toe':'event',
         'Mist Maker':'hydro',
         'Mlounder Flounder':'hydro',
-        'Mobster':'event',
+        'Mobster':'prize',
         'Mole':'normal',
         'Molten Midas':'forgotten',
         'Monarch':'tactical',
