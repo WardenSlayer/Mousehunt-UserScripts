@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.36
+// @version      1.37
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
@@ -615,6 +615,7 @@ $(document).on("change", "#powerCrowns", function() {
 
 function populatePowerCrowns(mouse){
     const mouseName = $(mouse).find('.mouseCrownsView-group-mouse-name').text();
+    if(mouseName == '-- Empty --') {return false}
     let powerType = getMousePowerType(mouseName);
     let icon = 'https://www.mousehuntgame.com/images/powertypes/parental.png'
     let iconClass = "";
@@ -730,10 +731,11 @@ function getPowerTypeTotals(type) {
                        'shadow':78,
                        'tactical':104,
                        'multi':128,
-                       'event':173,
+                       'event':178,
                        'prize':2};
     const num = $('.mouseCrownsView-group:not(.favourite):not(.none):not(.bronze)').find('.pt.'+type).length;
     const percent = ((num/totalMice[type])*100).toFixed(2);
+    console.log(num,percent)
     return num+' ('+percent+'%)'
 }
 
