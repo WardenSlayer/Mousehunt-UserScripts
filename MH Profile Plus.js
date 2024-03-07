@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.38
+// @version      1.39
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
@@ -12,6 +12,8 @@
 // @connect      http://www.mousehuntgame.com/*
 // @connect      https://www.mousehuntgame.com/*
 // @grant GM_setClipboard
+// @downloadURL https://update.greasyfork.org/scripts/381389/MH%3A%20Profile%2B.user.js
+// @updateURL https://update.greasyfork.org/scripts/381389/MH%3A%20Profile%2B.meta.js
 // ==/UserScript==
 $(document).ready(function() {
     const debug = localStorage.getItem('ws.debug');
@@ -277,6 +279,7 @@ function setCrownBorder(thumb,catches,expanded) {
         background = '#fafafa';
     }
     $(thumb).css({
+        'cursor': 'pointer',
         'background-color': background,
         'border-style': 'solid',
         'border-width': '4px',
@@ -439,6 +442,7 @@ function buildToolbar() {
     $(copyCrownsButton).attr('title', 'Copy Crowns to Clipboard');
     toolBar.appendChild(copyCrownsButton);
     $(copyCrownsButton).css({
+        'cursor': 'pointer',
          'border-style': 'solid',
          'border-color': 'grey',
          'border-width': '2px',
@@ -699,23 +703,61 @@ function showPowerCrowns() {
             masterText = 'Master of '+type.charAt(0).toUpperCase()+type.substring(1)+'!';
         }
         const powerTypeData = getPowerTypeTotals(type);
-        $(thisBtn).text(powerTypeData[0]);
-        $(thisBtn).append($('<img>',{src:icon,title:title}));
-        if(powerTypeData[1]) {
-        $(thisBtn).append($('<img>',{src:'https://www.mousehuntgame.com/images/ui/crowns/crown_silver.png?asset_cache_version=2',title:masterText}));
+        const powerTypeIcon = $('<img>',{src:icon,title:title, width:"35", height:"35"});
+        $(thisBtn).append(powerTypeIcon);
+        //
+        const countText = document.createElement("div");
+        $(countText).append(powerTypeData[0])
+        //
+        if(powerTypeData[2]) {
+            const masterBtn = $('<img>',{src:'https://www.mousehuntgame.com/images/ui/crowns/crown_silver.png?asset_cache_version=2',title:masterText, width:"50", height:"45"});
+            $(thisBtn).append(masterBtn);
+            $(masterBtn).css({
+                'position': 'relative',
+                'top': '-10px',
+                'left': '10px',
+            });
+            $(powerTypeIcon).css({
+                'position': 'relative',
+                'top': '-10px',
+                'left': '-10px',
+             });
+             $(countText).css({
+                'position': 'relative',
+                'top': '-10px',
+                'left': '0px',
+                'width':'100%',
+            });
+        } else {
+            const percentText = document.createElement("div");
+            $(percentText).append(powerTypeData[1])
+            $(percentText).css({
+                'position': 'relative',
+                'top': '-35px',
+                'left': '40px',
+                'width':'55%',
+            });
+            $(thisBtn).append(percentText);
+            $(powerTypeIcon).css({
+                'position': 'relative',
+                'left': '-40px',
+             });
+             $(countText).css({
+                'position': 'relative',
+                 'top': '-20px',
+                'left': '0px',
+                'width':'100%',
+            });
         }
-        $(thisBtn).find('img').css({
-            'height': '40%',
-            'width':'45%',
-        });
+        $(thisBtn).append(countText);
         $(thisBtn).css({
+            'cursor': 'pointer',
             'background-color': '#008CBA',
             'border-radius':'4px',
             'font-size':'16px',
             'padding': '7.5px 2.5px',
-            'text-align': 'bottom',
-            //'width': '16.666666666666666666%'
-            'width': '25%'
+            'height': '67px',
+            'width': '16.666666666666666666%',
         });
         $(thisBtn).on('click',function() {
             let ptProps = JSON.parse(localStorage.getItem('ws.mh.pfp.ptProps'));
@@ -757,14 +799,15 @@ function getPowerTypeTotals(type) {
                        'prize':2};
     const num = $('.mouseCrownsView-group:not(.favourite):not(.none):not(.bronze)').find('.pt.'+type).length;
     const percent = ((num/totalMice[type])*100).toFixed(2);
-    if (debug == true) {
-        console.log(type,num,percent);
-    };
     let result = [];
-    result.push(''+num+' of '+totalMice[type]+' ('+percent+'%)');
+    result.push(''+num+' of '+totalMice[type]);
     if(num == totalMice[type]) {
         result.push('isMaster')
     }
+    result.push(' '+percent+'% ');
+    if (debug == true) {
+        console.log(type,num,percent,result);
+    };
     return result
 }
 
