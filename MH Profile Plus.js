@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.39
+// @version      1.40
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
@@ -203,6 +203,35 @@ $(document).on('click', '.hunterInfoView-idCardBlock-secondaryHeader', function(
 //
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+function sumCategoryStats(category) {
+    const categoryName = $(category).find('.mouseListView-categoryContent-name');
+    const categoryTest = $(category).find('.mouseListView-categoryContent-description');
+    let categoryCatches = 0;
+    let categoryMisses = 0;
+    const categoryMice = $(category).find('.mouseListView-categoryContent-subgroup-mouse.stats:not(.header)')
+    categoryMice.each(function(i) {
+        const thisCatches = parseInt($(this).find('.catches').text().replace(",", ""),10);
+        const thisMisses = parseInt($(this).find('.misses').text().replace(",", ""),10);
+        categoryCatches+=thisCatches;
+        categoryMisses+=thisMisses;
+    });
+    const categoryTotal = categoryCatches+categoryMisses+99999;
+    let categoryStats = $(category).find('.categoryStats');
+    if ($(categoryStats).length > 0) {
+    } else {
+        categoryStats = document.createElement("div");
+        categoryStats.classList.add("categoryStats");
+        $(categoryStats).insertAfter(categoryTest);
+    }
+    $(categoryStats).text("Category Stats [Catches: "+categoryCatches.toLocaleString()+", Misses: "+categoryMisses.toLocaleString()+", Total: "+categoryTotal.toLocaleString()+"]")
+    console.log(category,categoryCatches,categoryMisses)
+    $(categoryStats).css({
+        'fontSize': "16px",
+        'margin-top': '3px',
+    });
+}
+
 function generateMice() {
     const allMice = $('.mouseListView-categoryContent-subgroup-mouse.stats:not(.header)');
     const statsHeader = $('.mouseListView-categoryContent-subgroup-mouse.stats.header');
@@ -218,6 +247,10 @@ function generateMice() {
     $('.mouseListView-categoryContent-subgroup-mouse.stats.header').on('click', '.mouseListView-categoryContent-subgroup-mouse-stats', function() {
         SortMice(this);
     })
+    const theseCategories = $('.mouseListView-categoryContent-category.all.active');
+    theseCategories .each(function(i) {
+        sumCategoryStats(this)
+    });
 }
 
 function SortMice(sortBy) {
@@ -710,21 +743,24 @@ function showPowerCrowns() {
         $(countText).append(powerTypeData[0])
         //
         if(powerTypeData[2]) {
-            const masterBtn = $('<img>',{src:'https://www.mousehuntgame.com/images/ui/crowns/crown_silver.png?asset_cache_version=2',title:masterText, width:"50", height:"45"});
+            const masterBtn = $('<img>',{src:'https://www.mousehuntgame.com/images/ui/crowns/crown_silver.png?asset_cache_version=2',title:masterText});
+            //const masterBtn = $('<img>',{src:'https://www.mousehuntgame.com/images/ui/crowns/crown_silver.png?asset_cache_version=2',title:masterText, width:"35", height:"35"});
             $(thisBtn).append(masterBtn);
             $(masterBtn).css({
                 'position': 'relative',
-                'top': '-10px',
-                'left': '10px',
+                'top': '-12px',
+                'left': '-5px',
+                'float': 'right',
             });
             $(powerTypeIcon).css({
                 'position': 'relative',
-                'top': '-10px',
-                'left': '-10px',
+                'top': '0px',
+                'left': '-5px',
              });
              $(countText).css({
+                'float': 'left',
                 'position': 'relative',
-                'top': '-10px',
+                'top': '-12px',
                 'left': '0px',
                 'width':'100%',
             });
@@ -756,7 +792,7 @@ function showPowerCrowns() {
             'border-radius':'4px',
             'font-size':'16px',
             'padding': '7.5px 2.5px',
-            'height': '67px',
+            'height': '67.5px',
             'width': '16.666666666666666666%',
         });
         $(thisBtn).on('click',function() {
