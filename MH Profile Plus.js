@@ -216,7 +216,7 @@ function sumCategoryStats(category) {
         categoryCatches+=thisCatches;
         categoryMisses+=thisMisses;
     });
-    const categoryTotal = categoryCatches+categoryMisses+99999;
+    const categoryTotal = categoryCatches+categoryMisses;
     let categoryStats = $(category).find('.categoryStats');
     if ($(categoryStats).length > 0) {
     } else {
@@ -225,7 +225,6 @@ function sumCategoryStats(category) {
         $(categoryStats).insertAfter(categoryTest);
     }
     $(categoryStats).text("Category Stats [Catches: "+categoryCatches.toLocaleString()+", Misses: "+categoryMisses.toLocaleString()+", Total: "+categoryTotal.toLocaleString()+"]")
-    console.log(category,categoryCatches,categoryMisses)
     $(categoryStats).css({
         'fontSize': "16px",
         'margin-top': '3px',
