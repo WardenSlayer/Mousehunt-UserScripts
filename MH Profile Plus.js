@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.41
+// @version      1.42
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
@@ -15,6 +15,7 @@
 // @downloadURL https://update.greasyfork.org/scripts/381389/MH%3A%20Profile%2B.user.js
 // @updateURL https://update.greasyfork.org/scripts/381389/MH%3A%20Profile%2B.meta.js
 // ==/UserScript==
+//
 $(document).ready(function() {
     const debug = localStorage.getItem('ws.debug');
     if (debug == true) {
