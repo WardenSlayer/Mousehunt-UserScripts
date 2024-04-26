@@ -16,13 +16,13 @@
 // @updateURL https://update.greasyfork.org/scripts/381389/MH%3A%20Profile%2B.meta.js
 // ==/UserScript==
 //
-$(document).ready(function () {
-  const debug = localStorage.getItem('ws.debug');
-  if (debug == true) {
-    console.log('Profile+ Started');
-  }
-  localStorage.setItem('ws.pfp.sortUorD', 'down');
-  loadFunction();
+$(document).ready(function() {
+    const debug = localStorage.getItem('ws.debug');
+    if (debug == true) {
+        console.log('Profile+ Started');
+    };
+    localStorage.setItem('ws.pfp.sortUorD','down');
+    loadFunction();
 
   addStyles(`#tipButton {
         position: absolute;
