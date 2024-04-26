@@ -20,7 +20,7 @@ $(document).ready(function() {
     const debug = localStorage.getItem('ws.debug');
     if (debug == true) {
         console.log('Profile+ Started');
-    };
+    }
     localStorage.setItem('ws.pfp.sortUorD','down');
     loadFunction();
 
