@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.46
+// @version      1.47
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
@@ -1057,12 +1057,12 @@ function getPowerTypeTotals(type) {
     arcane: 78,
     draconic: 67,
     forgotten: 87,
-    hydro: 189,
+    hydro: 204,
     law: 68,
     physical: 79,
     rift: 142,
     shadow: 91,
-    tactical: 106,
+    tactical: 121,
     multi: 138,
     event: 168,
     prize: 2,
@@ -2317,6 +2317,36 @@ function getMousePowerType(mouseName) {
     'Supremia Magnificus': 'draconic',
     "Three'amat the Mother of Dragons": 'draconic',
     'Mythical Dragon Emperor': 'draconic',
+    'Bark Burner': 'tactical',
+    'Sap Stealer': 'tactical',
+    'Branch Breaker': 'tactical',
+    'Moss Comber': 'tactical',
+    'Sardonic Sapling': 'tactical',
+    'Twisted Twig': 'tactical',
+    'Sour Sprout': 'tactical',
+    'Maniacal Maple': 'tactical',
+    'Brash Birch': 'tactical',
+    'Wailing Willow': 'tactical',
+    'Furious Fir': 'tactical',
+    'Heinous Hemlock': 'tactical',
+    'Rampaging Redwood': 'tactical',
+    'Herbicidal Maniac': 'tactical',
+    'Blight Incarnate': 'tactical',
+    'Crusty Crab': 'hydro',
+    'Abrasive Abalone': 'hydro',
+    'Scornful Scallop': 'hydro',
+    'Barbaric Barnacle': 'hydro',
+    'Anguished Anemone': 'hydro',
+    'Menacing Medusozoa': 'hydro',
+    'Belligerent Berghia': 'hydro',
+    'Loutish Loach': 'hydro',
+    'Pesky Pleco': 'hydro',
+    'Shifty Shrimp': 'hydro',
+    'Killer Krill': 'hydro',
+    'Chaotic Chiton': 'hydro',
+    'Muscular Mussel': 'hydro',
+    'Nyagarha the Falls Guardian': 'hydro',
+    'Ancient Wisdom Keeper': 'hydro',
   };
   if (miceMap[mouseName] == undefined) {
     console.warn('Mouse not found', mouseName, miceMap[mouseName]);
