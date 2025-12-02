@@ -7,4 +7,4 @@ In order to use these scripts, you must be playing on [MHG.com](https://www.mous
 
 Once you have the browser extension ready, head on over to my [github page](https://wardenslayer.github.io/Mousehunt-UserScripts/) where you will find links to [GreasyFork](https://greasyfork.org/en/users/227259-warden-slayer) where you can hit the big green "Install" button to load the scripts individually.  
 
-If you need any help setting things up or want to share ideas/feedback on my scripts, [find me on Discord](https://discord.com/users/341669842736119818) or shoot me an email at [Dev.WardenSlayer@gmail.com](mailto:Dev.WardenSlayer@gmail.com)
+If you need any help setting things up or want to share ideas/feedback on my scripts, [find me on Discord](https://discord.com/users/341669842736119818) or shoot me an email at [Dev.WardenSlayer@gmail.com](mailto:xWardenSlayer@protonmail.com)
