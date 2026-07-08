@@ -2,7 +2,7 @@
 // @name         MH: Profile+
 // @author       Warden Slayer
 // @namespace    https://greasyfork.org/en/users/227259-wardenslayer
-// @version      1.48.1
+// @version      1.48.2
 // @description  Community requested features for the tabs on your MH profile.
 // @grant        GM_xmlhttpRequest
 // @icon         https://www.mousehuntgame.com/images/items/weapons/974151e440f297f1b6d55385310ac63c.jpg?cv=2
@@ -1058,12 +1058,12 @@ function getPowerTypeTotals(type) {
     draconic: 67,
     forgotten: 87,
     hydro: 204,
-    law: 113,
+    law: 133,
     physical: 79,
     rift: 142,
     shadow: 91,
     tactical: 121,
-    multi: 138,
+    multi: 139,
     event: 168,
     prize: 2,
   };
@@ -2392,6 +2392,27 @@ function getMousePowerType(mouseName) {
     'Suspense Weaver': 'law',
     'Tragedy Weaver': 'law',
     'Ultimate Mythweaver': 'law',
+    'Port Pillager': 'law',
+    'Amateur Knife Juggler': 'law',
+    'Treacherous Dock Lurker': 'law',
+    'Stubby Scrap Scavenger': 'law',
+    'Sly Skulking Scrapper': 'law',
+    'Hefty Hulking Hauler': 'law',
+    'Careless Canister Rider': 'law',
+    'Covetous Canister Thief': 'law',
+    'Colossal Canister Collector': 'law',
+    'Swift Stone Snatcher': 'law',
+    'Greedy Stone Grappler': 'law',
+    'Boulder and Pebble': 'law',
+    'Arrogant Aurora Connoisseur': 'law',
+    'Acrobatic Aurora Bandit': 'law',
+    'Audacious Aurora Embezzler': 'law',
+    'Quarrelsome Quartermaster': 'law',
+    'Cluttergrin the Commodore of Curiosities': 'law',
+    'Slipstream the Virtuoso of Vapours': 'law',
+    'Craggerclaw the Magnate of Minerals': 'law',
+    'Shimmerdread the Sovereign of Spice': 'law',
+    'Captain Crook': 'multi',
   };
   if (miceMap[mouseName] == undefined) {
     console.warn('Mouse not found', mouseName, miceMap[mouseName]);
